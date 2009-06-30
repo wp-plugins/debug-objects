@@ -170,19 +170,19 @@ msgstr "Speicherlimit, Konstante"
 
 #: debug_objects.php:219
 msgid "Post revision, constant"
-msgstr ""
+msgstr "Artikel Versionierung, Konstante"
 
 #: debug_objects.php:220
 msgid "Save queries, constant"
-msgstr ""
+msgstr "Queries speichern, Konstante"
 
 #: debug_objects.php:221
 msgid "Debug option, constant"
-msgstr ""
+msgstr "Debug Option, Konstante"
 
 #: debug_objects.php:222
 msgid "SSL Login, constant"
-msgstr ""
+msgstr "SSL Login, Konstante"
 
 #: debug_objects.php:223
 msgid "Concatenate scripts, constant"
@@ -202,56 +202,56 @@ msgstr ""
 
 #: debug_objects.php:227
 msgid "Autosave interval, constant"
-msgstr ""
+msgstr "Autosave Intervall, Konstante"
 
 #: debug_objects.php:255
 msgid "WordPress Cookie Informations"
-msgstr ""
+msgstr "WordPress Cookie Informationen"
 
 #: debug_objects.php:257
 msgid "Cookie domain, constant"
-msgstr ""
+msgstr "Cookie Domain, Konstante"
 
 #: debug_objects.php:258
 #: debug_objects.php:293
 msgid "Cookie path, constant"
-msgstr ""
+msgstr "Cookiepfad, Konstante"
 
 #: debug_objects.php:259
 msgid "Site cookie path, constant"
-msgstr ""
+msgstr "Sitecookiepfad, Konstante"
 
 #: debug_objects.php:260
 msgid "Plugin cookie path, constant"
-msgstr ""
+msgstr "Plugincookiepfad, Konstante"
 
 #: debug_objects.php:261
 msgid "Admin cookie path, constant"
-msgstr ""
+msgstr "Admincookiepfad, Konstante"
 
 #: debug_objects.php:274
 msgid "WordPress File Permissions Informations"
-msgstr ""
+msgstr "WordPress Datei Rechte Informationen"
 
 #: debug_objects.php:276
 msgid "File Permissions, constant"
-msgstr ""
+msgstr "Datei Rechte, Konstante"
 
 #: debug_objects.php:277
 msgid "DIR Permissions, constant"
-msgstr ""
+msgstr "Directory Rechte, Konstante"
 
 #: debug_objects.php:290
 msgid "WordPress Custom User &amp; Usermeta Tables"
-msgstr ""
+msgstr "WordPress benutzerdef. User &amp; Usermeta Tabellen"
 
 #: debug_objects.php:292
 msgid "Custom User Table, constant"
-msgstr ""
+msgstr "Benutzerdef. User Tabelle, Konstante"
 
 #: debug_objects.php:341
 msgid "WordPress FTP/SSH Informations"
-msgstr ""
+msgstr "WordPress FTP/SSH Informationen"
 
 #: debug_objects.php:343
 msgid "Forces the filesystem method, constant"
@@ -279,15 +279,15 @@ msgstr ""
 
 #: debug_objects.php:349
 msgid "FTP or SSH username, constant"
-msgstr ""
+msgstr "FTP oder SSH  Username, Konstante"
 
 #: debug_objects.php:350
 msgid "FTP or SSH password, constant"
-msgstr ""
+msgstr "FTP oder SSH Passwort, Konstante"
 
 #: debug_objects.php:351
 msgid "Hostname, constant"
-msgstr ""
+msgstr "Histname, Konstante"
 
 #: debug_objects.php:354
 msgid "WordPress Query Informations"
@@ -295,7 +295,7 @@ msgstr ""
 
 #: debug_objects.php:356
 msgid "Queries: "
-msgstr ""
+msgstr "Queries:"
 
 #: debug_objects.php:356
 msgid "See more Details with my plugin"
@@ -303,7 +303,7 @@ msgstr ""
 
 #: debug_objects.php:357
 msgid "Timer stop: "
-msgstr ""
+msgstr "Stopzeit:"
 
 #: debug_objects.php:370
 msgid "The Conditional Tags can be used in your Template files to change what content is displayed and how that content is displayed on a particular page depending on what conditions that page matches. You see on this view the condition of all possible tags."
@@ -367,7 +367,7 @@ msgstr ""
 #: debug_objects.php:448
 #: debug_objects.php:451
 msgid "is"
-msgstr ""
+msgstr "ist"
 
 #: debug_objects.php:374
 #: debug_objects.php:377
@@ -397,15 +397,15 @@ msgstr ""
 #: debug_objects.php:449
 #: debug_objects.php:452
 msgid "no"
-msgstr ""
+msgstr "kein"
 
 #: debug_objects.php:509
 msgid "Theme Values"
-msgstr ""
+msgstr "Themewerte"
 
 #: debug_objects.php:511
 msgid "Current theme name:"
-msgstr ""
+msgstr "Aktueller Themename:"
 
 #: debug_objects.php:518
 msgid "Current theme title:"
@@ -413,11 +413,11 @@ msgstr ""
 
 #: debug_objects.php:520
 msgid "Current theme uri:"
-msgstr ""
+msgstr "Aktuelle Theme URI:"
 
 #: debug_objects.php:527
 msgid "Current theme description:"
-msgstr ""
+msgstr "Aktuell Themebeschreibung."
 
 #: debug_objects.php:534
 msgid "Current theme author:"
@@ -437,64 +437,64 @@ msgstr ""
 
 #: debug_objects.php:556
 msgid "Current theme tags:"
-msgstr ""
+msgstr "Aktuelle Theme Tags:"
 
 #: debug_objects.php:564
 msgid "Current theme:"
-msgstr ""
+msgstr "Aktuelles Theme:"
 
 #: debug_objects.php:565
 msgid "Current theme directory:"
-msgstr ""
+msgstr "Aktuelles Themeverzeichnis:"
 
 #: debug_objects.php:566
 msgid "Current stylesheet:"
-msgstr ""
+msgstr "Aktuelles Stylsheet:"
 
 #: debug_objects.php:567
 msgid "Current stylesheet directory:"
-msgstr ""
+msgstr "Aktuelles Stylesheetverzeichnis:"
 
 #: debug_objects.php:568
 msgid "Current template path, constant"
-msgstr ""
+msgstr "Aktueller Templatepfad, Konstante"
 
 #: debug_objects.php:569
 msgid "Current stylesheet path, constant"
-msgstr ""
+msgstr "Aktueller Stylesheetpfad, Konstante"
 
 #: debug_objects.php:572
 msgid "Current template file"
-msgstr ""
+msgstr "Aktuelle Template Datei"
 
 #: debug_objects.php:591
 msgid "Simple WordPress Hooks &amp; Filters Insight"
-msgstr ""
+msgstr "Einfacher WordPress Hook &amp; Filter Einblick"
 
 #: debug_objects.php:606
 msgid "Priority"
-msgstr ""
+msgstr "Priorität"
 
 #: debug_objects.php:622
 msgid "View data"
-msgstr ""
+msgstr "Daten zeigen"
 
 #: debug_objects.php:644
 msgid "Hooks total:"
-msgstr ""
+msgstr "Hooks gesamt:"
 
 #: debug_objects.php:644
 msgid "Register filter/actions total:"
-msgstr ""
+msgstr "Registrierte fitler/actions gesamt:"
 
 #: debug_objects.php:738
 #: debug_objects.php:749
 msgid "Objects total:"
-msgstr ""
+msgstr "Objekte gesamt:"
 
 #: debug_objects.php:774
 msgid "by Frank B&uuml;ltge"
-msgstr ""
+msgstr "durch Frank B&uuml;ltge"
 
 #: debug_objects.php:775
 msgid "&raquo; Deactivate after analysis!"
@@ -502,29 +502,29 @@ msgstr ""
 
 #: debug_objects.php:780
 msgid "PHP, Memory &amp; WordPress"
-msgstr ""
+msgstr "PHP, Speicher &amp; WordPress"
 
 #: debug_objects.php:781
 msgid "Conditional Tags"
-msgstr ""
+msgstr "Conditional Tags"
 
 #: debug_objects.php:782
 msgid "Theme &amp; Template"
-msgstr ""
+msgstr "Theme &amp; Template"
 
 #: debug_objects.php:784
 msgid "Cache"
-msgstr ""
+msgstr "Speicher"
 
 #: debug_objects.php:786
 msgid "Hooks &amp; Filter"
-msgstr ""
+msgstr "Speicher"
 
 #: debug_objects.php:787
 msgid "Constants"
-msgstr ""
+msgstr "Konstanten"
 
 #: debug_objects.php:789
 msgid "Queries"
-msgstr ""
+msgstr "Queries"
 
