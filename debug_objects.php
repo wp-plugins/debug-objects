@@ -8,11 +8,12 @@
 /*
 Plugin Name: Debug Objects
 Plugin URI: http://bueltge.de/wordpress-theme-debuggen/536/
-Description: List filter and action-hooks, cache data and return of conditional tags only for admins; for debug purposes. It is possible to include the plugin <a href="http://wordpress.org/extend/plugins/debug-queries/">Debug Objects</a>
+Description: List filter and action-hooks, cache data, defined constants, php and memory informations and return of conditional tags only for admins; for debug, informations or learning purposes. It is possible to include the plugin <a href="http://wordpress.org/extend/plugins/debug-queries/">Debug Objects</a>
 Version: 0.1
+License: GNU
 Author: Frank B&uuml;ltge
 Author URI: http://bueltge.de/
-Last Change: 29.06.2009 13:11:27
+Last Change: 30.06.2009 14:00:21
 */
 
 //error_reporting(E_ALL);
@@ -76,12 +77,20 @@ if ( !class_exists('DebugObjects') ) {
 				return;
 			
 			if ( !is_admin() ) {
+				add_action( 'init', array(&$this, 'textdomain') );
 				add_action( 'wp_footer', array(&$this, 'wp_footer') );
+				
 				wp_enqueue_script( 'jquery-ui-tabs' );
 				wp_enqueue_script( 'debug-objects', WP_PLUGIN_URL . '/' . FB_WPDO_BASEFOLDER . '/js/debug_objects.js', array('jquery') );
 				wp_enqueue_style( 'do-jquery-ui-all-css', WP_PLUGIN_URL . '/' . FB_WPDO_BASEFOLDER . '/css/ui.all.css' );
 				wp_enqueue_style( 'do-style', WP_PLUGIN_URL . '/' . FB_WPDO_BASEFOLDER . '/css/style-frontend.css' );
 			}
+		}
+		
+		
+		function textdomain() {
+			
+			load_plugin_textdomain(FB_WPDO_TEXTDOMAIN, false, dirname( plugin_basename(__FILE__) ) . '/languages');
 		}
 		
 		
@@ -216,6 +225,134 @@ if ( !class_exists('DebugObjects') ) {
 			$echo .= '<li>' . __( 'Compress stylesheet, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>COMPRESS_CSS</code>: ' . $compress_css . '</li>' . "\n";
 			$echo .= '<li class="alternate">' . __( 'Enforce GZIP, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>ENFORCE_GZIP</code>: ' . $enforce_gzip . '</li>' . "\n";
 			$echo .= '<li>' . __( 'Autosave interval, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>AUTOSAVE_INTERVAL</code>: ' . $autosave_interval . '</li>' . "\n";
+			$echo .= '</ul>' . "\n";
+			
+			if ( !defined(COOKIE_DOMAIN) )
+				$cookie_domain = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
+			else
+				$cookie_domain = COOKIE_DOMAIN;
+				
+			if ( !defined(COOKIEPATH) )
+				$cookiepath = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
+			else
+				$cookiepath = COOKIEPATH;
+				
+			if ( !defined(SITECOOKIEPATH) )
+				$sitecookiepath = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
+			else
+				$sitecookiepath = SITECOOKIEPATH;
+				
+			if ( !defined(PLUGINS_COOKIE_PATH) )
+				$plugins_cookie_path = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
+			else
+				$plugins_cookie_path = PLUGINS_COOKIE_PATH;
+				
+			if ( !defined(ADMIN_COOKIE_PATH) )
+				$admin_cookie_path = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
+			else
+				$admin_cookie_path = ADMIN_COOKIE_PATH;
+			
+			$echo .= "\n" . '<h4>' . __( 'WordPress Cookie Informations', FB_WPDO_TEXTDOMAIN ) . '</h4>' . "\n";
+			$echo .= '<ul>' . "\n";
+			$echo .= '<li class="alternate">' . __( 'Cookie domain, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>COOKIE_DOMAIN</code>: ' . $cookie_domain . '</li>' . "\n";
+			$echo .= '<li>' . __( 'Cookie path, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>COOKIEPATH</code>: ' . $cookiepath . '</li>' . "\n";
+			$echo .= '<li class="alternate">' . __( 'Site cookie path, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>SITECOOKIEPATH</code>: ' . $sitecookiepath . '</li>' . "\n";
+			$echo .= '<li>' . __( 'Plugin cookie path, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>PLUGINS_COOKIE_PATH</code>: ' . $plugins_cookie_path . '</li>' . "\n";
+			$echo .= '<li class="alternate">' . __( 'Admin cookie path, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>ADMIN_COOKIE_PATH</code>: ' . $admin_cookie_path . '</li>' . "\n";
+			$echo .= '</ul>' . "\n";
+			
+			if ( !defined(FS_CHMOD_FILE) )
+				$fs_chmod_file = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
+			else
+				$fs_chmod_file = FS_CHMOD_FILE;
+				
+			if ( !defined(FS_CHMOD_DIR) )
+				$fs_chmod_dir = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
+			else
+				$fs_chmod_dir = FS_CHMOD_DIR;
+			
+			$echo .= "\n" . '<h4>' . __( 'WordPress File Permissions Informations', FB_WPDO_TEXTDOMAIN ) . '</h4>' . "\n";
+			$echo .= '<ul>' . "\n";
+			$echo .= '<li class="alternate">' . __( 'File Permissions, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>FS_CHMOD_FILE</code>: ' . $fs_chmod_file . '</li>' . "\n";
+			$echo .= '<li>' . __( 'DIR Permissions, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>FS_CHMOD_DIR</code>: ' . $fs_chmod_dir . '</li>' . "\n";
+			$echo .= '</ul>' . "\n";
+			
+			if ( !defined(CUSTOM_USER_TABLE) )
+				$custom_user_table = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
+			else
+				$custom_user_table = CUSTOM_USER_TABLE;
+				
+			if ( !defined(CUSTOM_USER_META_TABLE) )
+				$custom_user_meta_table = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
+			else
+				$custom_user_meta_table = CUSTOM_USER_META_TABLE;
+			
+			$echo .= "\n" . '<h4>' . __( 'WordPress Custom User &amp; Usermeta Tables', FB_WPDO_TEXTDOMAIN ) . '</h4>' . "\n";
+			$echo .= '<ul>' . "\n";
+			$echo .= '<li class="alternate">' . __( 'Custom User Table, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>CUSTOM_USER_TABLE</code>: ' . $custom_user_table . '</li>' . "\n";
+			$echo .= '<li>' . __( 'Cookie path, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>CUSTOM_USER_META_TABLE</code>: ' . $custom_user_meta_table . '</li>' . "\n";
+			$echo .= '</ul>' . "\n";
+			
+			if ( !defined(FS_METHOD) )
+				$fs_method = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
+			else
+				$fs_method = FS_METHOD;
+				
+			if ( !defined(FTP_BASE) )
+				$ftp_base = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
+			else
+				$ftp_base = FTP_BASE;
+			
+			if ( !defined(FTP_CONTENT_DIR) )
+				$ftp_content_dir = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
+			else
+				$ftp_content_dir = FTP_CONTENT_DIR;
+				
+			if ( !defined(FTP_PLUGIN_DIR) )
+				$ftp_plugin_dir = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
+			else
+				$ftp_plugin_dir = FTP_PLUGIN_DIR;
+			
+			if ( !defined(FTP_PUBKEY) )
+				$ftp_pubkey = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
+			else
+				$ftp_pubkey = FTP_PUBKEY;
+				
+			if ( !defined(FTP_PRIVKEY) )
+				$ftp_privkey = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
+			else
+				$ftp_privkey = FTP_PRIVKEY;
+			
+			if ( !defined(FTP_USER) )
+				$ftp_user = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
+			else
+				$ftp_user = FTP_USER;
+				
+			if ( !defined(FTP_PASS) )
+				$ftp_pass = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
+			else
+				$ftp_pass = FTP_PASS;
+			
+			if ( !defined(FTP_HOST) )
+				$ftp_host = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
+			else
+				$ftp_host = FTP_HOST;
+			
+			$echo .= "\n" . '<h4>' . __( 'WordPress FTP/SSH Informations', FB_WPDO_TEXTDOMAIN ) . '</h4>' . "\n";
+			$echo .= '<ul>' . "\n";
+			$echo .= '<li class="alternate">' . __( 'Forces the filesystem method, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>FS_METHOD</code> (<code>direct</code>, <code>ssh</code>, <code>ftpext</code> or <code>ftpsockets</code>): ' . $fs_method . '</li>' . "\n";
+			$echo .= '<li>' . __( 'Path to root install directory, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>FTP_BASE</code>: ' . $ftp_base . '</li>' . "\n";
+			$echo .= '<li class="alternate">' . __( 'Absoluth path to wp-content dorectory, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>FTP_CONTENT_DIR</code>: ' . $ftp_content_dir . '</li>' . "\n";
+			$echo .= '<li>' . __( 'Absoluth path tp plugin directory, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>FTP_PLUGIN_DIR</code>: ' . $ftp_plugin_dir . '</li>' . "\n";
+			$echo .= '<li class="alternate">' . __( 'Absoluth path to SSH public key, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>FTP_PUBKEY</code>: ' . $ftp_pubkey . '</li>' . "\n";
+			$echo .= '<li>' . __( 'Absoluth path to SSH private key, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>FTP_PRIVKEY</code>: ' . $ftp_privkey . '</li>' . "\n";
+			$echo .= '<li class="alternate">' . __( 'FTP or SSH username, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>FTP_USER</code>: ' . $ftp_user . '</li>' . "\n";
+			$echo .= '<li>' . __( 'FTP or SSH password, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>FTP_PASS</code>: ' . $ftp_pass . '</li>' . "\n";
+			$echo .= '<li class="alternate">' . __( 'Hostname, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>FTP_HOST</code>: ' . $ftp_host . '</li>' . "\n";
+			$echo .= '</ul>' . "\n";
+			
+			$echo .= "\n" . '<h4>' . __( 'WordPress Query Informations', FB_WPDO_TEXTDOMAIN ) . '</h4>' . "\n";
+			$echo .= '<ul>' . "\n";
 			$echo .= '<li class="alternate">' . __( 'Queries: ', FB_WPDO_TEXTDOMAIN ) . get_num_queries() . 'q <small><a href="http://wordpress.org/extend/plugins/debug-queries/">' . __( 'See more Details with my plugin', FB_WPDO_TEXTDOMAIN) . ' Debug Objects</a></small></li>' . "\n";
 			$echo .= '<li>' . __( 'Timer stop: ', FB_WPDO_TEXTDOMAIN ) . timer_stop() . 's</li>' . "\n";
 			$echo .= '</ul>' . "\n";
@@ -517,7 +654,7 @@ if ( !class_exists('DebugObjects') ) {
 			global $wp_object;
 			
 			$wp_object = 0;
-			$output = '';
+			$output    = '';
 			$wp_object ++;
 			
 			if ( !is_object($arr) && !is_array($arr) )
@@ -604,6 +741,17 @@ if ( !class_exists('DebugObjects') ) {
 		}
 		
 		
+		function view_def_constants() {
+			global $wp_object;
+			
+			$echo  = '';
+			$echo .= $this->get_as_ul_tree( get_defined_constants(), '<h4>All Defined Constants</h4>' );
+			$echo .= '<p>' . __( 'Objects total:', FB_WPDO_TEXTDOMAIN ) . ' ' . $wp_object . '</p>';
+			
+			return $echo;
+		}
+		
+		
 		// return/echo
 		function get_DebugObjects($view=true) {
 			
@@ -629,13 +777,14 @@ if ( !class_exists('DebugObjects') ) {
 			//echo on footer
 			$echo .= '<div id="debugobjectstabs">' . "\n";
 				$echo .= '<ul>' . "\n";
-				$echo .= '	<li><a href="#memory">' . __( 'PHP, Memory Usage &amp; WordPress', FB_WPDO_TEXTDOMAIN ) . '</a></li>' . "\n";
+				$echo .= '	<li><a href="#memory">' . __( 'PHP, Memory &amp; WordPress', FB_WPDO_TEXTDOMAIN ) . '</a></li>' . "\n";
 				$echo .= '	<li><a href="#conditional_tags">' . __( 'Conditional Tags', FB_WPDO_TEXTDOMAIN ) . '</a></li>' . "\n";
 				$echo .= '	<li><a href="#template">' . __( 'Theme &amp; Template', FB_WPDO_TEXTDOMAIN ) . '</a></li>' . "\n";
 				if (FB_WPDO_VIEW_CACHE)
 					$echo .= '	<li><a href="#cache">' . __( 'Cache', FB_WPDO_TEXTDOMAIN ) . '</a></li>' . "\n";
 				if (FB_WPDO_VIEW_HOOKS)
 					$echo .= '	<li><a href="#hooks">' . __( 'Hooks &amp; Filter', FB_WPDO_TEXTDOMAIN ) . '</a>' . "\n";
+				$echo .= '	<li><a href="#constants">' . __( 'Constants', FB_WPDO_TEXTDOMAIN ) . '</a>' . "\n";
 				if ($debug_queries_on)
 					$echo .= '	<li><a href="#queries">' . __( 'Queries', FB_WPDO_TEXTDOMAIN ) . '</a>' . "\n";
 				$echo .= '</ul>' . "\n";
@@ -663,6 +812,10 @@ if ( !class_exists('DebugObjects') ) {
 					$echo .= $this->view_hooks();
 					$echo .= '</div>' . "\n\n";
 				}
+				
+				$echo .= '<div id="constants">' . "\n";
+				$echo .= $this->view_def_constants();
+				$echo .= '</div>' . "\n\n";
 				
 				if ($debug_queries_on) {
 					$echo .= '<div id="queries">' . "\n";
