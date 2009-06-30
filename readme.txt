@@ -11,7 +11,7 @@ The Plugin Debug Objects provides the user, which has the appropriate rights, no
 == Description ==
 The Plugin Debug Objects provides the user, which has the appropriate rights, normally the administrator, a large number of information. Values and content get displayed at the frontend of the blog, to analyze errors but also to better understand WordPress.
 
-The Plugin provides in various tabs information to:
+= The Plugin provides in various tabs information to: =
 * PHP
 * Memory usage
 * Operating System
