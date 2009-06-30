@@ -46,7 +46,7 @@ There are no data in the database and there are no settings. Therefore, the inst
 
 = Requirements =
 
-* WordPress version 2.6 and later(tested at 2.8)
+* WordPress version 2.6 and later (tested at 2.9-rare)
 
 = Installation =
 
