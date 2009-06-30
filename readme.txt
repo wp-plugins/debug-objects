@@ -77,7 +77,7 @@ The plugin comes with various translations, please refer to the [WordPress Codex
 
 = v0.1 (30/06/2009) =
 
-* Write a Plugin based on ideas and help files
+* Write a Plugin based on my ideas and my many help files
 
 
 == Frequently Asked Questions ==
