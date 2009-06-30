@@ -190,15 +190,15 @@ msgstr ""
 
 #: debug_objects.php:224
 msgid "Compress scripts, constant"
-msgstr ""
+msgstr "Komprimiere JavaScript, Konstante"
 
 #: debug_objects.php:225
 msgid "Compress stylesheet, constant"
-msgstr ""
+msgstr "Komprimiere CSS, Konstante"
 
 #: debug_objects.php:226
 msgid "Enforce GZIP, constant"
-msgstr ""
+msgstr "Erzwinge GZIP für die Kompression, Konstante"
 
 #: debug_objects.php:227
 msgid "Autosave interval, constant"
@@ -255,27 +255,27 @@ msgstr "WordPress FTP/SSH Informationen"
 
 #: debug_objects.php:343
 msgid "Forces the filesystem method, constant"
-msgstr ""
+msgstr "Belastung der Dateisystemmethode, Konstante"
 
 #: debug_objects.php:344
 msgid "Path to root install directory, constant"
-msgstr ""
+msgstr "Pfad zum root Installationsordner, Konstante"
 
 #: debug_objects.php:345
 msgid "Absoluth path to wp-content dorectory, constant"
-msgstr ""
+msgstr "Absoluter Pfad zum wp-content Ordner, Konstante"
 
 #: debug_objects.php:346
 msgid "Absoluth path tp plugin directory, constant"
-msgstr ""
+msgstr "Absoluter Pfad zum Pluginordner, Konstante"
 
 #: debug_objects.php:347
 msgid "Absoluth path to SSH public key, constant"
-msgstr ""
+msgstr "Absoluter Pfad zum SSH öffenlichem Schlüssel, Konstante"
 
 #: debug_objects.php:348
 msgid "Absoluth path to SSH private key, constant"
-msgstr ""
+msgstr "Absoluter Pfad zum SSH privatem Schlüssel, Konstante"
 
 #: debug_objects.php:349
 msgid "FTP or SSH username, constant"
@@ -291,7 +291,7 @@ msgstr "Histname, Konstante"
 
 #: debug_objects.php:354
 msgid "WordPress Query Informations"
-msgstr ""
+msgstr "WordPress Query Informationen"
 
 #: debug_objects.php:356
 msgid "Queries: "
@@ -299,7 +299,7 @@ msgstr "Queries:"
 
 #: debug_objects.php:356
 msgid "See more Details with my plugin"
-msgstr ""
+msgstr "Mehr Details zeigt das Plugin"
 
 #: debug_objects.php:357
 msgid "Timer stop: "
@@ -307,7 +307,7 @@ msgstr "Stopzeit:"
 
 #: debug_objects.php:370
 msgid "The Conditional Tags can be used in your Template files to change what content is displayed and how that content is displayed on a particular page depending on what conditions that page matches. You see on this view the condition of all possible tags."
-msgstr ""
+msgstr "Mit Hilfe der Conditional tags können innerhalb von Templates Inhalte in Abhängigkeit bestimmter Bedingungen angezeigt werden. Alle aktuellen Zustände werden nun hier in Abhängikeit der Frontend-Darstellung gelistet."
 
 #: debug_objects.php:373
 #: debug_objects.php:376
@@ -337,7 +337,7 @@ msgstr ""
 #: debug_objects.php:448
 #: debug_objects.php:451
 msgid "Documentation in Codex"
-msgstr ""
+msgstr "Dokumentation im COdex"
 
 #: debug_objects.php:373
 #: debug_objects.php:376
@@ -409,7 +409,7 @@ msgstr "Aktueller Themename:"
 
 #: debug_objects.php:518
 msgid "Current theme title:"
-msgstr ""
+msgstr "Aktueller Themetitel:"
 
 #: debug_objects.php:520
 msgid "Current theme uri:"
@@ -421,19 +421,19 @@ msgstr "Aktuell Themebeschreibung."
 
 #: debug_objects.php:534
 msgid "Current theme author:"
-msgstr ""
+msgstr "Aktueller Themeautor:"
 
 #: debug_objects.php:541
 msgid "Current theme version:"
-msgstr ""
+msgstr "Aktuelle Themeversion:"
 
 #: debug_objects.php:548
 msgid "Current theme template:"
-msgstr ""
+msgstr "Aktuelles Themetemplate:"
 
 #: debug_objects.php:555
 msgid "Current theme status:"
-msgstr ""
+msgstr "Aktueller Themestatus:"
 
 #: debug_objects.php:556
 msgid "Current theme tags:"
@@ -498,7 +498,7 @@ msgstr "durch Frank B&uuml;ltge"
 
 #: debug_objects.php:775
 msgid "&raquo; Deactivate after analysis!"
-msgstr ""
+msgstr "&raquo; Deaktiviere nach der Analyse!"
 
 #: debug_objects.php:780
 msgid "PHP, Memory &amp; WordPress"
