@@ -13,7 +13,7 @@ Version: 0.1
 License: GNU
 Author: Frank B&uuml;ltge
 Author URI: http://bueltge.de/
-Last Change: 30.06.2009 14:00:21
+Last Change: 12.07.2009 19:30:17
 */
 
 //error_reporting(E_ALL);
@@ -353,7 +353,7 @@ if ( !class_exists('DebugObjects') ) {
 			
 			$echo .= "\n" . '<h4>' . __( 'WordPress Query Informations', FB_WPDO_TEXTDOMAIN ) . '</h4>' . "\n";
 			$echo .= '<ul>' . "\n";
-			$echo .= '<li class="alternate">' . __( 'Queries: ', FB_WPDO_TEXTDOMAIN ) . get_num_queries() . 'q <small><a href="http://wordpress.org/extend/plugins/debug-queries/">' . __( 'See more Details with my plugin', FB_WPDO_TEXTDOMAIN) . ' Debug Objects</a></small></li>' . "\n";
+			$echo .= '<li class="alternate">' . __( 'Queries: ', FB_WPDO_TEXTDOMAIN ) . get_num_queries() . 'q <small><a href="http://wordpress.org/extend/plugins/debug-queries/">' . __( 'See more Details with my plugin', FB_WPDO_TEXTDOMAIN) . ' Debug Queries</a></small></li>' . "\n";
 			$echo .= '<li>' . __( 'Timer stop: ', FB_WPDO_TEXTDOMAIN ) . timer_stop() . 's</li>' . "\n";
 			$echo .= '</ul>' . "\n";
 			
