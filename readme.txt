@@ -3,7 +3,7 @@ Contributors: Bueltge
 Donate link: http://bueltge.de/wunschliste/
 Tags: debug, sql, analyse, tuning, performance, database, queries, query, php, 
 Requires at least: 2.7
-Tested up to: 2.9-rare
+Tested up to: 2.9
 Stable tag: 0.1
 
 The Plugin Debug Objects provides the user, which has the appropriate rights, normally the administrator, a large number of information. Values and content get displayed at the frontend of the blog, to analyze errors but also to better understand WordPress.
@@ -41,12 +41,18 @@ The plugin can be used with my Plugin [Debug Queries](http://wordpress.org/exten
 The plugin does not filter values and should only be used for information and optimization, I don't recommended to use it on a live blog. For developers it can rapidly deliver data, which is useful in a development environment.
 There are no data in the database and there are no settings. Therefore, the installation is pretty simple: Just upload the Plugin in the Plugin directory or use the automatic installation of the backend to install and activate the Plugin. In the footer of the frontend of the blog, you can see the information.
 
+The plugin list all entries on frontend and backend of your install; you can custom this with the follow constants on the php-file in the folder of the plugin
+`// Hook on Frontend
+define( 'FB_WPDO_FRONTEND', TRUE );`
+`// Hook on Backend
+define( 'FB_WPDO_BACKEND', TRUE );`
+
 
 == Installation ==
 
 = Requirements =
 
-* WordPress version 2.6 and later (tested at 2.9-rare)
+* WordPress version 2.6 and later (tested at 2.9)
 
 = Installation =
 
@@ -74,6 +80,12 @@ The plugin comes with various translations, please refer to the [WordPress Codex
 
 
 == Changelog ==
+
+= v0.2 (17/12/2009) =
+
+* also view all contens in backend of WordPress
+* small bugfixes on html-markup
+* 2 new constants for hook on frontend and backend; see the php-file
 
 = v0.1 (30/06/2009) =
 

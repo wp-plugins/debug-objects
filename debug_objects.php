@@ -2,18 +2,18 @@
 /**
  * @package Debug Objects
  * @author Frank B&uuml;ltge
- * @version 0.1
+ * @version 0.2
  */
  
 /*
 Plugin Name: Debug Objects
 Plugin URI: http://bueltge.de/debug-objects-wordpress-plugin/966/
 Description: List filter and action-hooks, cache data, defined constants, php and memory informations and return of conditional tags only for admins; for debug, informations or learning purposes. It is possible to include the plugin <a href="http://wordpress.org/extend/plugins/debug-queries/">Debug Objects</a>
-Version: 0.1
+Version: 0.2
 License: GNU
 Author: Frank B&uuml;ltge
 Author URI: http://bueltge.de/
-Last Change: 12.07.2009 19:30:17
+Last Change: 17.12.2009 16:18:04
 */
 
 //error_reporting(E_ALL);
@@ -49,6 +49,10 @@ if ( function_exists('add_action') ) {
 	define( 'FB_WPDO_VIEW_CACHE', TRUE );
 	
 	define( 'FB_WPDO_SORT_HOOKS', TRUE );
+	// Hook on Frontend
+	define( 'FB_WPDO_FRONTEND', TRUE );
+	// Hook on Backend
+	define( 'FB_WPDO_BACKEND', TRUE );
 	
 	if ( !defined('SAVEQUERIES') )
 		define('SAVEQUERIES', true);
@@ -76,9 +80,17 @@ if ( !class_exists('DebugObjects') ) {
 			if ( !current_user_can('DebugObjects') )
 				return;
 			
-			if ( !is_admin() ) {
+			if ( defined('FB_WPDO_FRONTEND') && FB_WPDO_FRONTEND && !is_admin() ) {
 				add_action( 'init', array(&$this, 'textdomain') );
 				add_action( 'wp_footer', array(&$this, 'wp_footer') );
+				
+				wp_enqueue_script( 'jquery-ui-tabs' );
+				wp_enqueue_script( 'debug-objects', WP_PLUGIN_URL . '/' . FB_WPDO_BASEFOLDER . '/js/debug_objects.js', array('jquery') );
+				wp_enqueue_style( 'do-jquery-ui-all-css', WP_PLUGIN_URL . '/' . FB_WPDO_BASEFOLDER . '/css/ui.all.css' );
+				wp_enqueue_style( 'do-style', WP_PLUGIN_URL . '/' . FB_WPDO_BASEFOLDER . '/css/style-frontend.css' );
+			} elseif ( defined('FB_WPDO_BACKEND') && FB_WPDO_BACKEND && is_admin() ) {
+				add_action( 'init', array(&$this, 'textdomain') );
+				add_action( 'admin_footer', array(&$this, 'wp_footer') );
 				
 				wp_enqueue_script( 'jquery-ui-tabs' );
 				wp_enqueue_script( 'debug-objects', WP_PLUGIN_URL . '/' . FB_WPDO_BASEFOLDER . '/js/debug_objects.js', array('jquery') );
@@ -96,6 +108,14 @@ if ( !class_exists('DebugObjects') ) {
 		
 		function view_stuff() {
 			global $locale;
+			
+			$plugins = get_option('active_plugins');
+			$required_plugin = 'debug_queries/debug_queries.php';
+			$debug_queries_on = FALSE;
+			if ( in_array( $required_plugin , $plugins ) ) {
+				$debug_queries_on = TRUE;
+				global $DebugQueries;
+			}
 			
 			if ( defined('WPLANG') )
 				$locale = WPLANG;
@@ -353,7 +373,10 @@ if ( !class_exists('DebugObjects') ) {
 			
 			$echo .= "\n" . '<h4>' . __( 'WordPress Query Informations', FB_WPDO_TEXTDOMAIN ) . '</h4>' . "\n";
 			$echo .= '<ul>' . "\n";
-			$echo .= '<li class="alternate">' . __( 'Queries: ', FB_WPDO_TEXTDOMAIN ) . get_num_queries() . 'q <small><a href="http://wordpress.org/extend/plugins/debug-queries/">' . __( 'See more Details with my plugin', FB_WPDO_TEXTDOMAIN) . ' Debug Queries</a></small></li>' . "\n";
+			$echo .= '<li class="alternate">' . __( 'Queries: ', FB_WPDO_TEXTDOMAIN ) . get_num_queries() . 'q';
+			if ($debug_queries_on)
+				$echo .= '<small><a href="http://wordpress.org/extend/plugins/debug-queries/">' . __( 'See more Details with my plugin', FB_WPDO_TEXTDOMAIN) . ' Debug Queries</a></small>';
+			$echo .= '</li>' . "\n";
 			$echo .= '<li>' . __( 'Timer stop: ', FB_WPDO_TEXTDOMAIN ) . timer_stop() . 's</li>' . "\n";
 			$echo .= '</ul>' . "\n";
 			
@@ -568,11 +591,13 @@ if ( !class_exists('DebugObjects') ) {
 				$echo .= '<li>' . __( 'Current template path, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>TEMPLATEPATH</code>: ' . TEMPLATEPATH . '</li>';
 				$echo .= '<li>' . __( 'Current stylesheet path, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>STYLESHEETPATH</code>: ' . STYLESHEETPATH . '</li>';
 			$echo .= '</ul>' . "\n";
-						
-			$echo .=  "\n" . '<h4>' . __( 'Current template file', FB_WPDO_TEXTDOMAIN ) . '</h4>' . "\n";
-			$echo .= '<ul>' . "\n";
-			$echo .= '<li class="alternate">' . $template . '</li>';
-			$echo .= '</ul>' . "\n";
+			
+			if ($template) {
+				$echo .=  "\n" . '<h4>' . __( 'Current template file', FB_WPDO_TEXTDOMAIN ) . '</h4>' . "\n";
+				$echo .= '<ul>' . "\n";
+				$echo .= '<li class="alternate">' . $template . '</li>';
+				$echo .= '</ul>' . "\n";
+			}
 			
 			return $echo;
 		}
@@ -664,11 +689,13 @@ if ( !class_exists('DebugObjects') ) {
 				$output .= '<ul class="root' . ($unserialized_string ? ' unserialized' : '') . '">' . "\n";
 				if ( is_object($arr) ) {
 					$output .= '<li class="vt-object"><span class="' . ($unserialized_string ? 'unserialized' : 'key') . '">' . $root_name . '</span>';
-					if (!$unserialized_string) $output .= '<br />' . "\n";
+					if (!$unserialized_string)
+						$output .= '<br />' . "\n";
 					$output .= '<small><em>type</em>: object (' . get_class($arr) . ')</small><br/><small><em>count</em>: ' . count( get_object_vars($arr) ) . '</small><ul>'; 
 				} else {
 					$output .= '<li class="vt-array"><span class="' . ($unserialized_string ? 'unserialized' : 'key') . '">' . $root_name . '</span>';
-					if (!$unserialized_string) $output .= '<br />' . "\n";
+					if (!$unserialized_string)
+						$output .= '<br />' . "\n";
 					$output .= '<small><em>type</em>: array</small><br/><small><em>count</em>: ' . count($arr) . '</small><ul>'; 
 				}
 			}
@@ -676,48 +703,58 @@ if ( !class_exists('DebugObjects') ) {
 			foreach($arr as $key => $val) {
 				$wp_object ++;
 				
-				if (is_numeric($key)) $key = "[". $key. "]"; 
+				if ( is_numeric($key) )
+					$key = "[". $key. "]"; 
 				$vt = gettype($val);
 				switch ($vt) {
 					case "object":
-						$output .= "<li class=\"vt-$vt\"><span class=\"key\">".htmlspecialchars($key). "</span>";
-						$output .= "<br/><small><em>type</em>: $vt (".get_class($val). ") | <em>count</em>: ".count($val). "</small>"; 
-						$output .= "<ul>";
-						$output .= $this->get_as_ul_tree($val);
-						$output .= "</ul></li>";
+						$output .= "<li class=\"vt-$vt\"><span class=\"key\">" . htmlspecialchars($key) . '</span>';
+						$output .= "<br/><small><em>type</em>: $vt (" . get_class($val) . ") | <em>count</em>: " . count($val) . "</small>"; 
+						if ($val) {
+							$output .= '<ul>';
+							$output .= $this->get_as_ul_tree($val);
+							$output .= '</ul>';
+						}
+						$output .= '</li>';
 					break;
 					case "array":
-						$output .= "<li class=\"vt-$vt\"><span class=\"key\">".htmlspecialchars($key). "</span>";
-						$output .= "<br/><small><em>type</em>: $vt | <em>count</em>: ".count($val). "</small>"; 
-						$output .= "<ul>";
-						$output .= $this->get_as_ul_tree($val);
-						$output .= "</ul></li>";
+						$output .= "<li class=\"vt-$vt\"><span class=\"key\">" . htmlspecialchars($key) . '</span>';
+						$output .= "<br/><small><em>type</em>: $vt | <em>count</em>: " . count($val) . '</small>'; 
+						if ($val) {
+							$output .= '<ul>';
+							$output .= $this->get_as_ul_tree($val);
+							$output .= '</ul>';
+						}
+						$output .= '</li>';
 					break;
 					case "boolean":
-						$output .= "<li class=\"vt-$vt\"><span class=\"key\">".htmlspecialchars($key). "</span>";
-						$output .= "<br/><small><em>type</em>: $vt</small><br/><small><em>value</em>: </small><span class=\"value\">".($val?"true":"false"). "</span></li>";
+						$output .= "<li class=\"vt-$vt\"><span class=\"key\">" . htmlspecialchars($key) . '</span>';
+						$output .= "<br/><small><em>type</em>: $vt</small><br/><small><em>value</em>: </small><span class=\"value\">".($val?"true":"false"). '</span></li>';
 					break;
 					case "integer":
 					case "double":
 					case "float":
-						$output .= "<li class=\"vt-$vt\"><span class=\"key\">".htmlspecialchars($key). "</span>";
+						$output .= "<li class=\"vt-$vt\"><span class=\"key\">" . htmlspecialchars($key) . '</span>';
 						$output .= "<br/><small><em>type</em>: $vt</small><br/><small><em>value</em>: </small><span class=\"value\">$val</span></li>";
 					break;
 					case "string":
 						$obj = @unserialize($val);
 						$is_serialized = ($obj !== false && preg_match("/^(O:|a:)/", $val));
-						$output .= "<li class=\"vt-$vt\"><span class=\"key\">".htmlspecialchars($key). "</span>";
-						$output .= "<br/><small><em>type</em>: $vt | <em>size</em>: ".strlen($val). " | <em>serialized</em>: ".($is_serialized !== false?"true":"false"). "</small><br/>";
+						$output .= "<li class=\"vt-$vt\"><span class=\"key\">".htmlspecialchars($key). '</span>';
+						$output .= "<br/><small><em>type</em>: $vt | <em>size</em>: ".strlen($val). " | <em>serialized</em>: ".($is_serialized !== false?"true":"false"). '</small><br/>';
 						if ($is_serialized) {
 							$output .= $this->get_as_ul_tree($obj, "<small><em>value</em>:</small> <span class=\"value\">[unserialized]</span>", true);
 						}
 						else {
-							$output .= '<small><em>value</em>: </small><span class="value">' . htmlspecialchars($val) . '</span>';
+							if ($val)
+								$output .= '<small><em>value</em>: </small><span class="value">' . htmlspecialchars($val) . '</span>';
+							else
+								$output .= '';
 						}
 						$output .= '</li>';
 					break;
 					default: //what the hell is this ?
-						$output .= '<li id="hook_$wp_object" class="vt-' . $vt . '"><span class="key">' . htmlspecialchars($key) . '</span>';
+						$output .= '<li id="hook_' . $wp_object . '_' . $vt . '" class="vt-' . $vt . '"><span class="key">' . htmlspecialchars($key) . '</span>';
 						$output .= '<br/><small><em>type</em>: ' . $vt . '</small><br/><small><em>value</em>:</small><span class="value">' . @htmlspecialchars($val) . '</span></li>';
 					break;
 				}
@@ -734,7 +771,7 @@ if ( !class_exists('DebugObjects') ) {
 			global $wp_object_cache, $wp_object;
 			
 			$echo  = '';
-			$echo .= $this->get_as_ul_tree( $wp_object_cache, '<h4>WordPress Object Cache</h4>' );
+			$echo .= $this->get_as_ul_tree( $wp_object_cache, '<strong class="h4">WordPress Object Cache</strong>' );
 			$echo .= '<p>' . __( 'Objects total:', FB_WPDO_TEXTDOMAIN ) . ' ' . $wp_object . '</p>';
 			
 			return $echo;
@@ -745,7 +782,7 @@ if ( !class_exists('DebugObjects') ) {
 			global $wp_object;
 			
 			$echo  = '';
-			$echo .= $this->get_as_ul_tree( get_defined_constants(), '<h4>All Defined Constants</h4>' );
+			$echo .= $this->get_as_ul_tree( get_defined_constants(), '<strong class="h4">All Defined Constants</strong>' );
 			$echo .= '<p>' . __( 'Objects total:', FB_WPDO_TEXTDOMAIN ) . ' ' . $wp_object . '</p>';
 			
 			return $echo;
@@ -769,7 +806,7 @@ if ( !class_exists('DebugObjects') ) {
 			}
 			
 			$echo  = '';
-			$echo .= '<br style="clear: both;"';
+			$echo .= '<br style="clear: both;"/>';
 			$echo .= '<div id="debugobjects">' . "\n";
 			$echo .= '<h3><a href="http://bueltge.de/">Debug Objects</a> ' . __('by Frank B&uuml;ltge') . ', <a href="http://bueltge.de/">bueltge.de</a></h3>' . "\n";
 			$echo .= '<p>' . __( '&raquo; Deactivate after analysis!', FB_WPDO_TEXTDOMAIN ). '</p>' . "\n";
@@ -783,10 +820,10 @@ if ( !class_exists('DebugObjects') ) {
 				if (FB_WPDO_VIEW_CACHE)
 					$echo .= '	<li><a href="#cache">' . __( 'Cache', FB_WPDO_TEXTDOMAIN ) . '</a></li>' . "\n";
 				if (FB_WPDO_VIEW_HOOKS)
-					$echo .= '	<li><a href="#hooks">' . __( 'Hooks &amp; Filter', FB_WPDO_TEXTDOMAIN ) . '</a>' . "\n";
-				$echo .= '	<li><a href="#constants">' . __( 'Constants', FB_WPDO_TEXTDOMAIN ) . '</a>' . "\n";
+					$echo .= '	<li><a href="#hooks">' . __( 'Hooks &amp; Filter', FB_WPDO_TEXTDOMAIN ) . '</a></li>' . "\n";
+				$echo .= '	<li><a href="#constants">' . __( 'Constants', FB_WPDO_TEXTDOMAIN ) . '</a></li>' . "\n";
 				if ($debug_queries_on)
-					$echo .= '	<li><a href="#queries">' . __( 'Queries', FB_WPDO_TEXTDOMAIN ) . '</a>' . "\n";
+					$echo .= '	<li><a href="#queries">' . __( 'Queries', FB_WPDO_TEXTDOMAIN ) . '</a></li>' . "\n";
 				$echo .= '</ul>' . "\n";
 			
 				$echo .= '<div id="memory">' . "\n";

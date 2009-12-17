@@ -11,14 +11,20 @@ div#debugobjects {
 	z-index: 999;
 }
 
+div#debugobjects #memory ul, div#debugobjects #conditional_tags ul, div#debugobjects #hooks ul, div#debugobjects #template ul, div#debugobjects #cache ul, div#debugobjects #constants ul {
+	list-style-type: disc;
+	padding: 0 1em;
+}
+
 div#debugobjects h3,div#debugobjects h3 a {
 	color: #fff;
 	background: #464646;
 }
 
-div#debugobjects h4, div#debugobjects h4 a {
+div#debugobjects h4, div#debugobjects h4 a, .h4 {
 	color: #000;
 	font-weight: 900;
+	line-height: 2em;
 }
 
 div#debugobjects #memory li a, div#debugobjects #conditional_tags li a, div#debugobjects #hooks li a, div#debugobjects #template li a {
