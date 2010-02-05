@@ -2,18 +2,18 @@
 /**
  * @package Debug Objects
  * @author Frank B&uuml;ltge
- * @version 0.2
+ * @version 0.3
  */
  
 /*
 Plugin Name: Debug Objects
 Plugin URI: http://bueltge.de/debug-objects-wordpress-plugin/966/
 Description: List filter and action-hooks, cache data, defined constants, php and memory informations and return of conditional tags only for admins; for debug, informations or learning purposes. It is possible to include the plugin <a href="http://wordpress.org/extend/plugins/debug-queries/">Debug Objects</a>
-Version: 0.2
-License: GNU
+Version: 0.3
+License: GPL
 Author: Frank B&uuml;ltge
 Author URI: http://bueltge.de/
-Last Change: 17.12.2009 16:18:04
+Last Change: 05.02.2010 19:03:17
 */
 
 //error_reporting(E_ALL);
@@ -110,7 +110,7 @@ if ( !class_exists('DebugObjects') ) {
 			global $locale;
 			
 			$plugins = get_option('active_plugins');
-			$required_plugin = 'debug_queries/debug_queries.php';
+			$required_plugin = 'debug-queries/debug_queries.php';
 			$debug_queries_on = FALSE;
 			if ( in_array( $required_plugin , $plugins ) ) {
 				$debug_queries_on = TRUE;
@@ -798,7 +798,7 @@ if ( !class_exists('DebugObjects') ) {
 			global $wp_filter;
 			
 			$plugins = get_option('active_plugins');
-			$required_plugin = 'debug_queries/debug_queries.php';
+			$required_plugin = 'debug-queries/debug_queries.php';
 			$debug_queries_on = FALSE;
 			if ( in_array( $required_plugin , $plugins ) ) {
 				$debug_queries_on = TRUE;

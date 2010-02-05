@@ -3,7 +3,7 @@ Contributors: Bueltge
 Donate link: http://bueltge.de/wunschliste/
 Tags: debug, sql, analyse, tuning, performance, database, queries, query, php, 
 Requires at least: 2.7
-Tested up to: 2.9
+Tested up to: 3.0-alpha
 Stable tag: 0.1
 
 The Plugin Debug Objects provides the user, which has the appropriate rights, normally the administrator, a large number of information. Values and content get displayed at the frontend of the blog, to analyze errors but also to better understand WordPress.
@@ -80,6 +80,8 @@ The plugin comes with various translations, please refer to the [WordPress Codex
 
 
 == Changelog ==
+= v0.3 (02/05/2010) =
+Small fix for search plugin Debug Queries
 
 = v0.2 (17/12/2009) =
 
