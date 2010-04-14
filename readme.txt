@@ -47,6 +47,9 @@ define( 'FB_WPDO_FRONTEND', TRUE );`
 `// Hook on Backend
 define( 'FB_WPDO_BACKEND', TRUE );`
 
+= Localizations =
+* Thanks for belorussion tranlation to [Marcis G.](http://pc.de/ "pc.de")
+
 
 == Installation ==
 
