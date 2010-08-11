@@ -48,6 +48,7 @@ define( 'FB_WPDO_BACKEND', TRUE );`
 = Localizations =
 * Thanks for belorussion translation to [Marcis G.](http://pc.de/ "pc.de")
 * Thanks for japanese translation to [Fumito Mizuno](http://ounziw.com/ "Standing on the Shoulder of Linus")
+* Thanks for hindi translation to[Alois M&auml;nner](http://www.nautilus-one.at "http://www.nautilus-one.at")
 
 
 == Installation ==
