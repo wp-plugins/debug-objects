@@ -2,18 +2,18 @@
 /**
  * @package Debug Objects
  * @author Frank B&uuml;ltge
- * @version 0.3.0
+ * @version 1.0.0
  */
  
 /*
 Plugin Name: Debug Objects
 Plugin URI: http://bueltge.de/debug-objects-wordpress-plugin/966/
 Description: List filter and action-hooks, cache data, defined constants, php and memory informations and return of conditional tags only for admins; for debug, informations or learning purposes. It is possible to include the plugin <a href="http://wordpress.org/extend/plugins/debug-queries/">Debug Objects</a>
-Version: 0.3.0
+Version: 1.0.0
 License: GPL
 Author: Frank B&uuml;ltge
 Author URI: http://bueltge.de/
-Last Change: 05.02.2010 19:03:17
+Last Change: 06.11.2010 11:03:17
 */
 
 //error_reporting(E_ALL);
@@ -151,63 +151,63 @@ if ( !class_exists('DebugObjects') ) {
 				$os = __( 'Linux', FB_WPDO_TEXTDOMAIN );
 			} //Operating-System scan end
 			
-			if ( !defined(AUTOSAVE_INTERVAL) )
+			if ( !defined('AUTOSAVE_INTERVAL') )
 				$autosave_interval = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			elseif ( !constant('AUTOSAVE_INTERVAL') )
 				$autosave_interval = __( 'OFF', FB_WPDO_TEXTDOMAIN );
 			else
 				$autosave_interval = AUTOSAVE_INTERVAL . __( 's', FB_WPDO_TEXTDOMAIN );
 			
-			if ( !defined(WP_POST_REVISIONS) )
+			if ( !defined('WP_POST_REVISIONS') )
 				$post_revisions = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			elseif ( !constant('WP_POST_REVISIONS') )
 				$post_revisions = __( 'OFF', FB_WPDO_TEXTDOMAIN );
 			else
 				$post_revisions = WP_POST_REVISIONS;
 			
-			if ( !defined(SAVEQUERIES) )
+			if ( !defined('SAVEQUERIES') )
 				$savequeries = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			elseif ( !constant('SAVEQUERIES') )
 				$savequeries = __( 'OFF', FB_WPDO_TEXTDOMAIN );
 			elseif ( SAVEQUERIES == 1 )
 				$savequeries = __( 'ON', FB_WPDO_TEXTDOMAIN );
 			
-			if ( !defined(WP_DEBUG) )
+			if ( !defined('WP_DEBUG') )
 				$debug = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			elseif ( !constant('WP_DEBUG') )
 				$debug = __( 'OFF', FB_WPDO_TEXTDOMAIN );
 			elseif ( WP_DEBUG == 1 )
 				$debug = __( 'ON', FB_WPDO_TEXTDOMAIN );
 				
-			if ( !defined(FORCE_SSL_LOGIN) )
+			if ( !defined('FORCE_SSL_LOGIN') )
 				$ssl_login = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			elseif ( !constant('FORCE_SSL_LOGIN') )
 				$ssl_login = __( 'OFF', FB_WPDO_TEXTDOMAIN );
 			elseif ( FORCE_SSL_LOGIN == 1 )
 				$ssl_login = __( 'ON', FB_WPDO_TEXTDOMAIN );
 			
-			if ( !defined(CONCATENATE_SCRIPTS) )
+			if ( !defined('CONCATENATE_SCRIPTS') )
 				$concatenate_scripts = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			elseif ( !constant('CONCATENATE_SCRIPTS') )
 				$concatenate_scripts = __( 'OFF', FB_WPDO_TEXTDOMAIN );
 			elseif ( CONCATENATE_SCRIPTS == 1 )
 					$concatenate_scripts = __( 'ON', FB_WPDO_TEXTDOMAIN );
 			
-			if ( !defined(COMPRESS_SCRIPTS) )
+			if ( !defined('COMPRESS_SCRIPTS') )
 				$compress_scripts = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			elseif ( !constant('COMPRESS_SCRIPTS') )
 				$compress_scripts = __( 'OFF', FB_WPDO_TEXTDOMAIN );
 			elseif ( COMPRESS_SCRIPTS == 1 )
 				$compress_scripts = __( 'ON', FB_WPDO_TEXTDOMAIN );
 			
-			if ( !defined(COMPRESS_CSS) )
+			if ( !defined('COMPRESS_CSS') )
 				$compress_css = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			elseif ( !constant('COMPRESS_CSS') )
 				$compress_css = __( 'OFF', FB_WPDO_TEXTDOMAIN );
 			elseif ( COMPRESS_CSS == 1 )
 				$compress_css = __( 'ON', FB_WPDO_TEXTDOMAIN );
 			
-			if ( !defined(ENFORCE_GZIP) )
+			if ( !defined('ENFORCE_GZIP') )
 				$enforce_gzip = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			elseif ( !constant('ENFORCE_GZIP') )
 				$enforce_gzip = __( 'OFF', FB_WPDO_TEXTDOMAIN );
@@ -247,27 +247,27 @@ if ( !class_exists('DebugObjects') ) {
 			$echo .= '<li>' . __( 'Autosave interval, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>AUTOSAVE_INTERVAL</code>: ' . $autosave_interval . '</li>' . "\n";
 			$echo .= '</ul>' . "\n";
 			
-			if ( !defined(COOKIE_DOMAIN) )
+			if ( !defined('COOKIE_DOMAIN') )
 				$cookie_domain = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$cookie_domain = COOKIE_DOMAIN;
 				
-			if ( !defined(COOKIEPATH) )
+			if ( !defined('COOKIEPATH') )
 				$cookiepath = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$cookiepath = COOKIEPATH;
 				
-			if ( !defined(SITECOOKIEPATH) )
+			if ( !defined('SITECOOKIEPATH') )
 				$sitecookiepath = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$sitecookiepath = SITECOOKIEPATH;
 				
-			if ( !defined(PLUGINS_COOKIE_PATH) )
+			if ( !defined('PLUGINS_COOKIE_PATH') )
 				$plugins_cookie_path = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$plugins_cookie_path = PLUGINS_COOKIE_PATH;
 				
-			if ( !defined(ADMIN_COOKIE_PATH) )
+			if ( !defined('ADMIN_COOKIE_PATH') )
 				$admin_cookie_path = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$admin_cookie_path = ADMIN_COOKIE_PATH;
@@ -281,12 +281,12 @@ if ( !class_exists('DebugObjects') ) {
 			$echo .= '<li class="alternate">' . __( 'Admin cookie path, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>ADMIN_COOKIE_PATH</code>: ' . $admin_cookie_path . '</li>' . "\n";
 			$echo .= '</ul>' . "\n";
 			
-			if ( !defined(FS_CHMOD_FILE) )
+			if ( !defined('FS_CHMOD_FILE') )
 				$fs_chmod_file = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$fs_chmod_file = FS_CHMOD_FILE;
 				
-			if ( !defined(FS_CHMOD_DIR) )
+			if ( !defined('FS_CHMOD_DIR') )
 				$fs_chmod_dir = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$fs_chmod_dir = FS_CHMOD_DIR;
@@ -297,12 +297,12 @@ if ( !class_exists('DebugObjects') ) {
 			$echo .= '<li>' . __( 'DIR Permissions, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>FS_CHMOD_DIR</code>: ' . $fs_chmod_dir . '</li>' . "\n";
 			$echo .= '</ul>' . "\n";
 			
-			if ( !defined(CUSTOM_USER_TABLE) )
+			if ( !defined('CUSTOM_USER_TABLE') )
 				$custom_user_table = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$custom_user_table = CUSTOM_USER_TABLE;
 				
-			if ( !defined(CUSTOM_USER_META_TABLE) )
+			if ( !defined('CUSTOM_USER_META_TABLE') )
 				$custom_user_meta_table = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$custom_user_meta_table = CUSTOM_USER_META_TABLE;
@@ -313,47 +313,47 @@ if ( !class_exists('DebugObjects') ) {
 			$echo .= '<li>' . __( 'Cookie path, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>CUSTOM_USER_META_TABLE</code>: ' . $custom_user_meta_table . '</li>' . "\n";
 			$echo .= '</ul>' . "\n";
 			
-			if ( !defined(FS_METHOD) )
+			if ( !defined('FS_METHOD') )
 				$fs_method = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$fs_method = FS_METHOD;
 				
-			if ( !defined(FTP_BASE) )
+			if ( !defined('FTP_BASE') )
 				$ftp_base = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$ftp_base = FTP_BASE;
 			
-			if ( !defined(FTP_CONTENT_DIR) )
+			if ( !defined('FTP_CONTENT_DIR') )
 				$ftp_content_dir = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$ftp_content_dir = FTP_CONTENT_DIR;
 				
-			if ( !defined(FTP_PLUGIN_DIR) )
+			if ( !defined('FTP_PLUGIN_DIR') )
 				$ftp_plugin_dir = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$ftp_plugin_dir = FTP_PLUGIN_DIR;
 			
-			if ( !defined(FTP_PUBKEY) )
+			if ( !defined('FTP_PUBKEY') )
 				$ftp_pubkey = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$ftp_pubkey = FTP_PUBKEY;
 				
-			if ( !defined(FTP_PRIVKEY) )
+			if ( !defined('FTP_PRIVKEY') )
 				$ftp_privkey = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$ftp_privkey = FTP_PRIVKEY;
 			
-			if ( !defined(FTP_USER) )
+			if ( !defined('FTP_USER') )
 				$ftp_user = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$ftp_user = FTP_USER;
 				
-			if ( !defined(FTP_PASS) )
+			if ( !defined('FTP_PASS') )
 				$ftp_pass = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$ftp_pass = FTP_PASS;
 			
-			if ( !defined(FTP_HOST) )
+			if ( !defined('FTP_HOST') )
 				$ftp_host = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$ftp_host = FTP_HOST;
