@@ -49,6 +49,8 @@ if ( function_exists('add_action') ) {
 	define( 'FB_WPDO_VIEW_CACHE', TRUE );
 	
 	define( 'FB_WPDO_SORT_HOOKS', TRUE );
+	// list only on get-param in url
+	define( 'FB_WPDO_GET_DEBUG', tRUE );
 	// Hook on Frontend
 	define( 'FB_WPDO_FRONTEND', TRUE );
 	// Hook on Backend
@@ -79,6 +81,11 @@ if ( !class_exists('DebugObjects') ) {
 			
 			if ( !current_user_can('DebugObjects') )
 				return;
+			
+			if ( defined('FB_WPDO_GET_DEBUG') && FB_WPDO_GET_DEBUG ) {
+				if ( $_GET['debugobjects'] !== 'true' )
+					return;
+			}
 			
 			if ( defined('FB_WPDO_FRONTEND') && FB_WPDO_FRONTEND && !is_admin() ) {
 				add_action( 'init', array(&$this, 'textdomain') );
@@ -373,11 +380,11 @@ if ( !class_exists('DebugObjects') ) {
 			
 			$echo .= "\n" . '<h4>' . __( 'WordPress Query Informations', FB_WPDO_TEXTDOMAIN ) . '</h4>' . "\n";
 			$echo .= '<ul>' . "\n";
-			$echo .= '<li class="alternate">' . __( 'Queries: ', FB_WPDO_TEXTDOMAIN ) . get_num_queries() . 'q';
+			$echo .= '<li class="alternate">' . __( 'Queries:', FB_WPDO_TEXTDOMAIN ) . ' ' . get_num_queries() . 'q';
 			if ($debug_queries_on)
 				$echo .= '<small><a href="http://wordpress.org/extend/plugins/debug-queries/">' . __( 'See more Details with my plugin', FB_WPDO_TEXTDOMAIN) . ' Debug Queries</a></small>';
 			$echo .= '</li>' . "\n";
-			$echo .= '<li>' . __( 'Timer stop: ', FB_WPDO_TEXTDOMAIN ) . timer_stop() . 's</li>' . "\n";
+			$echo .= '<li>' . __( 'Timer stop:', FB_WPDO_TEXTDOMAIN ) . ' ' . timer_stop() . 's</li>' . "\n";
 			$echo .= '</ul>' . "\n";
 			
 			return $echo;
@@ -808,7 +815,7 @@ if ( !class_exists('DebugObjects') ) {
 			$echo  = '';
 			$echo .= '<br style="clear: both;"/>';
 			$echo .= '<div id="debugobjects">' . "\n";
-			$echo .= '<h3><a href="http://bueltge.de/">Debug Objects</a> ' . __('by Frank B&uuml;ltge') . ', <a href="http://bueltge.de/">bueltge.de</a></h3>' . "\n";
+			$echo .= '<h3><a href="http://bueltge.de/">Debug Objects</a> ' . __('by Frank B&uuml;ltge', FB_WPDO_TEXTDOMAIN ) . ', <a href="http://bueltge.de/">bueltge.de</a></h3>' . "\n";
 			$echo .= '<p>' . __( '&raquo; Deactivate after analysis!', FB_WPDO_TEXTDOMAIN ). '</p>' . "\n";
 				
 			//echo on footer

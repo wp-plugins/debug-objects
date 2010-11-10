@@ -4,13 +4,17 @@ Donate link: http://bueltge.de/wunschliste/
 Tags: debug, sql, analyse, tuning, performance, database, queries, query, php, 
 Requires at least: 2.7
 Tested up to: 3.1-alpha
-Stable tag: 0.3.0
+Stable tag: 1.0.0
 
 The Plugin Debug Objects provides the user, which has the appropriate rights, normally the administrator, a large number of information. Values and content get displayed at the frontend of the blog, to analyze errors but also to better understand WordPress.
 
 
 == Description ==
 The Plugin Debug Objects provides the user, which has the appropriate rights, normally the administrator, a large number of information. Values and content get displayed at the frontend of the blog, to analyze errors but also to better understand WordPress.
+
+= Important for use =
+Add to any URL of the WP-installation the string `?debugobjects=true`, so that list all informations of the plugin below the site in frontend or backend.
+You can set the constant `FB_WPDO_GET_DEBUG` to `FALSE` for the permanent diversion of all values.
 
 = The Plugin provides in various tabs information to: =
 * PHP
