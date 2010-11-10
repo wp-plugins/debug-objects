@@ -8,7 +8,7 @@
 /*
 Plugin Name: Debug Objects
 Plugin URI: http://bueltge.de/debug-objects-wordpress-plugin/966/
-Description: List filter and action-hooks, cache data, defined constants, php and memory informations and return of conditional tags only for admins; for debug, informations or learning purposes. It is possible to include the plugin <a href="http://wordpress.org/extend/plugins/debug-queries/">Debug Objects</a>
+Description: List filter and action-hooks, cache data, defined constants, php and memory informations and return of conditional tags only for admins; for debug, informations or learning purposes. It is possible to include the plugin <a href="http://wordpress.org/extend/plugins/debug-queries/">Debug Queries</a>
 Version: 1.0.0
 License: GPL
 Author: Frank B&uuml;ltge
