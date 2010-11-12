@@ -2,18 +2,18 @@
 /**
  * @package Debug Objects
  * @author Frank B&uuml;ltge
- * @version 1.0.0
+ * @version 1.0.1
  */
  
 /*
 Plugin Name: Debug Objects
 Plugin URI: http://bueltge.de/debug-objects-wordpress-plugin/966/
 Description: List filter and action-hooks, cache data, defined constants, php and memory informations and return of conditional tags only for admins; for debug, informations or learning purposes. It is possible to include the plugin <a href="http://wordpress.org/extend/plugins/debug-queries/">Debug Queries</a>
-Version: 1.0.0
+Version: 1.0.1
 License: GPL
 Author: Frank B&uuml;ltge
 Author URI: http://bueltge.de/
-Last Change: 06.11.2010 11:03:17
+Last Change: 12.11.2010 23:03:17
 */
 
 //error_reporting(E_ALL);
@@ -50,7 +50,7 @@ if ( function_exists('add_action') ) {
 	
 	define( 'FB_WPDO_SORT_HOOKS', TRUE );
 	// list only on get-param in url
-	define( 'FB_WPDO_GET_DEBUG', tRUE );
+	define( 'FB_WPDO_GET_DEBUG', TRUE );
 	// Hook on Frontend
 	define( 'FB_WPDO_FRONTEND', TRUE );
 	// Hook on Backend
@@ -83,7 +83,7 @@ if ( !class_exists('DebugObjects') ) {
 				return;
 			
 			if ( defined('FB_WPDO_GET_DEBUG') && FB_WPDO_GET_DEBUG ) {
-				if ( $_GET['debugobjects'] !== 'true' )
+				if ( !isset($_GET['debugobjects']) || $_GET['debugobjects'] !== 'true' )
 					return;
 			}
 			
@@ -494,44 +494,45 @@ if ( !class_exists('DebugObjects') ) {
 		// same as WP for check template
 		function view_template() {
 			
-			if ( is_trackback() ) {
-				$this->template = ABSPATH . 'wp-trackback.php';
-			} else if ( is_404() && $template = get_404_template() ) {
-				$this->template = $template;
-			} else if ( is_search() && $template = get_search_template() ) {
-				$this->template = $template;
-			} else if ( is_tax() && $template = get_taxonomy_template()) {
-				$this->template = $template;
-			} else if ( is_home() && $template = get_home_template() ) {
-				$this->template = $template;
-			} else if ( is_attachment() && $template = get_attachment_template() ) {
-				$this->template = $template;
-			} else if ( is_single() && $template = get_single_template() ) {
-				$this->template = $template;
-			} else if ( is_page() && $template = get_page_template() ) {
-				$this->template = $template;
-			} else if ( is_category() && $template = get_category_template()) {
-				$this->template = $template;
-			} else if ( is_tag() && $template = get_tag_template()) {
-				$this->template = $template;
-			} else if ( is_author() && $template = get_author_template() ) {
-				$this->template = $template;
-			} else if ( is_date() && $template = get_date_template() ) {
-				$this->template = $template;
-			} else if ( is_archive() && $template = get_archive_template() ) {
-				$this->template = $template;
-			} else if ( is_comments_popup() && $template = get_comments_popup_template() ) {
-				$this->template = $template;
-			} else if ( is_paged() && $template = get_paged_template() ) {
-				$this->template = $template;
-			} else if ( is_tag() && $template = get_tag_template() ) {
-				$this->template = $template;
-			} else if ( is_tax() && $template = get_taxonomy_template() ) {
-				$this->template = $template;
-			} else if ( file_exists(TEMPLATEPATH . "/index.php") ) {
-				$this->template = TEMPLATEPATH . "/index.php";
+			if ( isset($template) ) {
+				if ( is_trackback() ) {
+					$this->template = ABSPATH . 'wp-trackback.php';
+				} else if ( is_404() && $template = get_404_template() ) {
+					$this->template = $template;
+				} else if ( is_search() && $template = get_search_template() ) {
+					$this->template = $template;
+				} else if ( is_tax() && $template = get_taxonomy_template()) {
+					$this->template = $template;
+				} else if ( is_home() && $template = get_home_template() ) {
+					$this->template = $template;
+				} else if ( is_attachment() && $template = get_attachment_template() ) {
+					$this->template = $template;
+				} else if ( is_single() && $template = get_single_template() ) {
+					$this->template = $template;
+				} else if ( is_page() && $template = get_page_template() ) {
+					$this->template = $template;
+				} else if ( is_category() && $template = get_category_template()) {
+					$this->template = $template;
+				} else if ( is_tag() && $template = get_tag_template()) {
+					$this->template = $template;
+				} else if ( is_author() && $template = get_author_template() ) {
+					$this->template = $template;
+				} else if ( is_date() && $template = get_date_template() ) {
+					$this->template = $template;
+				} else if ( is_archive() && $template = get_archive_template() ) {
+					$this->template = $template;
+				} else if ( is_comments_popup() && $template = get_comments_popup_template() ) {
+					$this->template = $template;
+				} else if ( is_paged() && $template = get_paged_template() ) {
+					$this->template = $template;
+				} else if ( is_tag() && $template = get_tag_template() ) {
+					$this->template = $template;
+				} else if ( is_tax() && $template = get_taxonomy_template() ) {
+					$this->template = $template;
+				} else if ( file_exists(TEMPLATEPATH . "/index.php") ) {
+					$this->template = TEMPLATEPATH . "/index.php";
+				}
 			}
-			
 			$theme_data = array();
 			$theme_data = get_theme_data( get_stylesheet_directory() . '/style.css');
 
@@ -599,7 +600,7 @@ if ( !class_exists('DebugObjects') ) {
 				$echo .= '<li>' . __( 'Current stylesheet path, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>STYLESHEETPATH</code>: ' . STYLESHEETPATH . '</li>';
 			$echo .= '</ul>' . "\n";
 			
-			if ($template) {
+			if ( isset($template) && $template) {
 				$echo .=  "\n" . '<h4>' . __( 'Current template file', FB_WPDO_TEXTDOMAIN ) . '</h4>' . "\n";
 				$echo .= '<ul>' . "\n";
 				$echo .= '<li class="alternate">' . $template . '</li>';
