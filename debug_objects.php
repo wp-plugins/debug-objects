@@ -13,7 +13,7 @@ Version: 1.0.1
 License: GPL
 Author: Frank B&uuml;ltge
 Author URI: http://bueltge.de/
-Last Change: 12.11.2010 23:03:17
+Last Change: 19.12.2010 13:03:17
 */
 
 //error_reporting(E_ALL);
@@ -369,10 +369,10 @@ if ( !class_exists('DebugObjects') ) {
 			$echo .= '<ul>' . "\n";
 			$echo .= '<li class="alternate">' . __( 'Forces the filesystem method, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>FS_METHOD</code> (<code>direct</code>, <code>ssh</code>, <code>ftpext</code> or <code>ftpsockets</code>): ' . $fs_method . '</li>' . "\n";
 			$echo .= '<li>' . __( 'Path to root install directory, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>FTP_BASE</code>: ' . $ftp_base . '</li>' . "\n";
-			$echo .= '<li class="alternate">' . __( 'Absoluth path to wp-content dorectory, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>FTP_CONTENT_DIR</code>: ' . $ftp_content_dir . '</li>' . "\n";
-			$echo .= '<li>' . __( 'Absoluth path tp plugin directory, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>FTP_PLUGIN_DIR</code>: ' . $ftp_plugin_dir . '</li>' . "\n";
-			$echo .= '<li class="alternate">' . __( 'Absoluth path to SSH public key, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>FTP_PUBKEY</code>: ' . $ftp_pubkey . '</li>' . "\n";
-			$echo .= '<li>' . __( 'Absoluth path to SSH private key, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>FTP_PRIVKEY</code>: ' . $ftp_privkey . '</li>' . "\n";
+			$echo .= '<li class="alternate">' . __( 'Absolute path to wp-content directory, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>FTP_CONTENT_DIR</code>: ' . $ftp_content_dir . '</li>' . "\n";
+			$echo .= '<li>' . __( 'Absolute path to plugin directory, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>FTP_PLUGIN_DIR</code>: ' . $ftp_plugin_dir . '</li>' . "\n";
+			$echo .= '<li class="alternate">' . __( 'Absolute path to SSH public key, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>FTP_PUBKEY</code>: ' . $ftp_pubkey . '</li>' . "\n";
+			$echo .= '<li>' . __( 'dorector path to SSH private key, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>FTP_PRIVKEY</code>: ' . $ftp_privkey . '</li>' . "\n";
 			$echo .= '<li class="alternate">' . __( 'FTP or SSH username, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>FTP_USER</code>: ' . $ftp_user . '</li>' . "\n";
 			$echo .= '<li>' . __( 'FTP or SSH password, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>FTP_PASS</code>: ' . $ftp_pass . '</li>' . "\n";
 			$echo .= '<li class="alternate">' . __( 'Hostname, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>FTP_HOST</code>: ' . $ftp_host . '</li>' . "\n";
