@@ -3,7 +3,7 @@ Contributors: Bueltge
 Donate link: http://bueltge.de/wunschliste/
 Tags: debug, sql, analyse, tuning, performance, database, queries, query, php, 
 Requires at least: 2.7
-Tested up to: 3.1-alpha
+Tested up to: 3.1
 Stable tag: 1.0.1
 
 The Plugin Debug Objects provides the user, which has the appropriate rights, normally the administrator, a large number of information. Values and content get displayed at the frontend of the blog, to analyze errors but also to better understand WordPress.
@@ -53,6 +53,7 @@ define( 'FB_WPDO_BACKEND', TRUE );`
 * Thanks for belorussion translation to [Marcis G.](http://pc.de/ "pc.de")
 * Thanks for japanese translation to [Fumito Mizuno](http://ounziw.com/ "Standing on the Shoulder of Linus")
 * Thanks for hindi translation to[Alois M&auml;nner](http://www.nautilus-one.at "http://www.nautilus-one.at")
+* Thanks for dutch translation to [Renè](http://wpwebshop.com/premium-wordpress-themes/ "WP webshop")
 
 
 == Installation ==
