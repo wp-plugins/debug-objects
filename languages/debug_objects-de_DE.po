@@ -81,13 +81,13 @@ msgstr "Linux"
 #: debug_objects.php:354
 #: debug_objects.php:359
 #: debug_objects.php:364
-#: debug_objects.php:545
-#: debug_objects.php:554
-#: debug_objects.php:561
-#: debug_objects.php:568
-#: debug_objects.php:575
-#: debug_objects.php:582
-#: debug_objects.php:590
+#: debug_objects.php:546
+#: debug_objects.php:555
+#: debug_objects.php:562
+#: debug_objects.php:569
+#: debug_objects.php:576
+#: debug_objects.php:583
+#: debug_objects.php:591
 #@ debug_objects
 msgid "Undefined"
 msgstr "Undefiniert"
@@ -317,26 +317,6 @@ msgstr "Belastung der Dateisystemmethode, Konstante"
 msgid "Path to root install directory, constant"
 msgstr "Pfad zum root Installationsordner, Konstante"
 
-#: debug_objects.php:372
-#@ debug_objects
-msgid "Absoluth path to wp-content dorectory, constant"
-msgstr "Absoluter Pfad zum wp-content Ordner, Konstante"
-
-#: debug_objects.php:373
-#@ debug_objects
-msgid "Absoluth path tp plugin directory, constant"
-msgstr "Absoluter Pfad zum Pluginordner, Konstante"
-
-#: debug_objects.php:374
-#@ debug_objects
-msgid "Absoluth path to SSH public key, constant"
-msgstr "Absoluter Pfad zum SSH öffenlichem Schlüssel, Konstante"
-
-#: debug_objects.php:375
-#@ debug_objects
-msgid "Absoluth path to SSH private key, constant"
-msgstr "Absoluter Pfad zum SSH privatem Schlüssel, Konstante"
-
 #: debug_objects.php:376
 #@ debug_objects
 msgid "FTP or SSH username, constant"
@@ -460,163 +440,163 @@ msgstr "ist"
 msgid "no"
 msgstr "kein"
 
-#: debug_objects.php:539
+#: debug_objects.php:540
 #@ debug_objects
 msgid "Theme Values"
 msgstr "Themewerte"
 
-#: debug_objects.php:541
+#: debug_objects.php:542
 #@ debug_objects
 msgid "Current theme name:"
 msgstr "Aktueller Themename:"
 
-#: debug_objects.php:548
+#: debug_objects.php:549
 #@ debug_objects
 msgid "Current theme title:"
 msgstr "Aktueller Themetitel:"
 
-#: debug_objects.php:550
+#: debug_objects.php:551
 #@ debug_objects
 msgid "Current theme uri:"
 msgstr "Aktuelle Theme URI:"
 
-#: debug_objects.php:557
+#: debug_objects.php:558
 #@ debug_objects
 msgid "Current theme description:"
 msgstr "Aktuell Themebeschreibung."
 
-#: debug_objects.php:564
+#: debug_objects.php:565
 #@ debug_objects
 msgid "Current theme author:"
 msgstr "Aktueller Themeautor:"
 
-#: debug_objects.php:571
+#: debug_objects.php:572
 #@ debug_objects
 msgid "Current theme version:"
 msgstr "Aktuelle Themeversion:"
 
-#: debug_objects.php:578
+#: debug_objects.php:579
 #@ debug_objects
 msgid "Current theme template:"
 msgstr "Aktuelles Themetemplate:"
 
-#: debug_objects.php:585
+#: debug_objects.php:586
 #@ debug_objects
 msgid "Current theme status:"
 msgstr "Aktueller Themestatus:"
 
-#: debug_objects.php:586
+#: debug_objects.php:587
 #@ debug_objects
 msgid "Current theme tags:"
 msgstr "Aktuelle Theme Tags:"
 
-#: debug_objects.php:594
+#: debug_objects.php:595
 #@ debug_objects
 msgid "Current theme:"
 msgstr "Aktuelles Theme:"
 
-#: debug_objects.php:595
+#: debug_objects.php:596
 #@ debug_objects
 msgid "Current theme directory:"
 msgstr "Aktuelles Themeverzeichnis:"
 
-#: debug_objects.php:596
+#: debug_objects.php:597
 #@ debug_objects
 msgid "Current stylesheet:"
 msgstr "Aktuelles Stylsheet:"
 
-#: debug_objects.php:597
+#: debug_objects.php:598
 #@ debug_objects
 msgid "Current stylesheet directory:"
 msgstr "Aktuelles Stylesheetverzeichnis:"
 
-#: debug_objects.php:598
+#: debug_objects.php:599
 #@ debug_objects
 msgid "Current template path, constant"
 msgstr "Aktueller Templatepfad, Konstante"
 
-#: debug_objects.php:599
+#: debug_objects.php:600
 #@ debug_objects
 msgid "Current stylesheet path, constant"
 msgstr "Aktueller Stylesheetpfad, Konstante"
 
-#: debug_objects.php:603
+#: debug_objects.php:604
 #@ debug_objects
 msgid "Current template file"
 msgstr "Aktuelle Template Datei"
 
-#: debug_objects.php:623
+#: debug_objects.php:624
 #@ debug_objects
 msgid "Simple WordPress Hooks &amp; Filters Insight"
 msgstr "Einfacher WordPress Hook &amp; Filter Einblick"
 
-#: debug_objects.php:638
+#: debug_objects.php:639
 #@ debug_objects
 msgid "Priority"
 msgstr "Priorität"
 
-#: debug_objects.php:654
+#: debug_objects.php:655
 #@ debug_objects
 msgid "View data"
 msgstr "Daten zeigen"
 
-#: debug_objects.php:676
+#: debug_objects.php:677
 #@ debug_objects
 msgid "Hooks total:"
 msgstr "Hooks gesamt:"
 
-#: debug_objects.php:676
+#: debug_objects.php:677
 #@ debug_objects
 msgid "Register filter/actions total:"
 msgstr "Registrierte fitler/actions gesamt:"
 
-#: debug_objects.php:782
-#: debug_objects.php:793
+#: debug_objects.php:783
+#: debug_objects.php:794
 #@ debug_objects
 msgid "Objects total:"
 msgstr "Objekte gesamt:"
 
-#: debug_objects.php:818
+#: debug_objects.php:819
 #@ debug_objects
 msgid "by Frank B&uuml;ltge"
 msgstr "durch Frank B&uuml;ltge"
 
-#: debug_objects.php:819
+#: debug_objects.php:820
 #@ debug_objects
 msgid "&raquo; Deactivate after analysis!"
 msgstr "&raquo; Deaktiviere nach der Analyse!"
 
-#: debug_objects.php:824
+#: debug_objects.php:825
 #@ debug_objects
 msgid "PHP, Memory &amp; WordPress"
 msgstr "PHP, Speicher &amp; WordPress"
 
-#: debug_objects.php:825
+#: debug_objects.php:826
 #@ debug_objects
 msgid "Conditional Tags"
 msgstr "Conditional Tags"
 
-#: debug_objects.php:826
+#: debug_objects.php:827
 #@ debug_objects
 msgid "Theme &amp; Template"
 msgstr "Theme &amp; Template"
 
-#: debug_objects.php:828
+#: debug_objects.php:829
 #@ debug_objects
 msgid "Cache"
 msgstr "Speicher"
 
-#: debug_objects.php:830
+#: debug_objects.php:831
 #@ debug_objects
 msgid "Hooks &amp; Filter"
 msgstr "Speicher"
 
-#: debug_objects.php:831
+#: debug_objects.php:832
 #@ debug_objects
 msgid "Constants"
 msgstr "Konstanten"
 
-#: debug_objects.php:833
+#: debug_objects.php:834
 #@ debug_objects
 msgid "Queries"
 msgstr "Queries"
@@ -630,4 +610,24 @@ msgstr "Queries:"
 #@ debug_objects
 msgid "Timer stop:"
 msgstr "Timer Stop:"
+
+#: debug_objects.php:372
+#@ debug_objects
+msgid "Absolute path to wp-content directory, constant"
+msgstr "Absoluter Pfad zum wp-content Ordner, Konstante"
+
+#: debug_objects.php:373
+#@ debug_objects
+msgid "Absolute path to plugin directory, constant"
+msgstr "Absoluter Pfad zum Pluginordner, Konstante"
+
+#: debug_objects.php:374
+#@ debug_objects
+msgid "Absolute path to SSH public key, constant"
+msgstr "Absoluter Pfad zum SSH öffenlichem Schlüssel, Konstante"
+
+#: debug_objects.php:375
+#@ debug_objects
+msgid "dorector path to SSH private key, constant"
+msgstr "Absoluter Pfad zum SSH privatem Schlüssel, Konstante"
 
