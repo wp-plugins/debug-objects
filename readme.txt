@@ -55,6 +55,12 @@ define( 'FB_WPDO_BACKEND', TRUE );`
 * Thanks for hindi translation to[Alois M&auml;nner](http://www.nautilus-one.at "http://www.nautilus-one.at")
 * Thanks for dutch translation to [Renè](http://wpwebshop.com/premium-wordpress-themes/ "WP webshop")
 
+= More Plugins = 
+Please see also my [Premium Plugins](http://wpplugins.com/author/malo.conny/). Maybe you find an solution for your requirement.
+
+= Interested in WordPress tips and tricks =
+You may also be interested in WordPress tips and tricks at [WP Engineer](http://wpengineer.com/) or for german people [bueltge.de](http://bueltge.de/) 
+
 
 == Installation ==
 = Requirements =
