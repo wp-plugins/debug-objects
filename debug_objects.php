@@ -2,18 +2,17 @@
 /**
  * @package Debug Objects
  * @author Frank B&uuml;ltge
- * @version 1.0.1
  */
  
 /*
 Plugin Name: Debug Objects
 Plugin URI: http://bueltge.de/debug-objects-wordpress-plugin/966/
-Description: List filter and action-hooks, cache data, defined constants, php and memory informations and return of conditional tags only for admins; for debug, informations or learning purposes. It is possible to include the plugin <a href="http://wordpress.org/extend/plugins/debug-queries/">Debug Queries</a>
-Version: 1.0.1
+Description: List filter and action-hooks, cache data, defined constants, php and memory informations and return of conditional tags only for admins; for debug, informations or learning purposes. It is possible to include the plugin <a href="http://wordpress.org/extend/plugins/debug-queries/">Debug Queries</a>. Add to any URL of the WP-installation the string <code>?debugobjects=true</code>, so that list all informations of the plugin below the site in frontend or backend. You can set the constant <code>FB_WPDO_GET_DEBUG</code> to <code>FALSE</code> for the permanent diversion of all values.
+Version: 1.0.2
 License: GPL
 Author: Frank B&uuml;ltge
 Author URI: http://bueltge.de/
-Last Change: 19.12.2010 13:03:17
+Last Change: 06.03.2011 23:03:17
 */
 
 //error_reporting(E_ALL);
@@ -61,6 +60,10 @@ if ( function_exists('add_action') ) {
 }
 
 if ( !class_exists('DebugObjects') ) {
+	
+	// unsinstall all stuff on delete via backend
+	register_uninstall_hook( __FILE__, array('DebugObjects', 'deactivate') );
+	
 	class DebugObjects {
 		
 		// constructor
@@ -68,8 +71,6 @@ if ( !class_exists('DebugObjects') ) {
 			
 			if ( function_exists('register_activation_hook') )
 				register_activation_hook( __FILE__, array(&$this, 'activate') );
-			if ( function_exists('register_uninstall_hook') )
-				register_uninstall_hook( __FILE__, array(&$this, 'deactivate') );
 			if ( function_exists('register_deactivation_hook') )
 				register_deactivation_hook( __FILE__, array(&$this, 'deactivate') );
 				
@@ -643,8 +644,8 @@ if ( !class_exists('DebugObjects') ) {
 						
 						$echo .= '<li>';
 						$func = $sub['function'];
-						if ( is_array($func) ) {
-							$echo .= '<code><em>' .get_class($func[0]) . '-></em>' . $func[1] . '()</code>';
+						if ( is_object($func) ) {
+							$echo .= '<code><em>' . get_class($func[0]) . '-></em>' . $func[1] . '()</code>';
 							if ( empty($func[0]) ) {
 								$echo .= "\n". '<ul>' . "\n";
 								$x = 0;
@@ -746,9 +747,9 @@ if ( !class_exists('DebugObjects') ) {
 						$output .= "<br/><small><em>type</em>: $vt</small><br/><small><em>value</em>: </small><span class=\"value\">$val</span></li>";
 					break;
 					case "string":
-						$obj = @unserialize($val);
+						$obj = @unserialize( base64_decode($val) );
 						$is_serialized = ($obj !== false && preg_match("/^(O:|a:)/", $val));
-						$output .= "<li class=\"vt-$vt\"><span class=\"key\">".htmlspecialchars($key). '</span>';
+						$output .= "<li class=\"vt-$vt\"><span class=\"key\">" . htmlspecialchars($key) . '</span>';
 						$output .= "<br/><small><em>type</em>: $vt | <em>size</em>: ".strlen($val). " | <em>serialized</em>: ".($is_serialized !== false?"true":"false"). '</small><br/>';
 						if ($is_serialized) {
 							$output .= $this->get_as_ul_tree($obj, "<small><em>value</em>:</small> <span class=\"value\">[unserialized]</span>", true);
