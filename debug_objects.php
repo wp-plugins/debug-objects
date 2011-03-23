@@ -8,36 +8,36 @@
 Plugin Name: Debug Objects
 Plugin URI: http://bueltge.de/debug-objects-wordpress-plugin/966/
 Description: List filter and action-hooks, cache data, defined constants, php and memory informations and return of conditional tags only for admins; for debug, informations or learning purposes. It is possible to include the plugin <a href="http://wordpress.org/extend/plugins/debug-queries/">Debug Queries</a>. Add to any URL of the WP-installation the string <code>?debugobjects=true</code>, so that list all informations of the plugin below the site in frontend or backend. You can set the constant <code>FB_WPDO_GET_DEBUG</code> to <code>FALSE</code> for the permanent diversion of all values.
-Version: 1.0.2
+Version: 1.0.3
 License: GPL
 Author: Frank B&uuml;ltge
 Author URI: http://bueltge.de/
-Last Change: 06.03.2011 23:03:17
+Last Change: 23.03.2011 21:03:17
 */
 
 //error_reporting(E_ALL);
 
 //avoid direct calls to this file, because now WP core and framework has been used
-if ( !function_exists('add_action') ) {
-	header('Status: 403 Forbidden');
-	header('HTTP/1.1 403 Forbidden');
+if ( !function_exists( 'add_action' ) ) {
+	header( 'Status: 403 Forbidden' );
+	header( 'HTTP/1.1 403 Forbidden' );
 	exit();
 }
 
-if ( function_exists('add_action') ) {
+if ( function_exists( 'add_action' ) ) {
 	//WordPress definitions
-	if ( !defined('WP_CONTENT_URL') )
-		define('WP_CONTENT_URL', get_option('siteurl') . '/wp-content');
-	if ( !defined('WP_CONTENT_DIR') )
-		define('WP_CONTENT_DIR', ABSPATH . 'wp-content');
-	if ( !defined('WP_PLUGIN_URL') )
-		define('WP_PLUGIN_URL', WP_CONTENT_URL. '/plugins');
-	if ( !defined('WP_PLUGIN_DIR') )
-		define('WP_PLUGIN_DIR', WP_CONTENT_DIR. '/plugins');
-	if ( !defined('PLUGINDIR') )
+	if ( !defined( 'WP_CONTENT_URL' ) )
+		define( 'WP_CONTENT_URL', get_option( 'siteurl' ) . '/wp-content' );
+	if ( !defined( 'WP_CONTENT_DIR' ) )
+		define( 'WP_CONTENT_DIR', ABSPATH . 'wp-content' );
+	if ( !defined( 'WP_PLUGIN_URL' ) )
+		define( 'WP_PLUGIN_URL', WP_CONTENT_URL. '/plugins' );
+	if ( !defined( 'WP_PLUGIN_DIR' ) )
+		define( 'WP_PLUGIN_DIR', WP_CONTENT_DIR. '/plugins' );
+	if ( !defined( 'PLUGINDIR' ) )
 		define( 'PLUGINDIR', 'wp-content/plugins' ); // Relative to ABSPATH.  For back compat.
-	if ( !defined('WP_LANG_DIR') )
-		define('WP_LANG_DIR', WP_CONTENT_DIR . '/languages');
+	if ( !defined( 'WP_LANG_DIR' ) )
+		define( 'WP_LANG_DIR', WP_CONTENT_DIR . '/languages' );
 
 	// plugin definitions
 	define( 'FB_WPDO_BASENAME', plugin_basename(__FILE__) );
@@ -55,53 +55,52 @@ if ( function_exists('add_action') ) {
 	// Hook on Backend
 	define( 'FB_WPDO_BACKEND', TRUE );
 	
-	if ( !defined('SAVEQUERIES') )
-		define('SAVEQUERIES', true);
+	if ( !defined( 'SAVEQUERIES' ) )
+		define( 'SAVEQUERIES', true);
 }
 
-if ( !class_exists('DebugObjects') ) {
+if ( !class_exists( 'Debug_Objects' ) ) {
 	
-	// unsinstall all stuff on delete via backend
-	register_uninstall_hook( __FILE__, array('DebugObjects', 'deactivate') );
-	
-	class DebugObjects {
+	class Debug_Objects {
 		
 		// constructor
-		function DebugObjects() {
+		function Debug_Objects() {
 			
-			if ( function_exists('register_activation_hook') )
-				register_activation_hook( __FILE__, array(&$this, 'activate') );
-			if ( function_exists('register_deactivation_hook') )
-				register_deactivation_hook( __FILE__, array(&$this, 'deactivate') );
+			if ( function_exists( 'register_activation_hook' ) )
+				register_activation_hook( __FILE__, array( &$this, 'activate' ) );
+			if ( function_exists( 'register_deactivation_hook' ) )
+				register_deactivation_hook( __FILE__, array( &$this, 'deactivate' ) );
+			if ( function_exists( 'register_uninstall_hook' ) )
+				register_uninstall_hook(__FILE__, array( 'Debug_Objects', 'deactivate' ) );
 				
-			add_action( 'init', array(&$this, 'on_init'), 1 );
+			add_action( 'init', array( &$this, 'on_init' ), 1 );
 		}
 		
 		
 		function on_init() {
 			
-			if ( !current_user_can('DebugObjects') )
+			if ( !current_user_can( 'DebugObjects' ) )
 				return;
 			
-			if ( defined('FB_WPDO_GET_DEBUG') && FB_WPDO_GET_DEBUG ) {
+			if ( defined( 'FB_WPDO_GET_DEBUG' ) && FB_WPDO_GET_DEBUG ) {
 				if ( !isset($_GET['debugobjects']) || $_GET['debugobjects'] !== 'true' )
 					return;
 			}
 			
-			if ( defined('FB_WPDO_FRONTEND') && FB_WPDO_FRONTEND && !is_admin() ) {
-				add_action( 'init', array(&$this, 'textdomain') );
-				add_action( 'wp_footer', array(&$this, 'wp_footer') );
+			if ( defined( 'FB_WPDO_FRONTEND' ) && FB_WPDO_FRONTEND && !is_admin() ) {
+				add_action( 'init', array( &$this, 'textdomain' ) );
+				add_action( 'wp_footer', array( &$this, 'wp_footer' ) );
 				
 				wp_enqueue_script( 'jquery-ui-tabs' );
-				wp_enqueue_script( 'debug-objects', WP_PLUGIN_URL . '/' . FB_WPDO_BASEFOLDER . '/js/debug_objects.js', array('jquery') );
+				wp_enqueue_script( 'debug-objects', WP_PLUGIN_URL . '/' . FB_WPDO_BASEFOLDER . '/js/debug_objects.js', array( 'jquery' ) );
 				wp_enqueue_style( 'do-jquery-ui-all-css', WP_PLUGIN_URL . '/' . FB_WPDO_BASEFOLDER . '/css/ui.all.css' );
 				wp_enqueue_style( 'do-style', WP_PLUGIN_URL . '/' . FB_WPDO_BASEFOLDER . '/css/style-frontend.css' );
-			} elseif ( defined('FB_WPDO_BACKEND') && FB_WPDO_BACKEND && is_admin() ) {
-				add_action( 'init', array(&$this, 'textdomain') );
-				add_action( 'admin_footer', array(&$this, 'wp_footer') );
+			} elseif ( defined( 'FB_WPDO_BACKEND' ) && FB_WPDO_BACKEND && is_admin() ) {
+				add_action( 'init', array( &$this, 'textdomain' ) );
+				add_action( 'admin_footer', array( &$this, 'wp_footer' ) );
 				
 				wp_enqueue_script( 'jquery-ui-tabs' );
-				wp_enqueue_script( 'debug-objects', WP_PLUGIN_URL . '/' . FB_WPDO_BASEFOLDER . '/js/debug_objects.js', array('jquery') );
+				wp_enqueue_script( 'debug-objects', WP_PLUGIN_URL . '/' . FB_WPDO_BASEFOLDER . '/js/debug_objects.js', array( 'jquery' ) );
 				wp_enqueue_style( 'do-jquery-ui-all-css', WP_PLUGIN_URL . '/' . FB_WPDO_BASEFOLDER . '/css/ui.all.css' );
 				wp_enqueue_style( 'do-style', WP_PLUGIN_URL . '/' . FB_WPDO_BASEFOLDER . '/css/style-frontend.css' );
 			}
@@ -110,114 +109,114 @@ if ( !class_exists('DebugObjects') ) {
 		
 		function textdomain() {
 			
-			load_plugin_textdomain(FB_WPDO_TEXTDOMAIN, false, dirname( plugin_basename(__FILE__) ) . '/languages');
+			load_plugin_textdomain(FB_WPDO_TEXTDOMAIN, false, dirname( plugin_basename(__FILE__) ) . '/languages' );
 		}
 		
 		
 		function view_stuff() {
 			global $locale;
 			
-			$plugins = get_option('active_plugins');
+			$plugins = get_option( 'active_plugins' );
 			$required_plugin = 'debug-queries/debug_queries.php';
 			$debug_queries_on = FALSE;
 			if ( in_array( $required_plugin , $plugins ) ) {
 				$debug_queries_on = TRUE;
-				global $DebugQueries;
+				global $debug_queries;
 			}
 			
-			if ( defined('WPLANG') )
+			if ( defined( 'WPLANG' ) )
 				$locale = WPLANG;
 			if ( empty($locale) )
 				$locale = 'en_US';
 				
-			$memory_usage = function_exists('memory_get_usage') ? round(memory_get_usage() / 1024 / 1024, 2) : 0;
-			$memory_limit = (int) ini_get('memory_limit') ;
+			$memory_usage = function_exists( 'memory_get_usage' ) ? round(memory_get_usage() / 1024 / 1024, 2) : 0;
+			$memory_limit = (int) ini_get( 'memory_limit' ) ;
 			
 			if ( !empty($memory_usage) && !empty($memory_limit) )
 				$memory_percent = round( $memory_usage / $memory_limit * 100, 0 );
 			
 			$oskey = $_SERVER['HTTP_USER_AGENT'];
 			//Operating-System scan start
-			if ( preg_match('=WIN=i', $oskey) ) { //Windows
-				if (preg_match('=NT=i', $oskey)) {
-					if (preg_match('=5.1=', $oskey) ) {
+			if ( preg_match( '=WIN=i', $oskey) ) { //Windows
+				if (preg_match( '=NT=i', $oskey)) {
+					if (preg_match( '=5.1=', $oskey) ) {
 						$os = __( 'Windows XP', FB_WPDO_TEXTDOMAIN );
-					} elseif(preg_match('=5.0=', $oskey) ) {//Windows 2000
+					} elseif(preg_match( '=5.0=', $oskey) ) {//Windows 2000
 						$os = __( 'Windows 2000', FB_WPDO_TEXTDOMAIN );
 					}
 				} else {
-					if (preg_match('=ME=', $oskey) ) { //Windows ME
+					if (preg_match( '=ME=', $oskey) ) { //Windows ME
 						$os = __( 'Windows ME', FB_WPDO_TEXTDOMAIN );
-					} elseif(preg_match('=98=', $oskey) ) { //Windows 98
+					} elseif(preg_match( '=98=', $oskey) ) { //Windows 98
 						$os = __( 'Windows 98', FB_WPDO_TEXTDOMAIN );
-					} elseif(preg_match('=95=', $oskey) ) { //Windows 95
+					} elseif(preg_match( '=95=', $oskey) ) { //Windows 95
 						$os = __( 'Windows 95', FB_WPDO_TEXTDOMAIN );}
 				}
-			} elseif (preg_match('=MAC=i', $oskey) ) { //Macintosh
+			} elseif (preg_match( '=MAC=i', $oskey) ) { //Macintosh
 				$os = __( 'Macintosh', FB_WPDO_TEXTDOMAIN );
-			} elseif (preg_match('=LINUX=i', $oskey) ) { //Linux
+			} elseif (preg_match( '=LINUX=i', $oskey) ) { //Linux
 				$os = __( 'Linux', FB_WPDO_TEXTDOMAIN );
 			} //Operating-System scan end
 			
-			if ( !defined('AUTOSAVE_INTERVAL') )
+			if ( !defined( 'AUTOSAVE_INTERVAL' ) )
 				$autosave_interval = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
-			elseif ( !constant('AUTOSAVE_INTERVAL') )
+			elseif ( !constant( 'AUTOSAVE_INTERVAL' ) )
 				$autosave_interval = __( 'OFF', FB_WPDO_TEXTDOMAIN );
 			else
 				$autosave_interval = AUTOSAVE_INTERVAL . __( 's', FB_WPDO_TEXTDOMAIN );
 			
-			if ( !defined('WP_POST_REVISIONS') )
+			if ( !defined( 'WP_POST_REVISIONS' ) )
 				$post_revisions = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
-			elseif ( !constant('WP_POST_REVISIONS') )
+			elseif ( !constant( 'WP_POST_REVISIONS' ) )
 				$post_revisions = __( 'OFF', FB_WPDO_TEXTDOMAIN );
 			else
 				$post_revisions = WP_POST_REVISIONS;
 			
-			if ( !defined('SAVEQUERIES') )
+			if ( !defined( 'SAVEQUERIES' ) )
 				$savequeries = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
-			elseif ( !constant('SAVEQUERIES') )
+			elseif ( !constant( 'SAVEQUERIES' ) )
 				$savequeries = __( 'OFF', FB_WPDO_TEXTDOMAIN );
 			elseif ( SAVEQUERIES == 1 )
 				$savequeries = __( 'ON', FB_WPDO_TEXTDOMAIN );
 			
-			if ( !defined('WP_DEBUG') )
+			if ( !defined( 'WP_DEBUG' ) )
 				$debug = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
-			elseif ( !constant('WP_DEBUG') )
+			elseif ( !constant( 'WP_DEBUG' ) )
 				$debug = __( 'OFF', FB_WPDO_TEXTDOMAIN );
 			elseif ( WP_DEBUG == 1 )
 				$debug = __( 'ON', FB_WPDO_TEXTDOMAIN );
 				
-			if ( !defined('FORCE_SSL_LOGIN') )
+			if ( !defined( 'FORCE_SSL_LOGIN' ) )
 				$ssl_login = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
-			elseif ( !constant('FORCE_SSL_LOGIN') )
+			elseif ( !constant( 'FORCE_SSL_LOGIN' ) )
 				$ssl_login = __( 'OFF', FB_WPDO_TEXTDOMAIN );
 			elseif ( FORCE_SSL_LOGIN == 1 )
 				$ssl_login = __( 'ON', FB_WPDO_TEXTDOMAIN );
 			
-			if ( !defined('CONCATENATE_SCRIPTS') )
+			if ( !defined( 'CONCATENATE_SCRIPTS' ) )
 				$concatenate_scripts = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
-			elseif ( !constant('CONCATENATE_SCRIPTS') )
+			elseif ( !constant( 'CONCATENATE_SCRIPTS' ) )
 				$concatenate_scripts = __( 'OFF', FB_WPDO_TEXTDOMAIN );
 			elseif ( CONCATENATE_SCRIPTS == 1 )
 					$concatenate_scripts = __( 'ON', FB_WPDO_TEXTDOMAIN );
 			
-			if ( !defined('COMPRESS_SCRIPTS') )
+			if ( !defined( 'COMPRESS_SCRIPTS' ) )
 				$compress_scripts = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
-			elseif ( !constant('COMPRESS_SCRIPTS') )
+			elseif ( !constant( 'COMPRESS_SCRIPTS' ) )
 				$compress_scripts = __( 'OFF', FB_WPDO_TEXTDOMAIN );
 			elseif ( COMPRESS_SCRIPTS == 1 )
 				$compress_scripts = __( 'ON', FB_WPDO_TEXTDOMAIN );
 			
-			if ( !defined('COMPRESS_CSS') )
+			if ( !defined( 'COMPRESS_CSS' ) )
 				$compress_css = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
-			elseif ( !constant('COMPRESS_CSS') )
+			elseif ( !constant( 'COMPRESS_CSS' ) )
 				$compress_css = __( 'OFF', FB_WPDO_TEXTDOMAIN );
 			elseif ( COMPRESS_CSS == 1 )
 				$compress_css = __( 'ON', FB_WPDO_TEXTDOMAIN );
 			
-			if ( !defined('ENFORCE_GZIP') )
+			if ( !defined( 'ENFORCE_GZIP' ) )
 				$enforce_gzip = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
-			elseif ( !constant('ENFORCE_GZIP') )
+			elseif ( !constant( 'ENFORCE_GZIP' ) )
 				$enforce_gzip = __( 'OFF', FB_WPDO_TEXTDOMAIN );
 			elseif ( ENFORCE_GZIP == 1 )
 				$enforce_gzip = __( 'ON', FB_WPDO_TEXTDOMAIN );
@@ -238,7 +237,7 @@ if ( !class_exists('DebugObjects') ) {
 			
 			$echo .= "\n" . '<h4>' . __( 'WordPress Informations', FB_WPDO_TEXTDOMAIN ) . '</h4>' . "\n";
 			$echo .= '<ul>' . "\n";
-			$echo .= '<li>' . __( 'Version:', FB_WPDO_TEXTDOMAIN ) . ' ' . get_bloginfo('version') . '</li>' . "\n";
+			$echo .= '<li>' . __( 'Version:', FB_WPDO_TEXTDOMAIN ) . ' ' . get_bloginfo( 'version' ) . '</li>' . "\n";
 			$echo .= '<li class="alternate">' . __( 'Language, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>WPLANG</code>: ' . $locale . '</li>' . "\n";
 			$echo .= '<li>' . __( 'Language folder, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>WP_LANG_DIR</code>: ' . WP_LANG_DIR . '</li>' . "\n";
 			$echo .= '<li class="alternate">' . __( 'Content URL, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>WP_CONTENT_URL</code>: ' . WP_CONTENT_URL . '</li>' . "\n";
@@ -255,27 +254,27 @@ if ( !class_exists('DebugObjects') ) {
 			$echo .= '<li>' . __( 'Autosave interval, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>AUTOSAVE_INTERVAL</code>: ' . $autosave_interval . '</li>' . "\n";
 			$echo .= '</ul>' . "\n";
 			
-			if ( !defined('COOKIE_DOMAIN') )
+			if ( !defined( 'COOKIE_DOMAIN' ) )
 				$cookie_domain = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$cookie_domain = COOKIE_DOMAIN;
 				
-			if ( !defined('COOKIEPATH') )
+			if ( !defined( 'COOKIEPATH' ) )
 				$cookiepath = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$cookiepath = COOKIEPATH;
 				
-			if ( !defined('SITECOOKIEPATH') )
+			if ( !defined( 'SITECOOKIEPATH' ) )
 				$sitecookiepath = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$sitecookiepath = SITECOOKIEPATH;
 				
-			if ( !defined('PLUGINS_COOKIE_PATH') )
+			if ( !defined( 'PLUGINS_COOKIE_PATH' ) )
 				$plugins_cookie_path = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$plugins_cookie_path = PLUGINS_COOKIE_PATH;
 				
-			if ( !defined('ADMIN_COOKIE_PATH') )
+			if ( !defined( 'ADMIN_COOKIE_PATH' ) )
 				$admin_cookie_path = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$admin_cookie_path = ADMIN_COOKIE_PATH;
@@ -289,12 +288,12 @@ if ( !class_exists('DebugObjects') ) {
 			$echo .= '<li class="alternate">' . __( 'Admin cookie path, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>ADMIN_COOKIE_PATH</code>: ' . $admin_cookie_path . '</li>' . "\n";
 			$echo .= '</ul>' . "\n";
 			
-			if ( !defined('FS_CHMOD_FILE') )
+			if ( !defined( 'FS_CHMOD_FILE' ) )
 				$fs_chmod_file = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$fs_chmod_file = FS_CHMOD_FILE;
 				
-			if ( !defined('FS_CHMOD_DIR') )
+			if ( !defined( 'FS_CHMOD_DIR' ) )
 				$fs_chmod_dir = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$fs_chmod_dir = FS_CHMOD_DIR;
@@ -305,12 +304,12 @@ if ( !class_exists('DebugObjects') ) {
 			$echo .= '<li>' . __( 'DIR Permissions, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>FS_CHMOD_DIR</code>: ' . $fs_chmod_dir . '</li>' . "\n";
 			$echo .= '</ul>' . "\n";
 			
-			if ( !defined('CUSTOM_USER_TABLE') )
+			if ( !defined( 'CUSTOM_USER_TABLE' ) )
 				$custom_user_table = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$custom_user_table = CUSTOM_USER_TABLE;
 				
-			if ( !defined('CUSTOM_USER_META_TABLE') )
+			if ( !defined( 'CUSTOM_USER_META_TABLE' ) )
 				$custom_user_meta_table = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$custom_user_meta_table = CUSTOM_USER_META_TABLE;
@@ -321,47 +320,47 @@ if ( !class_exists('DebugObjects') ) {
 			$echo .= '<li>' . __( 'Cookie path, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>CUSTOM_USER_META_TABLE</code>: ' . $custom_user_meta_table . '</li>' . "\n";
 			$echo .= '</ul>' . "\n";
 			
-			if ( !defined('FS_METHOD') )
+			if ( !defined( 'FS_METHOD' ) )
 				$fs_method = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$fs_method = FS_METHOD;
 				
-			if ( !defined('FTP_BASE') )
+			if ( !defined( 'FTP_BASE' ) )
 				$ftp_base = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$ftp_base = FTP_BASE;
 			
-			if ( !defined('FTP_CONTENT_DIR') )
+			if ( !defined( 'FTP_CONTENT_DIR' ) )
 				$ftp_content_dir = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$ftp_content_dir = FTP_CONTENT_DIR;
 				
-			if ( !defined('FTP_PLUGIN_DIR') )
+			if ( !defined( 'FTP_PLUGIN_DIR' ) )
 				$ftp_plugin_dir = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$ftp_plugin_dir = FTP_PLUGIN_DIR;
 			
-			if ( !defined('FTP_PUBKEY') )
+			if ( !defined( 'FTP_PUBKEY' ) )
 				$ftp_pubkey = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$ftp_pubkey = FTP_PUBKEY;
 				
-			if ( !defined('FTP_PRIVKEY') )
+			if ( !defined( 'FTP_PRIVKEY' ) )
 				$ftp_privkey = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$ftp_privkey = FTP_PRIVKEY;
 			
-			if ( !defined('FTP_USER') )
+			if ( !defined( 'FTP_USER' ) )
 				$ftp_user = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$ftp_user = FTP_USER;
 				
-			if ( !defined('FTP_PASS') )
+			if ( !defined( 'FTP_PASS' ) )
 				$ftp_pass = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$ftp_pass = FTP_PASS;
 			
-			if ( !defined('FTP_HOST') )
+			if ( !defined( 'FTP_HOST' ) )
 				$ftp_host = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$ftp_host = FTP_HOST;
@@ -401,88 +400,88 @@ if ( !class_exists('DebugObjects') ) {
 			$is .= '<p>' . __( 'The Conditional Tags can be used in your Template files to change what content is displayed and how that content is displayed on a particular page depending on what conditions that page matches. You see on this view the condition of all possible tags.', FB_WPDO_TEXTDOMAIN ) . '</p>' . "\n";
 			$is .= '<ul>' . "\n";
 			
-			if ( is_admin() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_admin" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __('is', FB_WPDO_TEXTDOMAIN) . '</b> admin</a></li>' . "\n";
-			else $is_not .= '<li><i>' . __('no', FB_WPDO_TEXTDOMAIN) . '</i> admin</li>' . "\n";
+			if ( is_admin() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_admin" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __( 'is', FB_WPDO_TEXTDOMAIN) . '</b> admin</a></li>' . "\n";
+			else $is_not .= '<li><i>' . __( 'no', FB_WPDO_TEXTDOMAIN) . '</i> admin</li>' . "\n";
 		
-			if ( is_archive() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_archive" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __('is', FB_WPDO_TEXTDOMAIN) . '</b> archive</a></li>' . "\n";
-			else $is_not .= '<li><i>' . __('no', FB_WPDO_TEXTDOMAIN) . '</i> archive</li>' . "\n";
+			if ( is_archive() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_archive" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __( 'is', FB_WPDO_TEXTDOMAIN) . '</b> archive</a></li>' . "\n";
+			else $is_not .= '<li><i>' . __( 'no', FB_WPDO_TEXTDOMAIN) . '</i> archive</li>' . "\n";
 		
-			if ( is_attachment() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_attachment" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __('is', FB_WPDO_TEXTDOMAIN) . '</b> attachment</a></li>' . "\n";
-			else $is_not .= '<li><i>' . __('no', FB_WPDO_TEXTDOMAIN) . '</i> attachment</li>' . "\n";
+			if ( is_attachment() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_attachment" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __( 'is', FB_WPDO_TEXTDOMAIN) . '</b> attachment</a></li>' . "\n";
+			else $is_not .= '<li><i>' . __( 'no', FB_WPDO_TEXTDOMAIN) . '</i> attachment</li>' . "\n";
 		
-			if ( is_author() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_author" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __('is', FB_WPDO_TEXTDOMAIN) . '</b> author</a></li>' . "\n";
-			else $is_not .= '<li><i>' . __('no', FB_WPDO_TEXTDOMAIN) . '</i> author</li>' . "\n";
+			if ( is_author() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_author" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __( 'is', FB_WPDO_TEXTDOMAIN) . '</b> author</a></li>' . "\n";
+			else $is_not .= '<li><i>' . __( 'no', FB_WPDO_TEXTDOMAIN) . '</i> author</li>' . "\n";
 		
-			if ( is_category() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_category" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __('is', FB_WPDO_TEXTDOMAIN) . '</b> category</a></li>' . "\n";
-			else $is_not .= '<li><i>' . __('no', FB_WPDO_TEXTDOMAIN) . '</i> category</li>' . "\n";
+			if ( is_category() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_category" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __( 'is', FB_WPDO_TEXTDOMAIN) . '</b> category</a></li>' . "\n";
+			else $is_not .= '<li><i>' . __( 'no', FB_WPDO_TEXTDOMAIN) . '</i> category</li>' . "\n";
 		
-			if ( is_tag() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_tag" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __('is', FB_WPDO_TEXTDOMAIN) . '</b> tag</a></li>' . "\n";
-			else $is_not .= '<li><i>' . __('no', FB_WPDO_TEXTDOMAIN) . '</i> tag</li>' . "\n";
+			if ( is_tag() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_tag" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __( 'is', FB_WPDO_TEXTDOMAIN) . '</b> tag</a></li>' . "\n";
+			else $is_not .= '<li><i>' . __( 'no', FB_WPDO_TEXTDOMAIN) . '</i> tag</li>' . "\n";
 			
-			if ( is_tax() ) $is .= "\t" . '<li><a href="http://codex.wordpress.org/Function_Reference/is_tax" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __('is', FB_WPDO_TEXTDOMAIN) . '</b> tag</a></li>' . "\n";
-			else $is_not .= '<li><i>' . __('no', FB_WPDO_TEXTDOMAIN) . '</i> tax</li>' . "\n";
+			if ( is_tax() ) $is .= "\t" . '<li><a href="http://codex.wordpress.org/Function_Reference/is_tax" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __( 'is', FB_WPDO_TEXTDOMAIN) . '</b> tag</a></li>' . "\n";
+			else $is_not .= '<li><i>' . __( 'no', FB_WPDO_TEXTDOMAIN) . '</i> tax</li>' . "\n";
 			
-			if ( is_comments_popup() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_comments_popup" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __('is', FB_WPDO_TEXTDOMAIN) . '</b> comments_popup</a></li>' . "\n";
-			else $is_not .= '<li><i>' . __('no', FB_WPDO_TEXTDOMAIN) . '</i> comments_popup</li>' . "\n";
+			if ( is_comments_popup() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_comments_popup" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __( 'is', FB_WPDO_TEXTDOMAIN) . '</b> comments_popup</a></li>' . "\n";
+			else $is_not .= '<li><i>' . __( 'no', FB_WPDO_TEXTDOMAIN) . '</i> comments_popup</li>' . "\n";
 		
-			if ( is_date() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_date" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __('is', FB_WPDO_TEXTDOMAIN) . '</b> date</a></li>' . "\n";
-			else $is_not .= '<li><i>' . __('no', FB_WPDO_TEXTDOMAIN) . '</i> date</li>' . "\n";
+			if ( is_date() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_date" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __( 'is', FB_WPDO_TEXTDOMAIN) . '</b> date</a></li>' . "\n";
+			else $is_not .= '<li><i>' . __( 'no', FB_WPDO_TEXTDOMAIN) . '</i> date</li>' . "\n";
 			
-			if ( is_day() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_day" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __('is', FB_WPDO_TEXTDOMAIN) . '</b> day</a></li>' . "\n";
-			else $is_not .= '<li><i>' . __('no', FB_WPDO_TEXTDOMAIN) . '</i> day</li>' . "\n";
+			if ( is_day() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_day" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __( 'is', FB_WPDO_TEXTDOMAIN) . '</b> day</a></li>' . "\n";
+			else $is_not .= '<li><i>' . __( 'no', FB_WPDO_TEXTDOMAIN) . '</i> day</li>' . "\n";
 		
-			if ( is_feed() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_feed" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __('is', FB_WPDO_TEXTDOMAIN) . '</b> feed</a></li>' . "\n";
-			else $is_not .= '<li><i>' . __('no', FB_WPDO_TEXTDOMAIN) . '</i> feed</li>' . "\n";
+			if ( is_feed() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_feed" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __( 'is', FB_WPDO_TEXTDOMAIN) . '</b> feed</a></li>' . "\n";
+			else $is_not .= '<li><i>' . __( 'no', FB_WPDO_TEXTDOMAIN) . '</i> feed</li>' . "\n";
 			
-			if ( is_front_page() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_front_page" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __('is', FB_WPDO_TEXTDOMAIN) . '</b> front_page</a></li>' . "\n";
-			else $is_not .= '<li><i>' . __('no', FB_WPDO_TEXTDOMAIN) . '</i> front_page</li>' . "\n";
+			if ( is_front_page() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_front_page" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __( 'is', FB_WPDO_TEXTDOMAIN) . '</b> front_page</a></li>' . "\n";
+			else $is_not .= '<li><i>' . __( 'no', FB_WPDO_TEXTDOMAIN) . '</i> front_page</li>' . "\n";
 			
-			if ( is_home() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_home" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __('is', FB_WPDO_TEXTDOMAIN) . '</b> home</a></li>' . "\n";
-			else $is_not .= '<li><i>' . __('no', FB_WPDO_TEXTDOMAIN) . '</i> home</li>' . "\n";
+			if ( is_home() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_home" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __( 'is', FB_WPDO_TEXTDOMAIN) . '</b> home</a></li>' . "\n";
+			else $is_not .= '<li><i>' . __( 'no', FB_WPDO_TEXTDOMAIN) . '</i> home</li>' . "\n";
 			
-			if ( is_month() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_month" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __('is', FB_WPDO_TEXTDOMAIN) . '</b> month</a></li>' . "\n";
-			else $is_not .= '<li><i>' . __('no', FB_WPDO_TEXTDOMAIN) . '</i> month</li>' . "\n";
+			if ( is_month() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_month" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __( 'is', FB_WPDO_TEXTDOMAIN) . '</b> month</a></li>' . "\n";
+			else $is_not .= '<li><i>' . __( 'no', FB_WPDO_TEXTDOMAIN) . '</i> month</li>' . "\n";
 		
-			if ( is_page() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_page" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __('is', FB_WPDO_TEXTDOMAIN) . '</b> page</a></li>' . "\n";
-			else $is_not .= '<li><i>' . __('no', FB_WPDO_TEXTDOMAIN) . '</i> page</li>' . "\n";
+			if ( is_page() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_page" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __( 'is', FB_WPDO_TEXTDOMAIN) . '</b> page</a></li>' . "\n";
+			else $is_not .= '<li><i>' . __( 'no', FB_WPDO_TEXTDOMAIN) . '</i> page</li>' . "\n";
 		
-			if ( is_paged() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_paged" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __('is', FB_WPDO_TEXTDOMAIN) . '</b> paged</a></li>' . "\n";
-			else $is_not .= '<li><i>' . __('no', FB_WPDO_TEXTDOMAIN) . '</i> paged</li>' . "\n";
+			if ( is_paged() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_paged" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __( 'is', FB_WPDO_TEXTDOMAIN) . '</b> paged</a></li>' . "\n";
+			else $is_not .= '<li><i>' . __( 'no', FB_WPDO_TEXTDOMAIN) . '</i> paged</li>' . "\n";
 			
-			if ( is_plugin_page() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_plugin_page" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __('is', FB_WPDO_TEXTDOMAIN) . '</b> plugin_page</a></li>' . "\n";
-			else $is_not .= '<li><i>' . __('no', FB_WPDO_TEXTDOMAIN) . '</i> plugin_page</li>' . "\n";
+			if ( is_plugin_page() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_plugin_page" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __( 'is', FB_WPDO_TEXTDOMAIN) . '</b> plugin_page</a></li>' . "\n";
+			else $is_not .= '<li><i>' . __( 'no', FB_WPDO_TEXTDOMAIN) . '</i> plugin_page</li>' . "\n";
 			
-			if ( is_preview() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_preview" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __('is', FB_WPDO_TEXTDOMAIN) . '</b> preview</a></li>' . "\n";
-			else $is_not .= '<li><i>' . __('no', FB_WPDO_TEXTDOMAIN) . '</i> preview</li>' . "\n";
+			if ( is_preview() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_preview" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __( 'is', FB_WPDO_TEXTDOMAIN) . '</b> preview</a></li>' . "\n";
+			else $is_not .= '<li><i>' . __( 'no', FB_WPDO_TEXTDOMAIN) . '</i> preview</li>' . "\n";
 		
-			if ( is_robots() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_robots" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __('is', FB_WPDO_TEXTDOMAIN) . '</b> robots</a></li>' . "\n";
-			else $is_not .= '<li><i>' . __('no', FB_WPDO_TEXTDOMAIN) . '</i> robots</li>' . "\n";
+			if ( is_robots() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_robots" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __( 'is', FB_WPDO_TEXTDOMAIN) . '</b> robots</a></li>' . "\n";
+			else $is_not .= '<li><i>' . __( 'no', FB_WPDO_TEXTDOMAIN) . '</i> robots</li>' . "\n";
 		
-			if ( is_search() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_search" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __('is', FB_WPDO_TEXTDOMAIN) . '</b> search</a></li>' . "\n";
-			else $is_not .= '<li><i>' . __('no', FB_WPDO_TEXTDOMAIN) . '</i> search</li>' . "\n";
+			if ( is_search() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_search" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __( 'is', FB_WPDO_TEXTDOMAIN) . '</b> search</a></li>' . "\n";
+			else $is_not .= '<li><i>' . __( 'no', FB_WPDO_TEXTDOMAIN) . '</i> search</li>' . "\n";
 		
-			if ( is_single() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_single" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __('is', FB_WPDO_TEXTDOMAIN) . '</b> single</a></li>' . "\n";
-			else $is_not .= '<li><i>' . __('no', FB_WPDO_TEXTDOMAIN) . '</i> single</li>' . "\n";
+			if ( is_single() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_single" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __( 'is', FB_WPDO_TEXTDOMAIN) . '</b> single</a></li>' . "\n";
+			else $is_not .= '<li><i>' . __( 'no', FB_WPDO_TEXTDOMAIN) . '</i> single</li>' . "\n";
 		
-			if ( is_singular() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_singular" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __('is', FB_WPDO_TEXTDOMAIN) . '</b> singular</a></li>' . "\n";
-			else $is_not .= '<li><i>' . __('no', FB_WPDO_TEXTDOMAIN) . '</i> singular</li>' . "\n";
+			if ( is_singular() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_singular" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __( 'is', FB_WPDO_TEXTDOMAIN) . '</b> singular</a></li>' . "\n";
+			else $is_not .= '<li><i>' . __( 'no', FB_WPDO_TEXTDOMAIN) . '</i> singular</li>' . "\n";
 		
-			if ( is_sticky() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_sticky" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __('is', FB_WPDO_TEXTDOMAIN) . '</b> sticky</a></li>' . "\n";
-			else $is_not .= '<li><i>' . __('no', FB_WPDO_TEXTDOMAIN) . '</i> sticky</li>' . "\n";
+			if ( is_sticky() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_sticky" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __( 'is', FB_WPDO_TEXTDOMAIN) . '</b> sticky</a></li>' . "\n";
+			else $is_not .= '<li><i>' . __( 'no', FB_WPDO_TEXTDOMAIN) . '</i> sticky</li>' . "\n";
 		
-			if ( is_time() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_time" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __('is', FB_WPDO_TEXTDOMAIN) . '</b> time</a></li>' . "\n";
-			else $is_not .= '<li><i>' . __('no', FB_WPDO_TEXTDOMAIN) . '</i> time</li>' . "\n";
+			if ( is_time() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_time" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __( 'is', FB_WPDO_TEXTDOMAIN) . '</b> time</a></li>' . "\n";
+			else $is_not .= '<li><i>' . __( 'no', FB_WPDO_TEXTDOMAIN) . '</i> time</li>' . "\n";
 		
-			if ( is_trackback() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_trackback" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __('is', FB_WPDO_TEXTDOMAIN) . '</b> trackback</a></li>' . "\n";
-			else $is_not .= '<li><i>' . __('no', FB_WPDO_TEXTDOMAIN) . '</i> trackback</li>' . "\n";
+			if ( is_trackback() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_trackback" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __( 'is', FB_WPDO_TEXTDOMAIN) . '</b> trackback</a></li>' . "\n";
+			else $is_not .= '<li><i>' . __( 'no', FB_WPDO_TEXTDOMAIN) . '</i> trackback</li>' . "\n";
 		
-			if ( is_year() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_year" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __('is', FB_WPDO_TEXTDOMAIN) . '</b> year</a></li>' . "\n";
-			else $is_not .= '<li><i>' . __('no', FB_WPDO_TEXTDOMAIN) . '</i> year</li>' . "\n";
+			if ( is_year() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_year" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __( 'is', FB_WPDO_TEXTDOMAIN) . '</b> year</a></li>' . "\n";
+			else $is_not .= '<li><i>' . __( 'no', FB_WPDO_TEXTDOMAIN) . '</i> year</li>' . "\n";
 		
-			if ( is_404() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_404" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __('is', FB_WPDO_TEXTDOMAIN) . '</b> 404</a></li>' . "\n";
-			else $is_not .= '<li><i>' . __('no', FB_WPDO_TEXTDOMAIN) . '</i> 404</li>' . "\n";
+			if ( is_404() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_404" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __( 'is', FB_WPDO_TEXTDOMAIN) . '</b> 404</a></li>' . "\n";
+			else $is_not .= '<li><i>' . __( 'no', FB_WPDO_TEXTDOMAIN) . '</i> 404</li>' . "\n";
 		
-			if ( FB_WPDO_VIEW_IS_NOT == ('TRUE' || 1) ) {
+			if ( FB_WPDO_VIEW_IS_NOT == ( 'TRUE' || 1) ) {
 				$is .= $is_not;
 			}
 			
@@ -535,7 +534,7 @@ if ( !class_exists('DebugObjects') ) {
 				}
 			}
 			$theme_data = array();
-			$theme_data = get_theme_data( get_stylesheet_directory() . '/style.css');
+			$theme_data = get_theme_data( get_stylesheet_directory() . '/style.css' );
 
 			$echo  = '';
 			$echo .=  "\n" . '<h4>' . __( 'Theme Values', FB_WPDO_TEXTDOMAIN ) . '</h4>' . "\n";
@@ -587,7 +586,7 @@ if ( !class_exists('DebugObjects') ) {
 				$echo .= '<li>' . __( 'Current theme status:', FB_WPDO_TEXTDOMAIN ) . ' ' . $theme_data['Status'] . '</li>';
 				$echo .= '<li class="alternate">' . __( 'Current theme tags:', FB_WPDO_TEXTDOMAIN ) . ' ';
 				if ( $theme_data['Tags'][0] != '' ) {
-					$echo .= join(', ', $theme_data['Tags']);
+					$echo .= join( ', ', $theme_data['Tags']);
 				} else {
 					$echo .= __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 				}
@@ -622,7 +621,7 @@ if ( !class_exists('DebugObjects') ) {
 			$echo  = '';
 			
 			//hooks
-			$echo .= "\n" . '<h4>' . __('Simple WordPress Hooks &amp; Filters Insight', FB_WPDO_TEXTDOMAIN) . '</h4>' . "\n";
+			$echo .= "\n" . '<h4>' . __( 'Simple WordPress Hooks &amp; Filters Insight', FB_WPDO_TEXTDOMAIN) . '</h4>' . "\n";
 			$echo .= "\n\n". '<ol>' . "\n";
 			$wp_hook = 0;
 			$wp_func = 0;
@@ -637,7 +636,7 @@ if ( !class_exists('DebugObjects') ) {
 				$echo .= '<ul id="li' . $wp_hook. '">' . "\n";
 				
 				foreach($arrays as $priority => $subarray) {
-					$echo .= '<li>' . __('Priority', FB_WPDO_TEXTDOMAIN ) . ' <strong>' . $priority. '</strong> : ' . "\n";
+					$echo .= '<li>' . __( 'Priority', FB_WPDO_TEXTDOMAIN ) . ' <strong>' . $priority. '</strong> : ' . "\n";
 					$echo .= '<ol>' . "\n";
 					foreach($subarray as $sub) {
 						$wp_func ++;
@@ -653,7 +652,7 @@ if ( !class_exists('DebugObjects') ) {
 									$x ++;
 									if ( !is_string($v) ) {
 										$v  = htmlentities( serialize($v) );
-										$v  = '<a href="javascript:toggle(\'serialize_' . $wp_func. $x. '\');">' . __('View data', FB_WPDO_TEXTDOMAIN ) . '</a><textarea style="display:none;" class="large-text code" id="serialize_' . $wp_func. $x. '"name="v" cols="50" rows="10">' . $v. '</textarea>';
+										$v  = '<a href="javascript:toggle(\'serialize_' . $wp_func. $x. '\' );">' . __( 'View data', FB_WPDO_TEXTDOMAIN ) . '</a><textarea style="display:none;" class="large-text code" id="serialize_' . $wp_func. $x. '"name="v" cols="50" rows="10">' . $v. '</textarea>';
 									}
 									$echo .= '<li>' . $k. ' : ' . $v. '</li>' . "\n";
 								}
@@ -695,14 +694,14 @@ if ( !class_exists('DebugObjects') ) {
 				return $output;
 			
 			if ($root_name) {
-				$output .= '<ul class="root' . ($unserialized_string ? ' unserialized' : '') . '">' . "\n";
+				$output .= '<ul class="root' . ($unserialized_string ? ' unserialized' : '' ) . '">' . "\n";
 				if ( is_object($arr) ) {
-					$output .= '<li class="vt-object"><span class="' . ($unserialized_string ? 'unserialized' : 'key') . '">' . $root_name . '</span>';
+					$output .= '<li class="vt-object"><span class="' . ($unserialized_string ? 'unserialized' : 'key' ) . '">' . $root_name . '</span>';
 					if (!$unserialized_string)
 						$output .= '<br />' . "\n";
-					$output .= '<small><em>type</em>: object (' . get_class($arr) . ')</small><br/><small><em>count</em>: ' . count( get_object_vars($arr) ) . '</small><ul>'; 
+					$output .= '<small><em>type</em>: object ( ' . get_class($arr) . ' )</small><br/><small><em>count</em>: ' . count( get_object_vars($arr) ) . '</small><ul>'; 
 				} else {
-					$output .= '<li class="vt-array"><span class="' . ($unserialized_string ? 'unserialized' : 'key') . '">' . $root_name . '</span>';
+					$output .= '<li class="vt-array"><span class="' . ($unserialized_string ? 'unserialized' : 'key' ) . '">' . $root_name . '</span>';
 					if (!$unserialized_string)
 						$output .= '<br />' . "\n";
 					$output .= '<small><em>type</em>: array</small><br/><small><em>count</em>: ' . count($arr) . '</small><ul>'; 
@@ -799,25 +798,25 @@ if ( !class_exists('DebugObjects') ) {
 		
 		
 		// return/echo
-		function get_DebugObjects($view=true) {
+		function get_debug_objects($view=true) {
 			
-			if ( !current_user_can('DebugObjects') )
+			if ( !current_user_can( 'DebugObjects' ) )
 				return;
 			
 			global $wp_filter;
 			
-			$plugins = get_option('active_plugins');
+			$plugins = get_option( 'active_plugins' );
 			$required_plugin = 'debug-queries/debug_queries.php';
 			$debug_queries_on = FALSE;
 			if ( in_array( $required_plugin , $plugins ) ) {
 				$debug_queries_on = TRUE;
-				global $DebugQueries;
+				global $debug_queries;
 			}
 			
 			$echo  = '';
 			$echo .= '<br style="clear: both;"/>';
 			$echo .= '<div id="debugobjects">' . "\n";
-			$echo .= '<h3><a href="http://bueltge.de/">Debug Objects</a> ' . __('by Frank B&uuml;ltge', FB_WPDO_TEXTDOMAIN ) . ', <a href="http://bueltge.de/">bueltge.de</a></h3>' . "\n";
+			$echo .= '<h3><a href="http://bueltge.de/">Debug Objects</a> ' . __( 'by Frank B&uuml;ltge', FB_WPDO_TEXTDOMAIN ) . ', <a href="http://bueltge.de/">bueltge.de</a></h3>' . "\n";
 			$echo .= '<p>' . __( '&raquo; Deactivate after analysis!', FB_WPDO_TEXTDOMAIN ). '</p>' . "\n";
 				
 			//echo on footer
@@ -865,7 +864,7 @@ if ( !class_exists('DebugObjects') ) {
 				
 				if ($debug_queries_on) {
 					$echo .= '<div id="queries">' . "\n";
-					$echo .= $DebugQueries->get_fbDebugQueries();
+					$echo .= $debug_queries->get_queries();
 					$echo .= '</div>' . "\n\n";
 				}
 				
@@ -884,7 +883,7 @@ if ( !class_exists('DebugObjects') ) {
 		function activate() {
 			global $wp_roles;
 			
-			$wp_roles->add_cap('administrator', 'DebugObjects');
+			$wp_roles->add_cap( 'administrator', 'DebugObjects' );
 		}
 		
 		
@@ -892,50 +891,50 @@ if ( !class_exists('DebugObjects') ) {
 		function deactivate() {
 			global $wp_roles;
 			
-			$wp_roles->remove_cap('administrator', 'DebugObjects');
+			$wp_roles->remove_cap( 'administrator', 'DebugObjects' );
 		}
 		
 		
 		// function for WP < 2.8
-		function plugins_url($path = '', $plugin = '') {
-			if ( function_exists('is_ssl') )
+		function plugins_url($path = '', $plugin = '' ) {
+			if ( function_exists( 'is_ssl' ) )
 				$scheme = ( is_ssl() ? 'https' : 'http' );
 			else
 				$scheme = 'http';
 			$url = WP_PLUGIN_URL;
-			if ( 0 === strpos($url, 'http') ) {
-				if ( function_exists('is_ssl') && is_ssl() )
+			if ( 0 === strpos($url, 'http' ) ) {
+				if ( function_exists( 'is_ssl' ) && is_ssl() )
 					$url = str_replace( 'http://', "{$scheme}://", $url );
 			}
 		
 			if ( !empty($plugin) && is_string($plugin) )
 			{
 				$folder = dirname(plugin_basename($plugin));
-				if (' . ' != $folder)
-					$url .= '/' . ltrim($folder, '/');
+				if ( ' . ' != $folder)
+					$url .= '/' . ltrim($folder, '/' );
 			}
 		
-			if ( !empty($path) && is_string($path) && strpos($path, ' .. ') === false )
-				$url .= '/' . ltrim($path, '/');
+			if ( !empty($path) && is_string($path) && strpos($path, ' .. ' ) === false )
+				$url .= '/' . ltrim($path, '/' );
 		
-			return apply_filters('plugins_url', $url, $path, $plugin);
+			return apply_filters( 'plugins_url', $url, $path, $plugin);
 		}
 		
 		
 		// echo in frontend
 		function wp_footer() {
 			
-			if ( !current_user_can('DebugObjects') )
+			if ( !current_user_can( 'DebugObjects' ) )
 				return;
 			
 			$echo  = '';
-			$echo .= $this->get_DebugObjects();
+			$echo .= $this->get_debug_objects();
 			
 			return $echo;
 		}
 	
 	} // end class
 	
-	$DebugObjects = new DebugObjects();
+	$debug_objects = new Debug_Objects();
 } // end if class exists
 ?>
