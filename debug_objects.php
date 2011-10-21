@@ -1,19 +1,19 @@
 <?php
 /**
  * @package Debug Objects
- * @author Frank B&uuml;ltge
+ * @author  Frank B&uuml;ltge
  */
  
-/*
-Plugin Name: Debug Objects
-Plugin URI: http://bueltge.de/debug-objects-wordpress-plugin/966/
-Description: List filter and action-hooks, cache data, defined constants, php and memory informations and return of conditional tags only for admins; for debug, informations or learning purposes. It is possible to include the plugin <a href="http://wordpress.org/extend/plugins/debug-queries/">Debug Queries</a>. Add to any URL of the WP-installation the string <code>?debugobjects=true</code>, so that list all informations of the plugin below the site in frontend or backend. You can set the constant <code>FB_WPDO_GET_DEBUG</code> to <code>FALSE</code> for the permanent diversion of all values.
-Version: 1.0.3
-License: GPL
-Author: Frank B&uuml;ltge
-Author URI: http://bueltge.de/
-Last Change: 23.03.2011 21:03:17
-*/
+/**
+ * Plugin Name: Debug Objects
+ * Plugin URI:  http://bueltge.de/debug-objects-wordpress-plugin/966/
+ * Description: List filter and action-hooks, cache data, defined constants, php and memory informations and return of conditional tags only for admins; for debug, informations or learning purposes. It is possible to include the plugin <a href="http://wordpress.org/extend/plugins/debug-queries/">Debug Queries</a>. Add to any URL of the WP-installation the string <code>?debugobjects=true</code>, so that list all informations of the plugin below the site in frontend or backend. You can set the constant <code>FB_WPDO_GET_DEBUG</code> to <code>FALSE</code> for the permanent diversion of all values.
+ * Version:     1.0.4
+ * License:     GPLv3
+ * Author:      Frank B&uuml;ltge
+ * Author URI:  http://bueltge.de/
+ * Last Change: 14.10.2011 14:56:02
+ */
 
 //error_reporting(E_ALL);
 
@@ -26,17 +26,17 @@ if ( !function_exists( 'add_action' ) ) {
 
 if ( function_exists( 'add_action' ) ) {
 	//WordPress definitions
-	if ( !defined( 'WP_CONTENT_URL' ) )
+	if ( ! defined( 'WP_CONTENT_URL' ) )
 		define( 'WP_CONTENT_URL', get_option( 'siteurl' ) . '/wp-content' );
-	if ( !defined( 'WP_CONTENT_DIR' ) )
+	if ( ! defined( 'WP_CONTENT_DIR' ) )
 		define( 'WP_CONTENT_DIR', ABSPATH . 'wp-content' );
-	if ( !defined( 'WP_PLUGIN_URL' ) )
+	if ( ! defined( 'WP_PLUGIN_URL' ) )
 		define( 'WP_PLUGIN_URL', WP_CONTENT_URL. '/plugins' );
-	if ( !defined( 'WP_PLUGIN_DIR' ) )
+	if ( ! defined( 'WP_PLUGIN_DIR' ) )
 		define( 'WP_PLUGIN_DIR', WP_CONTENT_DIR. '/plugins' );
-	if ( !defined( 'PLUGINDIR' ) )
+	if ( ! defined( 'PLUGINDIR' ) )
 		define( 'PLUGINDIR', 'wp-content/plugins' ); // Relative to ABSPATH.  For back compat.
-	if ( !defined( 'WP_LANG_DIR' ) )
+	if ( ! defined( 'WP_LANG_DIR' ) )
 		define( 'WP_LANG_DIR', WP_CONTENT_DIR . '/languages' );
 
 	// plugin definitions
@@ -55,16 +55,16 @@ if ( function_exists( 'add_action' ) ) {
 	// Hook on Backend
 	define( 'FB_WPDO_BACKEND', TRUE );
 	
-	if ( !defined( 'SAVEQUERIES' ) )
+	if ( ! defined( 'SAVEQUERIES' ) )
 		define( 'SAVEQUERIES', true);
 }
 
-if ( !class_exists( 'Debug_Objects' ) ) {
+if ( ! class_exists( 'Debug_Objects' ) ) {
 	
 	class Debug_Objects {
 		
 		// constructor
-		function Debug_Objects() {
+		function Debug_Objects () {
 			
 			if ( function_exists( 'register_activation_hook' ) )
 				register_activation_hook( __FILE__, array( &$this, 'activate' ) );
@@ -77,13 +77,13 @@ if ( !class_exists( 'Debug_Objects' ) ) {
 		}
 		
 		
-		function on_init() {
+		function on_init () {
 			
-			if ( !current_user_can( 'DebugObjects' ) )
+			if ( ! current_user_can( 'DebugObjects' ) )
 				return;
 			
 			if ( defined( 'FB_WPDO_GET_DEBUG' ) && FB_WPDO_GET_DEBUG ) {
-				if ( !isset($_GET['debugobjects']) || $_GET['debugobjects'] !== 'true' )
+				if ( ! isset($_GET['debugobjects']) || $_GET['debugobjects'] !== 'true' )
 					return;
 			}
 			
@@ -107,13 +107,13 @@ if ( !class_exists( 'Debug_Objects' ) ) {
 		}
 		
 		
-		function textdomain() {
+		function textdomain () {
 			
 			load_plugin_textdomain(FB_WPDO_TEXTDOMAIN, false, dirname( plugin_basename(__FILE__) ) . '/languages' );
 		}
 		
 		
-		function view_stuff() {
+		function view_stuff () {
 			global $locale;
 			
 			$plugins = get_option( 'active_plugins' );
@@ -158,63 +158,63 @@ if ( !class_exists( 'Debug_Objects' ) ) {
 				$os = __( 'Linux', FB_WPDO_TEXTDOMAIN );
 			} //Operating-System scan end
 			
-			if ( !defined( 'AUTOSAVE_INTERVAL' ) )
+			if ( ! defined( 'AUTOSAVE_INTERVAL' ) )
 				$autosave_interval = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			elseif ( !constant( 'AUTOSAVE_INTERVAL' ) )
 				$autosave_interval = __( 'OFF', FB_WPDO_TEXTDOMAIN );
 			else
 				$autosave_interval = AUTOSAVE_INTERVAL . __( 's', FB_WPDO_TEXTDOMAIN );
 			
-			if ( !defined( 'WP_POST_REVISIONS' ) )
+			if ( ! defined( 'WP_POST_REVISIONS' ) )
 				$post_revisions = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			elseif ( !constant( 'WP_POST_REVISIONS' ) )
 				$post_revisions = __( 'OFF', FB_WPDO_TEXTDOMAIN );
 			else
 				$post_revisions = WP_POST_REVISIONS;
 			
-			if ( !defined( 'SAVEQUERIES' ) )
+			if ( ! defined( 'SAVEQUERIES' ) )
 				$savequeries = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			elseif ( !constant( 'SAVEQUERIES' ) )
 				$savequeries = __( 'OFF', FB_WPDO_TEXTDOMAIN );
 			elseif ( SAVEQUERIES == 1 )
 				$savequeries = __( 'ON', FB_WPDO_TEXTDOMAIN );
 			
-			if ( !defined( 'WP_DEBUG' ) )
+			if ( ! defined( 'WP_DEBUG' ) )
 				$debug = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			elseif ( !constant( 'WP_DEBUG' ) )
 				$debug = __( 'OFF', FB_WPDO_TEXTDOMAIN );
 			elseif ( WP_DEBUG == 1 )
 				$debug = __( 'ON', FB_WPDO_TEXTDOMAIN );
 				
-			if ( !defined( 'FORCE_SSL_LOGIN' ) )
+			if ( ! defined( 'FORCE_SSL_LOGIN' ) )
 				$ssl_login = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			elseif ( !constant( 'FORCE_SSL_LOGIN' ) )
 				$ssl_login = __( 'OFF', FB_WPDO_TEXTDOMAIN );
 			elseif ( FORCE_SSL_LOGIN == 1 )
 				$ssl_login = __( 'ON', FB_WPDO_TEXTDOMAIN );
 			
-			if ( !defined( 'CONCATENATE_SCRIPTS' ) )
+			if ( ! defined( 'CONCATENATE_SCRIPTS' ) )
 				$concatenate_scripts = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			elseif ( !constant( 'CONCATENATE_SCRIPTS' ) )
 				$concatenate_scripts = __( 'OFF', FB_WPDO_TEXTDOMAIN );
 			elseif ( CONCATENATE_SCRIPTS == 1 )
 					$concatenate_scripts = __( 'ON', FB_WPDO_TEXTDOMAIN );
 			
-			if ( !defined( 'COMPRESS_SCRIPTS' ) )
+			if ( ! defined( 'COMPRESS_SCRIPTS' ) )
 				$compress_scripts = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			elseif ( !constant( 'COMPRESS_SCRIPTS' ) )
 				$compress_scripts = __( 'OFF', FB_WPDO_TEXTDOMAIN );
 			elseif ( COMPRESS_SCRIPTS == 1 )
 				$compress_scripts = __( 'ON', FB_WPDO_TEXTDOMAIN );
 			
-			if ( !defined( 'COMPRESS_CSS' ) )
+			if ( ! defined( 'COMPRESS_CSS' ) )
 				$compress_css = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			elseif ( !constant( 'COMPRESS_CSS' ) )
 				$compress_css = __( 'OFF', FB_WPDO_TEXTDOMAIN );
 			elseif ( COMPRESS_CSS == 1 )
 				$compress_css = __( 'ON', FB_WPDO_TEXTDOMAIN );
 			
-			if ( !defined( 'ENFORCE_GZIP' ) )
+			if ( ! defined( 'ENFORCE_GZIP' ) )
 				$enforce_gzip = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			elseif ( !constant( 'ENFORCE_GZIP' ) )
 				$enforce_gzip = __( 'OFF', FB_WPDO_TEXTDOMAIN );
@@ -254,27 +254,27 @@ if ( !class_exists( 'Debug_Objects' ) ) {
 			$echo .= '<li>' . __( 'Autosave interval, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>AUTOSAVE_INTERVAL</code>: ' . $autosave_interval . '</li>' . "\n";
 			$echo .= '</ul>' . "\n";
 			
-			if ( !defined( 'COOKIE_DOMAIN' ) )
+			if ( ! defined( 'COOKIE_DOMAIN' ) )
 				$cookie_domain = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$cookie_domain = COOKIE_DOMAIN;
 				
-			if ( !defined( 'COOKIEPATH' ) )
+			if ( ! defined( 'COOKIEPATH' ) )
 				$cookiepath = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$cookiepath = COOKIEPATH;
 				
-			if ( !defined( 'SITECOOKIEPATH' ) )
+			if ( ! defined( 'SITECOOKIEPATH' ) )
 				$sitecookiepath = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$sitecookiepath = SITECOOKIEPATH;
 				
-			if ( !defined( 'PLUGINS_COOKIE_PATH' ) )
+			if ( ! defined( 'PLUGINS_COOKIE_PATH' ) )
 				$plugins_cookie_path = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$plugins_cookie_path = PLUGINS_COOKIE_PATH;
 				
-			if ( !defined( 'ADMIN_COOKIE_PATH' ) )
+			if ( ! defined( 'ADMIN_COOKIE_PATH' ) )
 				$admin_cookie_path = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$admin_cookie_path = ADMIN_COOKIE_PATH;
@@ -288,12 +288,12 @@ if ( !class_exists( 'Debug_Objects' ) ) {
 			$echo .= '<li class="alternate">' . __( 'Admin cookie path, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>ADMIN_COOKIE_PATH</code>: ' . $admin_cookie_path . '</li>' . "\n";
 			$echo .= '</ul>' . "\n";
 			
-			if ( !defined( 'FS_CHMOD_FILE' ) )
+			if ( ! defined( 'FS_CHMOD_FILE' ) )
 				$fs_chmod_file = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$fs_chmod_file = FS_CHMOD_FILE;
 				
-			if ( !defined( 'FS_CHMOD_DIR' ) )
+			if ( ! defined( 'FS_CHMOD_DIR' ) )
 				$fs_chmod_dir = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$fs_chmod_dir = FS_CHMOD_DIR;
@@ -304,12 +304,12 @@ if ( !class_exists( 'Debug_Objects' ) ) {
 			$echo .= '<li>' . __( 'DIR Permissions, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>FS_CHMOD_DIR</code>: ' . $fs_chmod_dir . '</li>' . "\n";
 			$echo .= '</ul>' . "\n";
 			
-			if ( !defined( 'CUSTOM_USER_TABLE' ) )
+			if ( ! defined( 'CUSTOM_USER_TABLE' ) )
 				$custom_user_table = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$custom_user_table = CUSTOM_USER_TABLE;
 				
-			if ( !defined( 'CUSTOM_USER_META_TABLE' ) )
+			if ( ! defined( 'CUSTOM_USER_META_TABLE' ) )
 				$custom_user_meta_table = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$custom_user_meta_table = CUSTOM_USER_META_TABLE;
@@ -320,47 +320,47 @@ if ( !class_exists( 'Debug_Objects' ) ) {
 			$echo .= '<li>' . __( 'Cookie path, constant', FB_WPDO_TEXTDOMAIN ) . ' <code>CUSTOM_USER_META_TABLE</code>: ' . $custom_user_meta_table . '</li>' . "\n";
 			$echo .= '</ul>' . "\n";
 			
-			if ( !defined( 'FS_METHOD' ) )
+			if ( ! defined( 'FS_METHOD' ) )
 				$fs_method = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$fs_method = FS_METHOD;
 				
-			if ( !defined( 'FTP_BASE' ) )
+			if ( ! defined( 'FTP_BASE' ) )
 				$ftp_base = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$ftp_base = FTP_BASE;
 			
-			if ( !defined( 'FTP_CONTENT_DIR' ) )
+			if ( ! defined( 'FTP_CONTENT_DIR' ) )
 				$ftp_content_dir = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$ftp_content_dir = FTP_CONTENT_DIR;
 				
-			if ( !defined( 'FTP_PLUGIN_DIR' ) )
+			if ( ! defined( 'FTP_PLUGIN_DIR' ) )
 				$ftp_plugin_dir = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$ftp_plugin_dir = FTP_PLUGIN_DIR;
 			
-			if ( !defined( 'FTP_PUBKEY' ) )
+			if ( ! defined( 'FTP_PUBKEY' ) )
 				$ftp_pubkey = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$ftp_pubkey = FTP_PUBKEY;
 				
-			if ( !defined( 'FTP_PRIVKEY' ) )
+			if ( ! defined( 'FTP_PRIVKEY' ) )
 				$ftp_privkey = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$ftp_privkey = FTP_PRIVKEY;
 			
-			if ( !defined( 'FTP_USER' ) )
+			if ( ! defined( 'FTP_USER' ) )
 				$ftp_user = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$ftp_user = FTP_USER;
 				
-			if ( !defined( 'FTP_PASS' ) )
+			if ( ! defined( 'FTP_PASS' ) )
 				$ftp_pass = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$ftp_pass = FTP_PASS;
 			
-			if ( !defined( 'FTP_HOST' ) )
+			if ( ! defined( 'FTP_HOST' ) )
 				$ftp_host = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
 			else
 				$ftp_host = FTP_HOST;
@@ -611,11 +611,14 @@ if ( !class_exists( 'Debug_Objects' ) ) {
 		}
 		
 		
-		function view_hooks() {
+		function view_hooks () {
 			global $wp_filter;
 			
-			if (FB_WPDO_SORT_HOOKS)
-				ksort($wp_filter);
+			if ( empty( $wp_filter ) )
+				return NULL;
+			
+			if ( FB_WPDO_SORT_HOOKS )
+				ksort( $wp_filter );
 			
 			$class = '';
 			$echo  = '';
@@ -626,43 +629,68 @@ if ( !class_exists( 'Debug_Objects' ) ) {
 			$wp_hook = 0;
 			$wp_func = 0;
 			
-			foreach($wp_filter as $hook => $arrays) {
-				if (FB_WPDO_SORT_HOOKS)
+			foreach( $wp_filter as $hook => $arrays ) {
+				
+				if ( FB_WPDO_SORT_HOOKS )
 					ksort($arrays);
+				
 				$wp_hook ++;
+				
+				$hook = esc_html( $hook );
 				
 				$class = ( ' class="alternate"' == $class ) ? '' : ' class="alternate"';
 				$echo .= '<li' . $class . ' id="hook_' . $wp_hook. '" title="Hook: ' . $hook. '">' . $hook . "\n";
 				$echo .= '<ul id="li' . $wp_hook. '">' . "\n";
 				
-				foreach($arrays as $priority => $subarray) {
-					$echo .= '<li>' . __( 'Priority', FB_WPDO_TEXTDOMAIN ) . ' <strong>' . $priority. '</strong> : ' . "\n";
+				foreach( $arrays as $priority => $subarray ) {
+					$echo .= '<li>' . __( 'Priority', FB_WPDO_TEXTDOMAIN ) . ' <strong>' . $priority . '</strong>: ' . "\n";
 					$echo .= '<ol>' . "\n";
 					foreach($subarray as $sub) {
 						$wp_func ++;
 						
 						$echo .= '<li>';
 						$func = $sub['function'];
-						if ( is_object($func) ) {
-							$echo .= '<code><em>' . get_class($func[0]) . '-></em>' . $func[1] . '()</code>';
-							if ( empty($func[0]) ) {
-								$echo .= "\n". '<ul>' . "\n";
-								$x = 0;
-								foreach ($func[0] as $k=>$v) {
-									$x ++;
-									if ( !is_string($v) ) {
-										$v  = htmlentities( serialize($v) );
-										$v  = '<a href="javascript:toggle(\'serialize_' . $wp_func. $x. '\' );">' . __( 'View data', FB_WPDO_TEXTDOMAIN ) . '</a><textarea style="display:none;" class="large-text code" id="serialize_' . $wp_func. $x. '"name="v" cols="50" rows="10">' . $v. '</textarea>';
+						$args = $sub['accepted_args'];
+						if ( is_array( $func ) ) {
+							
+							if ( is_object($func[0]) ) {
+								$name  = get_class($func[0]) . ' :: ' . $func[1];
+								if ( empty($func[0]) ) {
+									$echo .= "\n". '<ul>' . "\n";
+									$x = 0;
+									foreach ( $func[0] as $k => $v ) {
+										$x ++;
+										if ( ! is_string($v) ) {
+											$v  = htmlentities( serialize($v) );
+											$v  = '<a href="javascript:toggle(\'serialize_' . $wp_func. $x. '\' );">' . __( 'View data', FB_WPDO_TEXTDOMAIN ) . '</a><textarea style="display:none;" class="large-text code" id="serialize_' . $wp_func. $x. '"name="v" cols="50" rows="10">' . $v. '</textarea>';
+										}
+										$echo .= '<li>' . $k. ' : ' . $v. '</li>' . "\n";
 									}
-									$echo .= '<li>' . $k. ' : ' . $v. '</li>' . "\n";
+									$echo .= '</ul>' . "\n";
 								}
-								$echo .= '</ul>' . "\n";
-							}
-						} else {
-							$echo .= '<code>' . $func. '()</code>';
-						}
-						$echo .= '</li>' . "\n";
+							} else {
+								$echo .= '<code>' . $func[0] . '()</code>';
+							} // end if is_object()
 						
+						} else {
+							$name  = $func;
+						} // end if is_array()
+						
+						// echo params
+					$echo .= sprintf (
+						"\t<code>%s()</code> (%s)",
+						esc_html( $name ),
+						sprintf(
+							_n(
+								__( '1 accepted argument', FB_WPDO_TEXTDOMAIN ),
+								__( '%s accepted argument', FB_WPDO_TEXTDOMAIN ),
+								$args
+							),
+							$args
+						)
+					);
+				
+						$echo .= '</li>' . "\n";
 					}
 					$echo .= '</ol>' . "\n";
 					$echo .= '</li>' . "\n";

@@ -1,9 +1,10 @@
 /* Begin Debug Objects CSS */
 div#debugobjects {
-	width: 90%;
+	position: absolute;
+	left: 1%;
+	right: 1%;
+	padding: 15px;
 	font-size: 12px; /* fix for alle themes */
-	margin: 1em auto;
-	padding: 15px 35px;
 	border: 1px solid #000;
 	background: #464646;
 	color: #fff;
@@ -19,6 +20,7 @@ div#debugobjects #memory ul, div#debugobjects #conditional_tags ul, div#debugobj
 div#debugobjects h3,div#debugobjects h3 a {
 	color: #fff;
 	background: #464646;
+	padding: 0;
 }
 
 div#debugobjects h4, div#debugobjects h4 a, .h4 {
