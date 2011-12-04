@@ -75,6 +75,8 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 			
 			add_action( 'init', array( &$this, 'on_init' ), 1 );
 			add_action( 'all',  array( $this, 'record_hook_usage' ) );
+			// small js for klick on admin bar and scroll top
+			add_action( 'admin_print_footer_scripts', array( $this, 'admin_bar_scrolltop' ) );
 		}
 		
 		
@@ -1091,6 +1093,24 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 				$first_call++;
 				$in_hook = FALSE;
 			}
+		}
+		
+		function admin_bar_scrolltop() {
+			if ( ! is_admin_bar_showing() )
+				return;
+			
+			?>
+			<script>
+			( function( $ ) {
+				$( '#wpadminbar' ).click( function() {
+					$( 'html, body' ).animate( { scrollTop: 0 }, 100 );
+				} );
+				$( '#wpadminbar li' ).click( function( e ) { 
+					e.stopPropagation(); 
+				} );
+			} )( jQuery );
+			</script>
+			<?php
 		}
 		
 		// return/echo
