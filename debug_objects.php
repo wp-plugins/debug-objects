@@ -7,12 +7,12 @@
 /**
  * Plugin Name: Debug Objects
  * Plugin URI:  http://bueltge.de/debug-objects-wordpress-plugin/966/
- * Description: List filter and action-hooks, cache data, defined constants, php and memory informations and return of conditional tags only for admins; for debug, informations or learning purposes. It is possible to include the plugin <a href="http://wordpress.org/extend/plugins/debug-queries/">Debug Queries</a>. Add to any URL of the WP-installation the string <code>?debugobjects=true</code>, so that list all informations of the plugin below the site in frontend or backend. You can set the constant <code>FB_WPDO_GET_DEBUG</code> to <code>FALSE</code> for the permanent diversion of all values.
- * Version:     1.0.4
+ * Description: List filter and action-hooks, cache data, defined constants, php and memory informations and return of conditional tags only for admins; for debug, informations or learning purposes. It is possible to include the plugin <a href="http://wordpress.org/extend/plugins/debug-queries/">Debug Queries</a>. Add to any URL of the WP-installation the string <code>?debugobjects=TRUE</code>, so that list all informations of the plugin below the site in frontend or backend. You can set the constant <code>FB_WPDO_GET_DEBUG</code> to <code>FALSE</code> for the permanent diversion of all values.
+ * Version:     1.1.0
  * License:     GPLv3
  * Author:      Frank B&uuml;ltge
  * Author URI:  http://bueltge.de/
- * Last Change: 14.10.2011 14:56:02
+ * Last Change: 01.12.2011 11:56:02
  */
 
 //error_reporting(E_ALL);
@@ -43,11 +43,14 @@ if ( function_exists( 'add_action' ) ) {
 	define( 'FB_WPDO_BASENAME', plugin_basename(__FILE__) );
 	define( 'FB_WPDO_BASEFOLDER', plugin_basename( dirname( __FILE__ ) ) );
 	define( 'FB_WPDO_TEXTDOMAIN', 'debug_objects' );
-	define( 'FB_WPDO_VIEW_IS_NOT', TRUE ); // view all conditional tags, she have not true
-	define( 'FB_WPDO_VIEW_HOOKS', TRUE );
+	define( 'FB_WPDO_VIEW_IS_NOT', TRUE ); // view all conditional tags, she have not TRUE
 	define( 'FB_WPDO_VIEW_CACHE', TRUE );
+	define( 'FB_WPDO_VIEW_HOOKS', TRUE );
+	define( 'FB_WPDO_VIEW_CONSTANTS', TRUE );
+	define( 'FB_WPDO_VIEW_HOOK_TABLE', TRUE );
+	define( 'FB_WPDO_VIEW_ENQUEUED_STUFF', TRUE );
 	
-	define( 'FB_WPDO_SORT_HOOKS', TRUE );
+	define( 'FB_WPDO_SORT_HOOKS', false );
 	// list only on get-param in url
 	define( 'FB_WPDO_GET_DEBUG', TRUE );
 	// Hook on Frontend
@@ -56,7 +59,7 @@ if ( function_exists( 'add_action' ) ) {
 	define( 'FB_WPDO_BACKEND', TRUE );
 	
 	if ( ! defined( 'SAVEQUERIES' ) )
-		define( 'SAVEQUERIES', true);
+		define( 'SAVEQUERIES', TRUE);
 }
 
 if ( ! class_exists( 'Debug_Objects' ) ) {
@@ -66,14 +69,12 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 		// constructor
 		function Debug_Objects () {
 			
-			if ( function_exists( 'register_activation_hook' ) )
-				register_activation_hook( __FILE__, array( &$this, 'activate' ) );
-			if ( function_exists( 'register_deactivation_hook' ) )
-				register_deactivation_hook( __FILE__, array( &$this, 'deactivate' ) );
-			if ( function_exists( 'register_uninstall_hook' ) )
-				register_uninstall_hook(__FILE__, array( 'Debug_Objects', 'deactivate' ) );
-				
+			register_activation_hook( __FILE__,   array( &$this, 'activate' ) );
+			register_deactivation_hook( __FILE__, array( &$this, 'deactivate' ) );
+			register_uninstall_hook(__FILE__,     array( 'Debug_Objects', 'deactivate' ) );
+			
 			add_action( 'init', array( &$this, 'on_init' ), 1 );
+			add_action( 'all',  array( $this, 'record_hook_usage' ) );
 		}
 		
 		
@@ -83,7 +84,7 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 				return;
 			
 			if ( defined( 'FB_WPDO_GET_DEBUG' ) && FB_WPDO_GET_DEBUG ) {
-				if ( ! isset($_GET['debugobjects']) || $_GET['debugobjects'] !== 'true' )
+				if ( ! isset($_GET['debugobjects']) )
 					return;
 			}
 			
@@ -109,7 +110,7 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 		
 		function textdomain () {
 			
-			load_plugin_textdomain(FB_WPDO_TEXTDOMAIN, false, dirname( plugin_basename(__FILE__) ) . '/languages' );
+			load_plugin_textdomain(FB_WPDO_TEXTDOMAIN, FALSE, dirname( plugin_basename(__FILE__) ) . '/languages' );
 		}
 		
 		
@@ -160,63 +161,63 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 			
 			if ( ! defined( 'AUTOSAVE_INTERVAL' ) )
 				$autosave_interval = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
-			elseif ( !constant( 'AUTOSAVE_INTERVAL' ) )
+			elseif ( ! constant( 'AUTOSAVE_INTERVAL' ) )
 				$autosave_interval = __( 'OFF', FB_WPDO_TEXTDOMAIN );
 			else
 				$autosave_interval = AUTOSAVE_INTERVAL . __( 's', FB_WPDO_TEXTDOMAIN );
 			
 			if ( ! defined( 'WP_POST_REVISIONS' ) )
 				$post_revisions = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
-			elseif ( !constant( 'WP_POST_REVISIONS' ) )
+			elseif ( ! constant( 'WP_POST_REVISIONS' ) )
 				$post_revisions = __( 'OFF', FB_WPDO_TEXTDOMAIN );
 			else
 				$post_revisions = WP_POST_REVISIONS;
 			
 			if ( ! defined( 'SAVEQUERIES' ) )
 				$savequeries = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
-			elseif ( !constant( 'SAVEQUERIES' ) )
+			elseif ( ! constant( 'SAVEQUERIES' ) )
 				$savequeries = __( 'OFF', FB_WPDO_TEXTDOMAIN );
 			elseif ( SAVEQUERIES == 1 )
 				$savequeries = __( 'ON', FB_WPDO_TEXTDOMAIN );
 			
 			if ( ! defined( 'WP_DEBUG' ) )
 				$debug = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
-			elseif ( !constant( 'WP_DEBUG' ) )
+			elseif ( ! constant( 'WP_DEBUG' ) )
 				$debug = __( 'OFF', FB_WPDO_TEXTDOMAIN );
 			elseif ( WP_DEBUG == 1 )
 				$debug = __( 'ON', FB_WPDO_TEXTDOMAIN );
 				
 			if ( ! defined( 'FORCE_SSL_LOGIN' ) )
 				$ssl_login = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
-			elseif ( !constant( 'FORCE_SSL_LOGIN' ) )
+			elseif ( ! constant( 'FORCE_SSL_LOGIN' ) )
 				$ssl_login = __( 'OFF', FB_WPDO_TEXTDOMAIN );
 			elseif ( FORCE_SSL_LOGIN == 1 )
 				$ssl_login = __( 'ON', FB_WPDO_TEXTDOMAIN );
 			
 			if ( ! defined( 'CONCATENATE_SCRIPTS' ) )
 				$concatenate_scripts = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
-			elseif ( !constant( 'CONCATENATE_SCRIPTS' ) )
+			elseif ( ! constant( 'CONCATENATE_SCRIPTS' ) )
 				$concatenate_scripts = __( 'OFF', FB_WPDO_TEXTDOMAIN );
 			elseif ( CONCATENATE_SCRIPTS == 1 )
 					$concatenate_scripts = __( 'ON', FB_WPDO_TEXTDOMAIN );
 			
 			if ( ! defined( 'COMPRESS_SCRIPTS' ) )
 				$compress_scripts = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
-			elseif ( !constant( 'COMPRESS_SCRIPTS' ) )
+			elseif ( ! constant( 'COMPRESS_SCRIPTS' ) )
 				$compress_scripts = __( 'OFF', FB_WPDO_TEXTDOMAIN );
 			elseif ( COMPRESS_SCRIPTS == 1 )
 				$compress_scripts = __( 'ON', FB_WPDO_TEXTDOMAIN );
 			
 			if ( ! defined( 'COMPRESS_CSS' ) )
 				$compress_css = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
-			elseif ( !constant( 'COMPRESS_CSS' ) )
+			elseif ( ! constant( 'COMPRESS_CSS' ) )
 				$compress_css = __( 'OFF', FB_WPDO_TEXTDOMAIN );
 			elseif ( COMPRESS_CSS == 1 )
 				$compress_css = __( 'ON', FB_WPDO_TEXTDOMAIN );
 			
 			if ( ! defined( 'ENFORCE_GZIP' ) )
 				$enforce_gzip = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
-			elseif ( !constant( 'ENFORCE_GZIP' ) )
+			elseif ( ! constant( 'ENFORCE_GZIP' ) )
 				$enforce_gzip = __( 'OFF', FB_WPDO_TEXTDOMAIN );
 			elseif ( ENFORCE_GZIP == 1 )
 				$enforce_gzip = __( 'ON', FB_WPDO_TEXTDOMAIN );
@@ -382,10 +383,51 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 			$echo .= '<ul>' . "\n";
 			$echo .= '<li class="alternate">' . __( 'Queries:', FB_WPDO_TEXTDOMAIN ) . ' ' . get_num_queries() . 'q';
 			if ($debug_queries_on)
-				$echo .= '<small><a href="http://wordpress.org/extend/plugins/debug-queries/">' . __( 'See more Details with my plugin', FB_WPDO_TEXTDOMAIN) . ' Debug Queries</a></small>';
+				$echo .= ' <small><a href="http://wordpress.org/extend/plugins/debug-queries/">' . __( 'See more Details with my plugin', FB_WPDO_TEXTDOMAIN) . ' Debug Queries</a></small>';
 			$echo .= '</li>' . "\n";
 			$echo .= '<li>' . __( 'Timer stop:', FB_WPDO_TEXTDOMAIN ) . ' ' . timer_stop() . 's</li>' . "\n";
 			$echo .= '</ul>' . "\n";
+			
+			// PHP_SELF
+			if ( ! isset( $_SERVER['PATH_INFO'] ) )
+				$_SERVER['PATH_INFO'] = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
+			if ( ! isset( $_SERVER['QUERY_STRING'] ) )
+				$_SERVER['QUERY_STRING'] = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
+			if ( ! isset( $_SERVER['SCRIPT_FILENAME'] ) )
+				$_SERVER['SCRIPT_FILENAME'] = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
+			if ( ! isset( $_SERVER['PHP_SELF'] ) )
+				$_SERVER['PHP_SELF'] = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
+			if ( ! isset( $_GET['error'] ) )
+				$_GET['error'] = __( 'Undefined', FB_WPDO_TEXTDOMAIN );
+			
+			$echo .= "\n" . '<h4>' . __( 'Selected server and execution environment information', FB_WPDO_TEXTDOMAIN ) . '</h4>' . "\n";
+			$echo .= '<ul>' . "\n";
+			$echo .= '<li>' . __( 'PATH_INFO:', FB_WPDO_TEXTDOMAIN ) . ' ' . $_SERVER['PATH_INFO'] . '</li>';
+			$echo .= '<li class="alternate">' . __( 'REQUEST_URI:', FB_WPDO_TEXTDOMAIN ) . ' ' . $_SERVER['REQUEST_URI'] . '</li>';
+			$echo .= '<li>' . __( 'QUERY_STRING:', FB_WPDO_TEXTDOMAIN ) . ' ' . $_SERVER['QUERY_STRING'] . '</li>';
+			$echo .= '<li class="alternate">' . __( 'SCRIPT_NAME:', FB_WPDO_TEXTDOMAIN ) . ' ' . $_SERVER['SCRIPT_NAME'] . '</li>';
+			$echo .= '<li>' . __( 'SCRIPT_FILENAME:', FB_WPDO_TEXTDOMAIN ) . ' ' . $_SERVER['SCRIPT_FILENAME'] . '</li>';
+			$echo .= '<li class="alternate">' . __( 'PHP_SELF:', FB_WPDO_TEXTDOMAIN ) . ' ' . $_SERVER['PHP_SELF'] . '</li>';
+			$echo .= '<li>' . __( 'GET Error:', FB_WPDO_TEXTDOMAIN ) . ' ' . $_GET['error'] . '</li>';
+			$echo .= '<li class="alternate">' . __( 'FILE:', FB_WPDO_TEXTDOMAIN ) . ' ' . __FILE__ . '</li>';
+			$echo .= '</ul>' . "\n";
+			
+			// Globals 
+			$echo .= "\n" . '<h4>' . __( 'HTTP GET variables', FB_WPDO_TEXTDOMAIN ) . '</h4>' . "\n";
+			$echo .= '<ul><li>' . "\n";
+			if ( ! isset( $_GET ) || empty( $_GET ) )
+				$echo .= __( 'Undefined or empty', FB_WPDO_TEXTDOMAIN );
+			else 
+				$echo .= var_export( $_GET, true );
+			$echo .= '</li></ul>' . "\n";
+			
+			$echo .= "\n" . '<h4>' . __( 'HTTP POST variables', FB_WPDO_TEXTDOMAIN ) . '</h4>' . "\n";
+			$echo .= '<ul><li>' . "\n";
+			if ( ! isset( $_POST ) || empty( $_POST ) )
+				$echo .= __( 'Undefined or empty', FB_WPDO_TEXTDOMAIN );
+			else 
+				$echo .= var_export( $_POST, true );
+			$echo .= '</li></ul>' . "\n";
 			
 			return $echo;
 		}
@@ -466,7 +508,7 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 			if ( is_singular() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_singular" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __( 'is', FB_WPDO_TEXTDOMAIN) . '</b> singular</a></li>' . "\n";
 			else $is_not .= '<li><i>' . __( 'no', FB_WPDO_TEXTDOMAIN) . '</i> singular</li>' . "\n";
 		
-			if ( is_sticky() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_sticky" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __( 'is', FB_WPDO_TEXTDOMAIN) . '</b> sticky</a></li>' . "\n";
+			if ( ! is_admin() && is_sticky() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_sticky" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __( 'is', FB_WPDO_TEXTDOMAIN) . '</b> sticky</a></li>' . "\n";
 			else $is_not .= '<li><i>' . __( 'no', FB_WPDO_TEXTDOMAIN) . '</i> sticky</li>' . "\n";
 		
 			if ( is_time() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_time" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __( 'is', FB_WPDO_TEXTDOMAIN) . '</b> time</a></li>' . "\n";
@@ -481,7 +523,7 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 			if ( is_404() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_404" title="' . __( 'Documentation in Codex', FB_WPDO_TEXTDOMAIN ) . '"><b>' . __( 'is', FB_WPDO_TEXTDOMAIN) . '</b> 404</a></li>' . "\n";
 			else $is_not .= '<li><i>' . __( 'no', FB_WPDO_TEXTDOMAIN) . '</i> 404</li>' . "\n";
 		
-			if ( FB_WPDO_VIEW_IS_NOT == ( 'TRUE' || 1) ) {
+			if ( FB_WPDO_VIEW_IS_NOT ) {
 				$is .= $is_not;
 			}
 			
@@ -492,7 +534,7 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 		
 		
 		// same as WP for check template
-		function view_template() {
+		function view_template () {
 			
 			if ( isset($template) ) {
 				if ( is_trackback() ) {
@@ -585,7 +627,7 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 				
 				$echo .= '<li>' . __( 'Current theme status:', FB_WPDO_TEXTDOMAIN ) . ' ' . $theme_data['Status'] . '</li>';
 				$echo .= '<li class="alternate">' . __( 'Current theme tags:', FB_WPDO_TEXTDOMAIN ) . ' ';
-				if ( $theme_data['Tags'][0] != '' ) {
+				if ( isset($theme_data['Tags'][0]) && $theme_data['Tags'][0] != '' ) {
 					$echo .= join( ', ', $theme_data['Tags']);
 				} else {
 					$echo .= __( 'Undefined', FB_WPDO_TEXTDOMAIN );
@@ -640,7 +682,7 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 				
 				$class = ( ' class="alternate"' == $class ) ? '' : ' class="alternate"';
 				$echo .= '<li' . $class . ' id="hook_' . $wp_hook. '" title="Hook: ' . $hook. '">' . $hook . "\n";
-				$echo .= '<ul id="li' . $wp_hook. '">' . "\n";
+				$echo .= '<ul id="li' . $wp_hook . '">' . "\n";
 				
 				foreach( $arrays as $priority => $subarray ) {
 					$echo .= '<li>' . __( 'Priority', FB_WPDO_TEXTDOMAIN ) . ' <strong>' . $priority . '</strong>: ' . "\n";
@@ -654,7 +696,7 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 						if ( is_array( $func ) ) {
 							
 							if ( is_object($func[0]) ) {
-								$name  = get_class($func[0]) . ' :: ' . $func[1];
+								$name  = get_class($func[0]) . '::' . $func[1];
 								if ( empty($func[0]) ) {
 									$echo .= "\n". '<ul>' . "\n";
 									$x = 0;
@@ -705,6 +747,103 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 			$echo .= '<p class="alternate">' . __( 'Hooks total:', FB_WPDO_TEXTDOMAIN ) . ' ' . $wp_hook . '<br />' . __( 'Register filter/actions total:', FB_WPDO_TEXTDOMAIN ) . ' ' . $wp_func . '</p>';
 			
 			return $echo;
+		}
+		
+		
+		/**
+		 * Tests if an input is valid PHP serialized string.
+		 *
+		 * Checks if a string is serialized using quick string manipulation
+		 * to throw out obviously incorrect strings. Unserialize is then run
+		 * on the string to perform the final verification.
+		 *
+		 * Valid serialized forms are the following:
+		 * <ul>
+		 * <li>boolean: <code>b:1;</code></li>
+		 * <li>integer: <code>i:1;</code></li>
+		 * <li>double: <code>d:0.2;</code></li>
+		 * <li>string: <code>s:4:"test";</code></li>
+		 * <li>array: <code>a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}</code></li>
+		 * <li>object: <code>O:8:"stdClass":0:{}</code></li>
+		 * <li>null: <code>N;</code></li>
+		 * </ul>
+		 *
+		 * @author		Chris Smith <code+php@chris.cs278.org>
+		 * @copyright	Copyright (c) 2009 Chris Smith (http://www.cs278.org/)
+		 * @license		http://sam.zoy.org/wtfpl/ WTFPL
+		 * @param		string	$value	Value to test for serialized form
+		 * @param		mixed	$result	Result of unserialize() of the $value
+		 * @return		boolean			True if $value is serialized data, otherwise FALSE
+		 */
+		function is_serialized( $value, &$result = null ) {
+			// Bit of a give away this one
+			if ( ! is_string( $value ) ) {
+				return FALSE;
+			}
+		
+			// Serialized FALSE, return TRUE. unserialize() returns FALSE on an
+			// invalid string or it could return FALSE if the string is serialized
+			// FALSE, eliminate that possibility.
+			if ( $value === 'b:0;' ) {
+				$result = FALSE;
+				return TRUE;
+			}
+		
+			$length	= strlen($value);
+			$end	= '';
+			
+			if ( isset( $value[0] ) ) {
+				switch ($value[0]) {
+					case 's':
+						if ( $value[$length - 2] !== '"' )
+							return FALSE;
+						
+					case 'b':
+					case 'i':
+					case 'd':
+						// This looks odd but it is quicker than isset()ing
+						$end .= ';';
+					case 'a':
+					case 'O':
+						$end .= '}';
+			
+						if ($value[1] !== ':')
+							return FALSE;
+			
+						switch ($value[2]) {
+							case 0:
+							case 1:
+							case 2:
+							case 3:
+							case 4:
+							case 5:
+							case 6:
+							case 7:
+							case 8:
+							case 9:
+							break;
+			
+							default:
+								return FALSE;
+						}
+					case 'N':
+						$end .= ';';
+					
+						if ( $value[$length - 1] !== $end[0] )
+							return FALSE;
+					break;
+					
+					default:
+						return FALSE;
+				}
+			}
+			
+			if ( ( $result = @unserialize($value) ) === FALSE ) {
+				$result = null;
+				return FALSE;
+			}
+			
+			return TRUE;
 		}
 		
 		
@@ -774,11 +913,20 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 						$output .= "<br/><small><em>type</em>: $vt</small><br/><small><em>value</em>: </small><span class=\"value\">$val</span></li>";
 					break;
 					case "string":
-						$obj = @unserialize( base64_decode($val) );
+						$val = trim( $val );
+						//$val = strtolower( stripslashes( $val ) );
+						//$val = base64_decode($val);
+						$val = preg_replace( '/;n;/', ';N;', $val );
+						$val = str_replace( "\n", "", $val );
+						$val = normalize_whitespace($val);
+						if ( is_serialized_string( $val ) )
+							$obj = unserialize( $val );
+						else
+							$obj = normalize_whitespace( $val );
 						$is_serialized = ($obj !== false && preg_match("/^(O:|a:)/", $val));
 						$output .= "<li class=\"vt-$vt\"><span class=\"key\">" . htmlspecialchars($key) . '</span>';
-						$output .= "<br/><small><em>type</em>: $vt | <em>size</em>: ".strlen($val). " | <em>serialized</em>: ".($is_serialized !== false?"true":"false"). '</small><br/>';
-						if ($is_serialized) {
+						$output .= "<br/><small><em>type</em>: $vt | <em>size</em>: ".strlen($val). " | <em>serialized</em>: ".(is_serialized($val) !== false?"true":"false"). '</small><br/>';
+						if ( is_serialized($val) ) {
 							$output .= $this->get_as_ul_tree($obj, "<small><em>value</em>:</small> <span class=\"value\">[unserialized]</span>", true);
 						}
 						else {
@@ -825,8 +973,128 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 		}
 		
 		
+		function view_enqueued_stuff( $handles = array() ) {
+			global $wp_scripts, $wp_styles;
+			
+			// scripts
+			foreach ( $wp_scripts -> registered as $registered )
+				$script_urls[ $registered -> handle ] = $registered -> src;
+			// styles
+			foreach ( $wp_styles -> registered as $registered )
+				$style_urls[ $registered -> handle ] = $registered -> src;
+			
+			if ( empty( $handles ) ) {
+				$handles = array_merge( $wp_scripts -> queue, $wp_styles -> queue );
+				array_values( $handles );
+			}
+			$output = '';
+			foreach ( $handles as $handle ) {
+				if ( ! empty( $script_urls[ $handle ] ) )
+					$output .= '<li>' . $script_urls[ $handle ] . '</li>';
+				if ( ! empty( $style_urls[ $handle ] ) )
+					$output .= '<li class="alternate">' . $style_urls[ $handle ] . '</li>';
+			}
+			$output = substr( $output, 0, -1 );
+			
+			return '<ul>' . $output . '</ul>';
+		}
+		
+		/*
+		 * Return Hook for current page
+		 */
+		function instrument_hooks() {
+			global $wpdb;
+			
+			$hooks = $wpdb->get_results( "SELECT * FROM wp_hook_list ORDER BY first_call" );
+			
+			$html = array();
+			$html[] = '<table>
+			<tr>
+				<th>1.Call</th>
+				<th>Hook-Name</th>
+				<th>-Type</th>
+				<th>Arguments</th>
+				<th>Called by</th>
+				<th>Line</th>
+				<th>File Name</th>
+			</tr>';
+			
+			$class = '';
+			foreach( $hooks as $hook ) {
+				$class = ( ' class="alternate"' == $class ) ? '' : ' class="alternate"';
+				if ( 30 < (int) strlen( $hook->hook_name ) )
+					$hook->hook_name = '<span title="' . $hook->hook_name . '">' . substr($hook->hook_name, 0, 30) . '</span>';
+				if ( 20 < (int) strlen( $hook->file_name ) )
+					$hook->file_name = '<span title="' . $hook->file_name . '">' . substr($hook->file_name, -20, 20) . '</span>';
+				$html[] = "<tr{$class}>
+					<td>{$hook->first_call}</td>
+					<td>{$hook->hook_name}</td>
+					<td>{$hook->hook_type}</td>
+					<td>{$hook->arg_count}</td>
+					<td>{$hook->called_by}</td>
+					<td>{$hook->line_num}</td>
+					<td>{$hook->file_name}</td>
+				</tr>";
+			}
+			$html[] = '</table>';
+			
+			return implode( "\n", $html );
+		}
+		
+		/**
+		 * Save Hooks in custom table
+		 */
+		function record_hook_usage( $hook ) {
+			global $wpdb;
+			
+			static $in_hook = FALSE;
+			static $first_call = 1;
+			static $doc_root;
+			$callstack = debug_backtrace();
+			if ( ! $in_hook ) {
+				$in_hook = TRUE;
+				if ( 1 == $first_call ) {
+					$doc_root = esc_attr( $_SERVER['DOCUMENT_ROOT'] );
+					$results = $wpdb->get_results("SHOW TABLE STATUS LIKE 'wp_hook_list'");
+					if ( 1 == count($results) ) {
+						$wpdb->query("TRUNCATE TABLE wp_hook_list");
+					} else {
+						$wpdb->query("CREATE TABLE wp_hook_list (
+						called_by varchar(96) NOT NULL,
+						hook_name varchar(96) NOT NULL,
+						hook_type varchar(15) NOT NULL,
+						first_call int(11) NOT NULL,
+						arg_count tinyint(4) NOT NULL,
+						file_name varchar(128) NOT NULL,
+						line_num smallint NOT NULL,
+						PRIMARY KEY (first_call,hook_name))"
+						);
+					}
+				}
+				$args = func_get_args();
+				$arg_count = count($args) - 1;
+				$hook_type = str_replace('do_','',
+					str_replace(
+						'apply_filters','filter',
+						str_replace( '_ref_array', '[]', $callstack[3]['function'] )
+					)
+				);
+				$file_name = addslashes( str_replace( $doc_root, '', $callstack[3]['file'] ) );
+				$line_num  = $callstack[3]['line'];
+				if ( ! isset( $callstack[4] ) )
+					$called_by = __( 'Undefinded', FB_WPDO_TEXTDOMAIN );
+				else
+					$called_by = $callstack[4]['function'] . '()';
+				$wpdb->query("INSERT wp_hook_list
+					(first_call,called_by,hook_name,hook_type,arg_count,file_name,line_num)
+					VALUES ($first_call,'$called_by','$hook','$hook_type',$arg_count,'$file_name',$line_num)");
+				$first_call++;
+				$in_hook = FALSE;
+			}
+		}
+		
 		// return/echo
-		function get_debug_objects($view=true) {
+		function get_debug_objects($view=TRUE) {
 			
 			if ( !current_user_can( 'DebugObjects' ) )
 				return;
@@ -845,62 +1113,80 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 			$echo .= '<br style="clear: both;"/>';
 			$echo .= '<div id="debugobjects">' . "\n";
 			$echo .= '<h3><a href="http://bueltge.de/">Debug Objects</a> ' . __( 'by Frank B&uuml;ltge', FB_WPDO_TEXTDOMAIN ) . ', <a href="http://bueltge.de/">bueltge.de</a></h3>' . "\n";
-			$echo .= '<p>' . __( '&raquo; Deactivate after analysis!', FB_WPDO_TEXTDOMAIN ). '</p>' . "\n";
-				
+			
 			//echo on footer
 			$echo .= '<div id="debugobjectstabs">' . "\n";
-				$echo .= '<ul>' . "\n";
-				$echo .= '	<li><a href="#memory">' . __( 'PHP, Memory &amp; WordPress', FB_WPDO_TEXTDOMAIN ) . '</a></li>' . "\n";
-				$echo .= '	<li><a href="#conditional_tags">' . __( 'Conditional Tags', FB_WPDO_TEXTDOMAIN ) . '</a></li>' . "\n";
-				$echo .= '	<li><a href="#template">' . __( 'Theme &amp; Template', FB_WPDO_TEXTDOMAIN ) . '</a></li>' . "\n";
-				if (FB_WPDO_VIEW_CACHE)
-					$echo .= '	<li><a href="#cache">' . __( 'Cache', FB_WPDO_TEXTDOMAIN ) . '</a></li>' . "\n";
-				if (FB_WPDO_VIEW_HOOKS)
-					$echo .= '	<li><a href="#hooks">' . __( 'Hooks &amp; Filter', FB_WPDO_TEXTDOMAIN ) . '</a></li>' . "\n";
+			$echo .= '<ul>' . "\n";
+			$echo .= '	<li><a href="#memory">' . __( 'PHP, Globals &amp; WP', FB_WPDO_TEXTDOMAIN ) . '</a></li>' . "\n";
+			$echo .= '	<li><a href="#conditional_tags">' . __( 'Conditional Tags', FB_WPDO_TEXTDOMAIN ) . '</a></li>' . "\n";
+			$echo .= '	<li><a href="#template">' . __( 'Theme &amp; Template', FB_WPDO_TEXTDOMAIN ) . '</a></li>' . "\n";
+			if ( FB_WPDO_VIEW_CACHE )
+				$echo .= '	<li><a href="#cache">' . __( 'Cache', FB_WPDO_TEXTDOMAIN ) . '</a></li>' . "\n";
+			if ( FB_WPDO_VIEW_HOOKS )
+				$echo .= '	<li><a href="#hooks">' . __( 'Hooks &amp; Filter', FB_WPDO_TEXTDOMAIN ) . '</a></li>' . "\n";
+			if ( FB_WPDO_VIEW_CONSTANTS )
 				$echo .= '	<li><a href="#constants">' . __( 'Constants', FB_WPDO_TEXTDOMAIN ) . '</a></li>' . "\n";
-				if ($debug_queries_on)
-					$echo .= '	<li><a href="#queries">' . __( 'Queries', FB_WPDO_TEXTDOMAIN ) . '</a></li>' . "\n";
-				$echo .= '</ul>' . "\n";
+			if ( FB_WPDO_VIEW_ENQUEUED_STUFF )
+				$echo .= '	<li><a href="#enqueue">' . __( 'Enqueued Stuff', FB_WPDO_TEXTDOMAIN ) . '</a></li>' . "\n";
+			if ( FB_WPDO_VIEW_HOOK_TABLE )
+				$echo .= '	<li><a href="#hook_table">' . __( 'Page Hooks', FB_WPDO_TEXTDOMAIN ) . '</a></li>' . "\n";
+			if ( $debug_queries_on )
+				$echo .= '	<li><a href="#queries">' . __( 'Queries', FB_WPDO_TEXTDOMAIN ) . '</a></li>' . "\n";
+			$echo .= '</ul>' . "\n";
 			
-				$echo .= '<div id="memory">' . "\n";
-				$echo .= $this->view_stuff();
+			$echo .= '<div id="memory">' . "\n";
+			$echo .= $this->view_stuff();
+			$echo .= '</div>' . "\n\n";
+			
+			$echo .= '<div id="conditional_tags">' . "\n";
+			$echo .= $this->view_conditional_tags();
+			$echo .= '</div>' . "\n\n";
+			
+			$echo .= '<div id="template">' . "\n";
+			$echo .= $this->view_template();
+			$echo .= '</div>' . "\n\n";
+			
+			if ( FB_WPDO_VIEW_CACHE ) {
+				$echo .= '<div id="cache">' . "\n";
+				$echo .= $this->view_cache();
 				$echo .= '</div>' . "\n\n";
-				
-				$echo .= '<div id="conditional_tags">' . "\n";
-				$echo .= $this->view_conditional_tags();
+			}
+			
+			if ( FB_WPDO_VIEW_HOOKS ) {
+				$echo .= '<div id="hooks">' . "\n";
+				$echo .= $this->view_hooks();
 				$echo .= '</div>' . "\n\n";
-				
-				$echo .= '<div id="template">' . "\n";
-				$echo .= $this->view_template();
-				$echo .= '</div>' . "\n\n";
-				
-				if (FB_WPDO_VIEW_CACHE) {
-					$echo .= '<div id="cache">' . "\n";
-					$echo .= $this->view_cache();
-					$echo .= '</div>' . "\n\n";
-				}
-				
-				if (FB_WPDO_VIEW_HOOKS) {
-					$echo .= '<div id="hooks">' . "\n";
-					$echo .= $this->view_hooks();
-					$echo .= '</div>' . "\n\n";
-				}
-				
+			}
+			
+			if ( FB_WPDO_VIEW_CONSTANTS ) {
 				$echo .= '<div id="constants">' . "\n";
 				$echo .= $this->view_def_constants();
 				$echo .= '</div>' . "\n\n";
-				
-				if ($debug_queries_on) {
-					$echo .= '<div id="queries">' . "\n";
-					$echo .= $debug_queries->get_queries();
-					$echo .= '</div>' . "\n\n";
-				}
+			}
+			
+			if ( FB_WPDO_VIEW_ENQUEUED_STUFF ) {
+				$echo .= '<div id="enqueue">' . "\n";
+				$echo .= $this->view_enqueued_stuff();
+				$echo .= '</div>' . "\n\n";
+			}
+			
+			if ( FB_WPDO_VIEW_HOOK_TABLE ) {
+				$echo .= '<div id="hook_table">' . "\n";
+				$echo .= $this->instrument_hooks();
+				$echo .= '</div>' . "\n\n";
+			}
+			
+			if ( $debug_queries_on ) {
+				$echo .= '<div id="queries">' . "\n";
+				$echo .= $debug_queries->get_queries();
+				$echo .= '</div>' . "\n\n";
+			}
 				
 			$echo .= '</div>' . "\n\n";
 				
 			$echo .= '</div>' . "\n";
 			
-			if ($view)
+			if ( $view )
 				echo $echo;
 			else
 				return $echo;
@@ -917,14 +1203,17 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 		
 		// delete user rights
 		function deactivate() {
-			global $wp_roles;
+			global $wp_roles, $wpdb;;
 			
 			$wp_roles->remove_cap( 'administrator', 'DebugObjects' );
+			// remove hook table
+			$table = $wpdb->prefix . 'hook_list';
+			$wpdb->query( "DROP TABLE IF EXISTS $table" );
 		}
 		
 		
 		// function for WP < 2.8
-		function plugins_url($path = '', $plugin = '' ) {
+		function plugins_url( $path = '', $plugin = '' ) {
 			if ( function_exists( 'is_ssl' ) )
 				$scheme = ( is_ssl() ? 'https' : 'http' );
 			else
@@ -935,14 +1224,13 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 					$url = str_replace( 'http://', "{$scheme}://", $url );
 			}
 		
-			if ( !empty($plugin) && is_string($plugin) )
-			{
+			if ( !empty($plugin) && is_string($plugin) ) {
 				$folder = dirname(plugin_basename($plugin));
 				if ( ' . ' != $folder)
 					$url .= '/' . ltrim($folder, '/' );
 			}
 		
-			if ( !empty($path) && is_string($path) && strpos($path, ' .. ' ) === false )
+			if ( !empty($path) && is_string($path) && strpos($path, ' .. ' ) === FALSE )
 				$url .= '/' . ltrim($path, '/' );
 		
 			return apply_filters( 'plugins_url', $url, $path, $plugin);
