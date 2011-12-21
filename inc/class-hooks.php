@@ -9,7 +9,7 @@
  */
 
 if ( ! class_exists( 'Debug_Objects_Hooks' ) ) {
-	add_action( 'admin_init', array( 'Debug_Objects_Hooks', 'init' ) );
+	//add_action( 'admin_init', array( 'Debug_Objects_Hooks', 'init' ) );
 	
 	class Debug_Objects_Hooks extends Debug_Objects {
 		

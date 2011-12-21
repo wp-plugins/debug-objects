@@ -15,9 +15,16 @@ div#debugobjectstabs, .ui-corner-all {
 	border-radius: 3px;
 }
 
-div#debugobjects #memory ul, div#debugobjects #conditional_tags ul, div#debugobjects #hooks ul, div#debugobjects #template ul, div#debugobjects #cache ul, div#debugobjects #constants ul {
+div#debugobjects #memory ul, div#debugobjects #conditional_tags ul, 
+div#debugobjects #hooks ul, div#debugobjects #template ul, 
+div#debugobjects #cache ul, div#debugobjects #constants ul,
+div#debugobjects #queries ul {
 	list-style-type: disc;
-	padding: 0 1em;
+}
+
+div#debugobjects #constants ul li,
+div#debugobjects #queries ul {
+	padding: 10px;
 }
 
 div#debugobjects h4, div#debugobjects h4 a, .h4 {
@@ -33,7 +40,7 @@ div#debugobjects #memory li a, div#debugobjects #conditional_tags li a, div#debu
 
 div#debugobjects #memory li a:hover, div#debugobjects #conditional_tags li a:hover, div#debugobjects #hooks li a:hover, div#debugobjects #template li a:hover {
 	color: #fff;
-	background: #114477
+	background: #114477;
 	text-decoration: none;
 }
 

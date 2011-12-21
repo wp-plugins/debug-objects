@@ -9,12 +9,12 @@
  * Plugin URI:  http://bueltge.de/debug-objects-wordpress-plugin/966/
  * Text Domain: debug_objects
  * Domain Path: /languages
- * Description: List filter and action-hooks, cache data, defined constants, php and memory informations and return of conditional tags only for admins; for debug, informations or learning purposes. It is possible to include the plugin <a href="http://wordpress.org/extend/plugins/debug-queries/">Debug Queries</a>. Add to any URL of the WP-installation the string <code>?debugobjects=TRUE</code>, so that list all informations of the plugin below the site in frontend or backend. You can set the constant <code>FB_WPDO_GET_DEBUG</code> to <code>FALSE</code> for the permanent diversion of all values.
+ * Description: List filter and action-hooks, cache data, defined constants, qieries, included scripts and styles, php and memory informations and return of conditional tags only for admins; for debug, informations or learning purposes.
  * Version:     2.0.0
  * License:     GPLv3
  * Author:      Frank B&uuml;ltge
  * Author URI:  http://bueltge.de/
- * Last Change: 01.12.2011 11:56:02
+ * Last Change: 19.12.2011 11:56:02
  */
 
 //error_reporting(E_ALL);
@@ -25,10 +25,34 @@
 if ( ! class_exists( 'Debug_Objects' ) ) {
 	
 	// include plugin on hook
-	add_action( 'plugins_loaded',       array( 'Debug_Objects', 'init' ) );
+	add_action( 'plugins_loaded',       array( 'Debug_Objects', 'get_object' ) );
 	register_activation_hook( __FILE__, array( 'Debug_Objects', 'on_activation' ) );
 	
 	class Debug_Objects {
+		
+		static private $classobj = NULL;
+		
+		public static $tabs = array();
+		
+		public static $option_string = 'debug_objects';
+		
+		static private $plugin;
+		
+		/**
+		 * Handler for the action 'init'. Instantiates this class.
+		 * 
+		 * @access  public
+		 * @since   2.0.0
+		 * @return  $classobj
+		 */
+		public function get_object() {
+			
+			if ( NULL === self :: $classobj ) {
+				self :: $classobj = new self;
+			}
+			
+			return self :: $classobj;
+		}
 		
 		/**
 		 * Init other methods via hook; install settings and capabilities
@@ -36,32 +60,58 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 		 * @since   2.0.0
 		 * @return  void
 		 */
-		public static function init() {
+		public function __construct() {
 			
 			// add and remove settings, the table for the plugin
+			
+			self :: $plugin = plugin_basename( __FILE__ );
 			
 			register_deactivation_hook( __FILE__, array( __CLASS__, 'on_deactivation' ) );
 			register_uninstall_hook( __FILE__,    array( 'Debug_Objects', 'on_deactivation' ) );
 			
-			// include features for the plugin or backend of WP
-			require_once dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'inc/class-features.php';
-			// include wrapper for content; markup and hooks
-			require_once dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'inc/class-page_wrapper.php';
+			// Include settings
+			require_once dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'inc/class-settings.php';
 			
-			// include different stuff, example php, globals wp-stuff
-			require_once dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'inc/class-php_wp_globals.php';
-			// includes defined constants
-			require_once dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'inc/class-constants.php';
-			// include cache
-			require_once dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'inc/class-cache.php';
-			// include template tags
-			require_once dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'inc/class-conditional_tags.php';
-			// include instrument hooks
-			//require_once dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'inc/class-page_hook.php';
-			// include list to view all enqueued scripts and styles
-			require_once dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'inc/class-enqueued_stuff.php';
-			// include list of hooks
-			require_once dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'inc/class-hooks.php';
+			self :: init_classes();
+		}
+		
+		public function init_classes() {
+			
+			if ( is_multisite() && is_plugin_active_for_network( plugin_basename( __FILE__ ) ) )
+				$options = get_site_option( self :: $option_string );
+			else
+				$options = get_option( self :: $option_string );
+			/*
+			$default = array(
+				//'Settings',         // Settings
+				'Wrap',             // Wrapper for content
+				'Feature',          // usefull features
+				'Php',              // php, WordPress, globals and more
+				'Conditional_Tags', // conditional tags
+				//'Constants',        // All active Constants
+				'Enqueue_Stuff',    // Scripts and styles
+				//'Hooks',            // Hooks
+				//'Page_Hooks',     // Hook Instrument for active page
+				//'Query',            // WP Queries
+				//'Cache',            // WP Cache
+				'About',            // about plugin
+			);
+			*/
+			
+			$by_settings = array( 'Wrap' );
+			if ( ! empty( $options ) ) {
+				foreach ( $options as $class => $check ) {
+					if ( '1' === $check )
+						$by_settings[] = ucwords( $class );
+				}
+			}
+			$classes = apply_filters( 'debug_objects_classes', $by_settings );
+			//var_dump($classes);
+			foreach ( $classes as $key => $require )
+				require_once dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'inc/class-' . strtolower( $require ) . '.php';
+			
+			foreach ( $classes as $class )
+				add_action( 'admin_init', array( 'Debug_Objects_' . $class, 'init' ) );
 		}
 		
 		/**
@@ -87,6 +137,11 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 				return $plugin_value;
 		}
 		
+		public function get_plugin_string() {
+			
+			return self :: $plugin;
+		}
+		
 		/**
 		 * Add user rights and the db-table
 		 * 
@@ -94,6 +149,8 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 		 * @return  void
 		 */
 		public static function on_activation() {
+			
+			add_option( self :: $option_string, array( 'feature' => '1', 'php' => '1', 'hooks' => '1', 'about' => '1' ) );
 			
 			$GLOBALS['wp_roles'] -> add_cap( 'administrator', '_debug_objects' );
 			// add table
@@ -118,6 +175,9 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 		 * @return  void
 		 */
 		public static function on_deactivation() {
+			
+			unregister_setting( self :: $option_string . '_group', self :: $option_string );
+			delete_option( self :: $option_string );
 			
 			$GLOBALS['wp_roles'] -> remove_cap( 'administrator', '_debug_objects' );
 			// remove hook table

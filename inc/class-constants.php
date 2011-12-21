@@ -9,7 +9,7 @@
  */
 
 if ( ! class_exists( 'Debug_Objects_Constants' ) ) {
-	add_action( 'admin_init', array( 'Debug_Objects_Constants', 'init' ) );
+	//add_action( 'admin_init', array( 'Debug_Objects_Constants', 'init' ) );
 	
 	class Debug_Objects_Constants extends Debug_Objects {
 		
