@@ -87,7 +87,10 @@ The plugin comes with various translations, please refer to the [WordPress Codex
 
 
 == Changelog ==
-= v1.1.0 (12/04/2011)=
+= 2.0.0 =
+* current under development; but you can test and use it
+
+= v1.1.0 (12/04/2011) =
 * Add Hooks of current page
 * Add list of all enqueued scripts and stylesheets
 * different changes on source
@@ -99,7 +102,7 @@ The plugin comes with various translations, please refer to the [WordPress Codex
 * small changes fpr WP Codex and notice of WP 3.1
 * Add bulgarian translation
 
-= v1.0.2 (03/06/2011))=
+= v1.0.2 (03/06/2011)) =
 * small fix on 2 php notice
 * change the description of plugins
 * add new language file for german users
