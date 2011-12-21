@@ -5,11 +5,11 @@ Tags: debug, sql, analyse, tuning, performance, database, queries, query, php,
 Requires at least: 2.7
 Tested up to: 3.3
 Stable tag: 1.1.0
-The Plugin Debug Objects provides the user, which has the appropriate rights, normally the administrator, a large number of information. Values and content get displayed at the frontend of the blog, to analyze errors but also to better understand WordPress.
 
+The Plugin Debug Objects provides a large number of information: query, cache, constants, hooks, functions and many more.
 
 == Description ==
-The Plugin Debug Objects provides the user, which has the appropriate rights, normally the administrator, a large number of information. Values and content get displayed at the frontend of the blog, to analyze errors but also to better understand WordPress.
+The Plugin Debug Objects provides the user, which has the appropriate rights, normally the administrator, a large number of information: query, cache, constants, hooks, functions and many more. Values and content get displayed at the frontend and backend of the blog, to analyze errors but also to better understand and develop with/for WordPress.
 
 = Important for use =
 Add to any URL of the WP-installation the string `?debugobjects=true`, so that list all informations of the plugin below the site in frontend or backend.
@@ -48,13 +48,6 @@ define( 'FB_WPDO_FRONTEND', TRUE );`
 `// Hook on Backend
 define( 'FB_WPDO_BACKEND', TRUE );`
 
-= Localizations =
-* Thanks for belorussion translation to [Marcis G.](http://pc.de/ "pc.de")
-* Thanks for japanese translation to [Fumito Mizuno](http://ounziw.com/ "Standing on the Shoulder of Linus")
-* Thanks for hindi translation to[Alois M&auml;nner](http://www.nautilus-one.at "http://www.nautilus-one.at")
-* Thanks for dutch translation to [Renè](http://wpwebshop.com/premium-wordpress-themes/ "WP webshop")
-* Thanks for bulgarian language files to [Web Geek](http://webhostinggeeks.com/)
-
 = More Plugins = 
 Please see also my [Premium Plugins](http://wpplugins.com/author/malo.conny/). Maybe you find an solution for your requirement.
 
@@ -85,6 +78,12 @@ Good news, this plugin is free for everyone! Since it's released under the GPL, 
 = Translations =
 The plugin comes with various translations, please refer to the [WordPress Codex](http://codex.wordpress.org/Installing_WordPress_in_Your_Language "Installing WordPress in Your Language") for more information about activating the translation. If you want to help to translate the plugin to your language, please have a look at the .pot file which contains all defintions and may be used with a [gettext](http://www.gnu.org/software/gettext/) editor like [Poedit](http://www.poedit.net/) (Windows).
 
+= Localizations =
+* Thanks for belorussion translation to [Marcis G.](http://pc.de/ "pc.de")
+* Thanks for japanese translation to [Fumito Mizuno](http://ounziw.com/ "Standing on the Shoulder of Linus")
+* Thanks for hindi translation to [Alois M&auml;nner](http://www.nautilus-one.at "http://www.nautilus-one.at")
+* Thanks for dutch translation to [Renè](http://wpwebshop.com/premium-wordpress-themes/ "WP webshop")
+* Thanks for bulgarian language files to [Web Geek](http://webhostinggeeks.com/)
 
 == Changelog ==
 = 2.0.0 =
@@ -124,8 +123,3 @@ The plugin comes with various translations, please refer to the [WordPress Codex
 
 = v0.1 (30/06/2009) =
 * Write a Plugin based on my ideas and my many help files
-
-
-== Frequently Asked Questions ==
-= I love this plugin! How can I show the developer how much I appreciate his work? =
-Please visit [my website](http://bueltge.de/ "bueltge.de") and let him know your care or see the [wishlist](http://bueltge.de/wunschliste/ "Wishlist") of the author or use the donate form.
