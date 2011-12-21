@@ -53,6 +53,7 @@ define( 'FB_WPDO_BACKEND', TRUE );`
 * Thanks for japanese translation to [Fumito Mizuno](http://ounziw.com/ "Standing on the Shoulder of Linus")
 * Thanks for hindi translation to[Alois M&auml;nner](http://www.nautilus-one.at "http://www.nautilus-one.at")
 * Thanks for dutch translation to [Renè](http://wpwebshop.com/premium-wordpress-themes/ "WP webshop")
+* Thanks for bulgarian language files to [Web Geek](http://webhostinggeeks.com/)
 
 = More Plugins = 
 Please see also my [Premium Plugins](http://wpplugins.com/author/malo.conny/). Maybe you find an solution for your requirement.
@@ -74,7 +75,7 @@ You may also be interested in WordPress tips and tricks at [WP Engineer](http://
 
 
 == Screenshots ==
-1. Example Screenshot (Version 2.0.0, WordPress 3.3)
+1. Example Screenshot (WordPress 3.3)
 
 
 == Other Notes ==
@@ -89,11 +90,19 @@ The plugin comes with various translations, please refer to the [WordPress Codex
 = 2.0.0 =
 * current under development; but you can test and use it
 
+= v1.1.0 (12/04/2011) =
+* Add Hooks of current page
+* Add list of all enqueued scripts and stylesheets
+* different changes on source
+* add more globals on first tab
+* test in WP 3.3RC1
+ 
 = v1.0.3 (03/23/2011) =
 * changes for the plugin Debug Queries
 * small changes fpr WP Codex and notice of WP 3.1
+* Add bulgarian translation
 
-= v1.0.2 (03/06/2011))=
+= v1.0.2 (03/06/2011)) =
 * small fix on 2 php notice
 * change the description of plugins
 * add new language file for german users
