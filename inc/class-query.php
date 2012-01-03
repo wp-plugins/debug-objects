@@ -130,7 +130,7 @@ if ( ! class_exists( 'Debug_Objects_Query' ) ) {
 			$debug_queries .= '<li><strong>' . __( 'Total query time:', parent :: get_plugin_data() ) . ' ' 
 				. number_format_i18n( sprintf('%0.1f', $total_query_time * 1000), 1 ) 
 				. __( 'ms for' ) . ' ' . count($wpdb->queries) . ' ' . __( 'queries (', parent :: get_plugin_data() ) 
-				. number_format_i18n( $total_query_time, 15 ) . __( 's), ', parent :: get_plugin_data() ). '</strong></li>';
+				. number_format_i18n( $total_query_time, 15 ) . __( 's) ', parent :: get_plugin_data() ). '</strong></li>';
 			if ( count($wpdb->queries) != get_num_queries() ) {
 				$debug_queries .= '<li><strong>' . __( 'Total num_query time:', parent :: get_plugin_data() ) . ' ' 
 					. timer_stop() . ' ' . __( 'for' ) . ' ' . get_num_queries() . ' ' 
@@ -145,9 +145,9 @@ if ( ! class_exists( 'Debug_Objects_Query' ) ) {
 					. ' <code>wp-config.php</code></li>' . "\n";
 			if ( 0 < $total_time )
 				$debug_queries .= '<li>' . __( 'Page generated in', parent :: get_plugin_data() ). ' ' 
-					. number_format_i18n( sprintf('%0.1f', $total_time * 1000), 1 ) . __( 'ms, (', parent :: get_plugin_data() ) 
-					. number_format_i18n( $total_time, 15 ) . __( 's), ', parent :: get_plugin_data() )
-					. $phpper . __( '% PHP', parent :: get_plugin_data() ) . ', ' . $mysqlper 
+					. number_format_i18n( sprintf('%0.1f', $total_time * 1000), 1 ) . __( 'ms; (', parent :: get_plugin_data() ) 
+					. $total_time . __( 's); ', parent :: get_plugin_data() )
+					. $phpper . __( '% PHP', parent :: get_plugin_data() ) . '; ' . $mysqlper 
 					. __( '% MySQL', parent :: get_plugin_data() ) . '</li>' . "\n";
 			$debug_queries .= '</ul>' . "\n";
 			

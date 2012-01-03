@@ -51,9 +51,6 @@ if ( ! class_exists( 'Debug_Objects_Settings' ) ) {
 		 */
 		public function __construct() {
 			
-			if ( ! is_admin() )
-				return NULL;
-			
 			// textdomain from parent class
 			self :: $textdomain    = parent :: get_plugin_data();
 			self :: $option_string = parent :: $option_string;
@@ -162,6 +159,16 @@ if ( ! class_exists( 'Debug_Objects_Settings' ) ) {
 			}
 		}
 		
+		public function return_options() {
+			
+			if ( is_multisite() && is_plugin_active_for_network( plugin_basename( __FILE__ ) ) )
+				$options = get_site_option( self :: $option_string );
+			else
+				$options = get_option( self :: $option_string );
+			
+			return $options;
+		}
+		
 		/**
 		 * Return form and markup on settings page
 		 * 
@@ -182,24 +189,17 @@ if ( ! class_exists( 'Debug_Objects_Settings' ) ) {
 					$action = 'options.php';
 				?>
 				<form method="post" action="<?php echo $action; ?>">
-					<?php
-					settings_fields( self :: $option_string . '_group' );
+					<?php settings_fields( self :: $option_string . '_group' ); ?>
 					
-					if ( is_multisite() && is_plugin_active_for_network( plugin_basename( __FILE__ ) ) )
-						$options = get_site_option( self :: $option_string );
-					else
-						$options = get_option( self :: $option_string );
-					?>
-					
-					<div class="metabox-holder has-right-sidebar">
+					<div id="poststuff" class="metabox-holder has-right-sidebar">
 						
 						<div class="inner-sidebar">
-							<?php do_action( 'debug_objects_settings_page_sidebar', $options ); ?>
+							<?php do_action( 'debug_objects_settings_page_sidebar', self :: return_options() ); ?>
 						</div> <!-- .inner-sidebar -->
 						
 						<div id="post-body">
 							<div id="post-body-content">
-								<?php do_action( 'debug_objects_settings_page', $options ); ?>
+								<?php do_action( 'debug_objects_settings_page', self :: return_options() ); ?>
 							</div> <!-- #post-body-content -->
 						</div> <!-- #post-body -->
 						
@@ -220,12 +220,14 @@ if ( ! class_exists( 'Debug_Objects_Settings' ) ) {
 			<table class="form-table">
 				<?php
 				$defaults = array(
-					'Feature'          => __( 'Usefull functions & helper (1. click on Admin Bar = scroll up)', self :: get_textdomain() ),
+					'Backend'          => __( 'Output in WordPress Admin Footer', self :: get_textdomain() ),
+					'Frontend'         => __( 'Output in Footer of Frontend', self :: get_textdomain() ),
 					'Php'              => __( 'PHP, WordPress and global Stuff', self :: get_textdomain() ),// php, WordPress, globals and more
 					'Conditional_Tags' => __( 'Conditional Tags', self :: get_textdomain() ), // conditional tags
 					'Constants'        => __( 'All Constants', self :: get_textdomain() ),// All active Constants
 					'Enqueue_Stuff'    => __( 'Introduced scripts and stylesheets', self :: get_textdomain() ),// Scripts and styles
-					'Hooks'            => __( 'List existing Hooks and assigned functions', self :: get_textdomain() ),// Hooks
+					'Debug_Hooks'      => __( 'List existing Hooks and assigned functions and count of accepted args', self :: get_textdomain() ), // Hooks, faster
+					/*'Hooks'            => __( 'List existing Hooks and assigned functions', self :: get_textdomain() ),// Hooks */
 					'Page_Hooks'       => __( 'Hooks of current page, very slow and use many RAM', self :: get_textdomain() ),// Hook Instrument for active page
 					'Query'            => __( 'Contents of Query', self :: get_textdomain() ),// WP Queries
 					'Cache'            => __( 'Contents of Cache', self :: get_textdomain() ),// WP Cache
@@ -329,7 +331,7 @@ if ( ! class_exists( 'Debug_Objects_Settings' ) ) {
 		}
 		
 		/*
-		 * Retrun string vor update message
+		 * Retrun string before update message
 		 * 
 		 * @uses   
 		 * @access public
@@ -383,7 +385,7 @@ if ( ! class_exists( 'Debug_Objects_Settings' ) ) {
 		public function register_settings() {
 			
 			register_setting( self :: $option_string . '_group', self :: $option_string, array( __CLASS__, 'validate_settings' ) );
-			add_option( self :: $option_string, array( 'feature' => '1', 'php' => '1', 'hooks' => '1', 'about' => '1' ) );
+			add_option( self :: $option_string, array( 'php' => '1', 'debug_hooks' => '1', 'about' => '1' ) );
 		}
 		
 		/**

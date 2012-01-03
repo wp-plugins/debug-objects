@@ -38,6 +38,10 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 		
 		static private $plugin;
 		
+		public static $by_settings = array( 'Wrap' );
+		
+		public static $exclude_class = array( 'Backend', 'Frontend' );
+		
 		/**
 		 * Handler for the action 'init'. Instantiates this class.
 		 * 
@@ -81,46 +85,33 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 				$options = get_site_option( self :: $option_string );
 			else
 				$options = get_option( self :: $option_string );
-			/*
-			$default = array(
-				//'Settings',         // Settings
-				'Wrap',             // Wrapper for content
-				'Feature',          // usefull features
-				'Php',              // php, WordPress, globals and more
-				'Conditional_Tags', // conditional tags
-				//'Constants',        // All active Constants
-				'Enqueue_Stuff',    // Scripts and styles
-				//'Hooks',            // Hooks
-				//'Page_Hooks',     // Hook Instrument for active page
-				//'Query',            // WP Queries
-				//'Cache',            // WP Cache
-				'About',            // about plugin
-			);
-			*/
 			
-			$by_settings = array( 'Wrap' );
+			// exclude options from include classes
+			foreach ( self :: $exclude_class as $exclude_class )
+				unset( $options[ strtolower( $exclude_class ) ] );
+			
 			if ( ! empty( $options ) ) {
 				foreach ( $options as $class => $check ) {
 					if ( '1' === $check )
-						$by_settings[] = ucwords( $class );
+						self :: $by_settings[] = ucwords( $class );
 				}
 			}
-			$classes = apply_filters( 'debug_objects_classes', $by_settings );
-			//var_dump($classes);
+			$classes = apply_filters( 'debug_objects_classes', self :: $by_settings );
+			
 			foreach ( $classes as $key => $require )
 				require_once dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'inc/class-' . strtolower( $require ) . '.php';
 			
 			foreach ( $classes as $class )
-				add_action( 'admin_init', array( 'Debug_Objects_' . $class, 'init' ) );
+				add_action( 'init', array( 'Debug_Objects_' . $class, 'init' ) );
 		}
 		
 		/**
-		 * return plugin comment data
+		 * Return plugin comment data
 		 * 
 		 * @since  2.0.0
 		 * @access public
 		 * @param  $value string, default = 'TextDomain'
-		 *		 Name, PluginURI, Version, Description, Author, AuthorURI, TextDomain, DomainPath, Network, Title
+		 *         Name, PluginURI, Version, Description, Author, AuthorURI, TextDomain, DomainPath, Network, Title
 		 * @return string
 		 */
 		public static function get_plugin_data( $value = 'TextDomain', $echo = FALSE ) {
@@ -150,7 +141,7 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 		 */
 		public static function on_activation() {
 			
-			add_option( self :: $option_string, array( 'feature' => '1', 'php' => '1', 'hooks' => '1', 'about' => '1' ) );
+			//add_option( self :: $option_string, array( 'php' => '1', 'hooks' => '1', 'about' => '1' ) );
 			
 			$GLOBALS['wp_roles'] -> add_cap( 'administrator', '_debug_objects' );
 			// add table

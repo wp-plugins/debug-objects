@@ -1,14 +1,1 @@
-function toggle(obj) {
-	var el = document.getElementById(obj);
-	if ( el.style.display != 'block' ) {
-		el.style.display = 'block';
-	}	else {
-		el.style.display = 'none';
-	}
-}
-
-jQuery(function($) {
-	$(function() {
-		$("#debugobjectstabs").tabs();
-	});
-});
+function toggle(a){var b=document.getElementById(a);if(b.style.display!="block"){b.style.display="block"}else{b.style.display="none"}}(function(a){a(function(){a("#debugobjectstabs").tabs({cache:true,cookie:{expires:7}})});a("#wpadminbar").click(function(){a("html, body").animate({scrollTop:0},100)});a("#wpadminbar li").click(function(a){a.stopPropagation()})})(jQuery)

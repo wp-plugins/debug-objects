@@ -82,7 +82,7 @@ The plugin comes with various translations, please refer to the [WordPress Codex
 * Thanks for belorussion translation to [Marcis G.](http://pc.de/ "pc.de")
 * Thanks for japanese translation to [Fumito Mizuno](http://ounziw.com/ "Standing on the Shoulder of Linus")
 * Thanks for hindi translation to [Alois M&auml;nner](http://www.nautilus-one.at "http://www.nautilus-one.at")
-* Thanks for dutch translation to [Renè](http://wpwebshop.com/premium-wordpress-themes/ "WP webshop")
+* Thanks for dutch translation to [RenÃ¨](http://wpwebshop.com/premium-wordpress-themes/ "WP webshop")
 * Thanks for bulgarian language files to [Web Geek](http://webhostinggeeks.com/)
 
 == Changelog ==

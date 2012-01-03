@@ -9,7 +9,7 @@
  */
 
 if ( ! class_exists( 'Debug_Objects_Wrap' ) ) {
-	//add_action( 'admin_init', array( 'Debug_Objects_Wrap', 'init' ) );
+	//add_action( 'init', array( 'Debug_Objects_Wrap', 'init' ) );
 	
 	class Debug_Objects_Wrap extends Debug_Objects {
 		
@@ -18,10 +18,19 @@ if ( ! class_exists( 'Debug_Objects_Wrap' ) ) {
 			if ( ! current_user_can( '_debug_objects' ) )
 				return;
 			
-			add_action( 'admin_footer', array( __CLASS__, 'in_admin_footer' ) );
+			$options = Debug_Objects_Settings :: return_options();
 			
-			add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_styles') );
-			add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_scripts') );
+			if ( isset( $options['frontend'] ) && '1' === $options['frontend'] ) {
+				add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue_scripts') );
+				add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue_styles') );
+				add_action( 'wp_footer', array( __CLASS__, 'in_admin_footer' ), 9999 );
+			}
+			
+			if ( isset( $options['backend'] ) && '1' === $options['backend'] ) {
+				add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_styles') );
+				add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_scripts') );
+				add_action( 'admin_footer', array( __CLASS__, 'in_admin_footer' ), 9999 );
+			}
 		}
 		
 		public static function enqueue_styles() {
@@ -49,7 +58,14 @@ if ( ! class_exists( 'Debug_Objects_Wrap' ) ) {
 			wp_enqueue_script(
 				parent :: get_plugin_data() . '_script', 
 				str_replace( '/inc', '', plugins_url( '/js/debug_objects' . $suffix. '.js', __FILE__ ) ), 
-				array( 'jquery-ui-tabs' ),
+				array( 'jquery-ui-tabs', parent :: get_plugin_data() . '_cookie_script' ),
+				'',
+				TRUE
+			);
+			wp_enqueue_script(
+				parent :: get_plugin_data() . '_cookie_script', 
+				str_replace( '/inc', '', plugins_url( '/js/jquery.cookie.js', __FILE__ ) ), 
+				array( 'jquery' ),
 				'',
 				TRUE
 			);
