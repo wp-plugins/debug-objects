@@ -56,7 +56,7 @@ div#debugobjects table {
 	width: 100%;
 }
 
-div#debugobjects #memory li:hover, div#debugobjects #conditional_tags li:hover, div#debugobjects #cache li li li li li:hover, div#debugobjects #debughooks li:hover, div#debugobjects #constants li li:hover, #debugobjects table tr:hover {
+div#debugobjects ul li:hover, div#debugobjects ol li:hover {
 	background: #dadada;
 }
 

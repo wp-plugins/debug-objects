@@ -2,18 +2,14 @@
 Contributors: Bueltge
 Donate link: http://bueltge.de/wunschliste/
 Tags: debug, sql, analyse, tuning, performance, database, queries, query, php, 
-Requires at least: 2.7
+Requires at least: 3.3
 Tested up to: 3.3
-Stable tag: 1.1.0
+Stable tag: 2.0.0
 
 The Plugin Debug Objects provides a large number of information: query, cache, constants, hooks, functions and many more.
 
 == Description ==
-The Plugin Debug Objects provides the user, which has the appropriate rights, normally the administrator, a large number of information: query, cache, constants, hooks, functions and many more. Values and content get displayed at the frontend and backend of the blog, to analyze errors but also to better understand and develop with/for WordPress.
-
-= Important for use =
-Add to any URL of the WP-installation the string `?debugobjects=true`, so that list all informations of the plugin below the site in frontend or backend.
-You can set the constant `FB_WPDO_GET_DEBUG` to `FALSE` for the permanent diversion of all values.
+The Plugin Debug Objects provides the user, which has the appropriate rights, normally the administrator, a large number of information: query, cache, constants, hooks, functions and many many more. Values and content get displayed at the frontend and backend of the blog, to analyze errors but also to better understand and develop with/for WordPress.
 
 = The Plugin provides in various tabs information to: =
 * PHP
@@ -36,17 +32,10 @@ You can set the constant `FB_WPDO_GET_DEBUG` to `FALSE` for the permanent divers
 * Functions, which respond on hooks and filters
 * Contents of arrays to hooks and filters
 * All defined constants
-
-The plugin can be used with my Plugin [Debug Queries](http://wordpress.org/extend/plugins/debug-queries/ "Debug Queries") and thus the analysis and optimization of the blog can be used. [Debug Queries](http://wordpress.org/extend/plugins/debug-queries/ "Debug Queries") will be integrated into the frontend of Debug Objects and is only for users with appropriate rights possible.
+* ...
 
 The plugin does not filter values and should only be used for information and optimization, I don't recommended to use it on a live blog. For developers it can rapidly deliver data, which is useful in a development environment.
 There are no data in the database and there are no settings. Therefore, the installation is pretty simple: Just upload the Plugin in the Plugin directory or use the automatic installation of the backend to install and activate the Plugin. In the footer of the frontend of the blog, you can see the information.
-
-The plugin list all entries on frontend and backend of your install; you can custom this with the follow constants on the php-file in the folder of the plugin
-`// Hook on Frontend
-define( 'FB_WPDO_FRONTEND', TRUE );`
-`// Hook on Backend
-define( 'FB_WPDO_BACKEND', TRUE );`
 
 = More Plugins = 
 Please see also my [Premium Plugins](http://wpplugins.com/author/malo.conny/). Maybe you find an solution for your requirement.
@@ -57,13 +46,14 @@ You may also be interested in WordPress tips and tricks at [WP Engineer](http://
 
 == Installation ==
 = Requirements =
-* WordPress version 2.6 and later (tested at 2.9)
+* WordPress (also Multisite) version 3.3 and later (tested at 3.3)
+* PHP 5.2
 
 = Installation =
 1. Unpack the download-package
 1. Upload the file to the `/wp-content/plugins/` directory
 1. Activate the plugin through the 'Plugins' menu in WordPress
-1. See the informations on the frontend of your blog
+1. Go to *Tools* -> *Debug Objects* and change settings or read instructions for use with url params
 1. Ready
 
 
@@ -87,7 +77,11 @@ The plugin comes with various translations, please refer to the [WordPress Codex
 
 == Changelog ==
 = 2.0.0 =
-* current under development; but you can test and use it
+* rewrite the plugin
+* add settings page
+* cookie for view output
+* different classes for different 
+* params for control output tasks
 
 = v1.1.0 (12/04/2011) =
 * Add Hooks of current page
