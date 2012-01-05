@@ -220,8 +220,8 @@ if ( ! class_exists( 'Debug_Objects_Settings' ) ) {
 			<table class="form-table">
 				<?php
 				$defaults = array(
-					'Backend'          => __( 'Output in WordPress Admin Footer', self :: get_textdomain() ),
-					'Frontend'         => __( 'Output in Footer of Frontend', self :: get_textdomain() ),
+					'Backend'          => __( 'Output in WordPress Admin Footer. <br />Alternatively use url param "<code>debug</code>" or set a cookie via url param "<code>debugcookie</code>" in days. <br />Example: <code>example.com/?debug</code>', self :: get_textdomain() ),
+					'Frontend'         => __( 'Output in Footer of Frontend. <br />Alternatively use url param "<code>debug</code>" or set a cookie via url param "<code>debugcookie</code>" in days <br />Example: <code>example.com/?debugcookie=5</code>', self :: get_textdomain() ),
 					'Php'              => __( 'PHP, WordPress and global Stuff', self :: get_textdomain() ),// php, WordPress, globals and more
 					'Conditional_Tags' => __( 'Conditional Tags', self :: get_textdomain() ), // conditional tags
 					'Constants'        => __( 'All Constants', self :: get_textdomain() ),// All active Constants
@@ -245,7 +245,7 @@ if ( ! class_exists( 'Debug_Objects_Settings' ) ) {
 					</td>
 					<td><input type="checkbox" id="<?php echo self :: $option_string . '_' . $key; ?>" name="<?php echo self :: $option_string . '[' . $key . ']'; ?>" value="1" 
 						<?php if ( isset( $options[$key] ) ) checked( '1', $options[$key] ); ?> />	
-						<span class="description"><?php esc_attr_e( $hint ); ?></span>
+						<span class="description"><?php _e( $hint ); ?></span>
 					</td>
 				</tr>
 					<?php

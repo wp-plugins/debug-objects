@@ -9,7 +9,7 @@
  * Plugin URI:  http://bueltge.de/debug-objects-wordpress-plugin/966/
  * Text Domain: debug_objects
  * Domain Path: /languages
- * Description: List filter and action-hooks, cache data, defined constants, qieries, included scripts and styles, php and memory informations and return of conditional tags only for admins; for debug, informations or learning purposes.
+ * Description: List filter and action-hooks, cache data, defined constants, qieries, included scripts and styles, php and memory informations and return of conditional tags only for admins; for debug, informations or learning purposes. Setting output in the settings of the plugin and use output via setting or url-param '<code>debug</code>' or set a cookie via url param '<code>debugcookie</code>' in days
  * Version:     2.0.0
  * License:     GPLv3
  * Author:      Frank B&uuml;ltge

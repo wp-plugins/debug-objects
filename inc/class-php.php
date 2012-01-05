@@ -413,6 +413,16 @@ if ( ! class_exists( 'Debug_Objects_Php' ) ) {
 				$output .= var_export( $_POST, TRUE );
 			$output .= '</li></ul>' . "\n";
 			
+			// cookies
+			$output .= "\n" . '<h4>' . __( 'COOKIEs', parent :: get_plugin_data() ) . '</h4>' . "\n";
+			$output .= '<ul><li>' . "\n";
+			if ( ! isset( $_COOKIE ) || empty( $_COOKIE ) )
+				$output .= __( 'Undefined or empty', parent :: get_plugin_data() );
+			else 
+				$output .= var_export( $_COOKIE, TRUE );
+			$output .= '</li></ul>' . "\n";
+			
+			
 			if ( $echo )
 				echo $output;
 			else
