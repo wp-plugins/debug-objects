@@ -88,7 +88,7 @@ if ( ! class_exists( 'Debug_Objects_Conditional_Tags' ) ) {
 			if ( is_paged() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_paged" title="' . __( 'Documentation in Codex', parent :: get_plugin_data() ) . '"><b>' . __( 'is', parent :: get_plugin_data() ) . '</b> paged</a></li>' . "\n";
 			else $is_not .= '<li><i>' . __( 'no', parent :: get_plugin_data() ) . '</i> paged</li>' . "\n";
 			
-			/* depreaced in WP 3.1
+			/* Deprecated in WP 3.1
 			if ( is_plugin_page() ) $is .= "\t" . '<li class="alternate"><a href="http://codex.wordpress.org/Function_Reference/is_plugin_page" title="' . __( 'Documentation in Codex', parent :: get_plugin_data() ) . '"><b>' . __( 'is', parent :: get_plugin_data() ) . '</b> plugin_page</a></li>' . "\n";
 			else $is_not .= '<li><i>' . __( 'no', parent :: get_plugin_data() ) . '</i> plugin_page</li>' . "\n";
 			*/
