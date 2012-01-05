@@ -12,12 +12,19 @@ if ( ! class_exists( 'Debug_Objects_Page_Hooks' ) ) {
 	
 	class Debug_Objects_Page_Hooks extends Debug_Objects {
 		
+		static private $table;
+		
 		public static function init() {
 			
 			if ( ! current_user_can( '_debug_objects' ) )
 				return;
 			
-			add_action( 'all',  array( __CLASS__, 'record_hook_usage' ) );
+			self :: $table = $GLOBALS['wpdb'] -> prefix . 'hook_list';
+			
+			// self :: control_schedule_record();
+			// add_action( 'record_hook_usage', array( 'Debug_Objects_Page_Hooks', 'control_record' ) );
+			
+			add_action( 'all', array( __CLASS__, 'record_hook_usage' ) );
 			add_filter( 'debug_objects_tabs', array( __CLASS__, 'get_conditional_tab' ) );
 		}
 		
@@ -31,10 +38,22 @@ if ( ! class_exists( 'Debug_Objects_Page_Hooks' ) ) {
 			return $tabs;
 		}
 		
-		function get_page_hooks( $echo = TRUE ) {
+		public function control_schedule_record() {
+			// wp_clear_scheduled_hook('record_hook_usage');
+			if ( ! wp_next_scheduled( 'record_hook_usage' ) )
+				wp_schedule_event( time(), 'daily', 'record_hook_usage' ); // hourly, daily and twicedaily
+			
+		}
+		
+		public function control_record() {
+			
+			add_action( 'all', array( __CLASS__, 'record_hook_usage' ) );
+		}
+		
+		public function get_page_hooks( $echo = TRUE ) {
 			global $wpdb;
 			
-			$hooks = $wpdb -> get_results( "SELECT * FROM wp_hook_list ORDER BY first_call" );
+			$hooks = $wpdb -> get_results( 'SELECT * FROM ' . self :: $table . ' ORDER BY first_call' );
 			
 			$html = array();
 			$html[] = '<table>
@@ -53,8 +72,10 @@ if ( ! class_exists( 'Debug_Objects_Page_Hooks' ) ) {
 				$class = ( ' class="alternate"' == $class ) ? '' : ' class="alternate"';
 				if ( 30 < (int) strlen( $hook -> hook_name ) )
 					$hook->hook_name = '<span title="' . $hook -> hook_name . '">' . substr($hook -> hook_name, 0, 36) . '</span>';
+				/*
 				if ( 20 < (int) strlen( $hook -> file_name ) )
 					$hook->file_name = '<span title="' . $hook -> file_name . '">' . substr($hook -> file_name, -30, 30) . '</span>';
+				*/
 				$html[] = "<tr{$class}>
 					<td>{$hook->first_call}</td>
 					<td>{$hook->hook_name}</td>
@@ -89,17 +110,35 @@ if ( ! class_exists( 'Debug_Objects_Page_Hooks' ) ) {
 				
 				if ( 1 == $first_call ) {
 					$doc_root = esc_attr( $_SERVER['DOCUMENT_ROOT'] );
+					
+					$results = $wpdb -> get_results( 'SHOW TABLE STATUS LIKE \'' . self :: $table . '\'');
+					if ( 1 == count($results) ) {
+						$wpdb -> query( 'TRUNCATE TABLE ' . self :: $table );
+					} else {
+						$wpdb -> query(
+							"CREATE TABLE self :: $table (
+							called_by varchar(96) NOT NULL,
+							hook_name varchar(96) NOT NULL,
+							hook_type varchar(15) NOT NULL,
+							first_call int(11) NOT NULL,
+							arg_count tinyint(4) NOT NULL,
+							file_name varchar(128) NOT NULL,
+							line_num smallint NOT NULL,
+							PRIMARY KEY (first_call,hook_name) )"
+						);
+					}
 				}
 				
 				$args = func_get_args();
 				$arg_count = count($args) - 1;
-				$hook_type = str_replace('do_','',
+				$hook_type = str_replace( 'do_', '',
 					str_replace(
-						'apply_filters','filter',
+						'apply_filters', 'filter',
 						str_replace( '_ref_array', '[]', $callstack[3]['function'] )
 					)
 				);
-				$file_name = addslashes( str_replace( $doc_root, '', $callstack[3]['file'] ) );
+				$str_replace = $doc_root . preg_replace('|https?://[^/]+|i', '', get_option('home') . '/' );
+				$file_name = addslashes( str_replace( $str_replace, '', $callstack[3]['file'] ) );
 				$line_num  = $callstack[3]['line'];
 				
 				if ( ! isset( $callstack[4] ) )
@@ -107,9 +146,9 @@ if ( ! class_exists( 'Debug_Objects_Page_Hooks' ) ) {
 				else
 					$called_by = $callstack[4]['function'] . '()';
 				
-				$wpdb -> query( "INSERT wp_hook_list
+				$wpdb -> query( "INSERT " . self :: $table . "
 					(first_call,called_by,hook_name,hook_type,arg_count,file_name,line_num)
-					VALUES ($first_call,'$called_by','$hook','$hook_type',$arg_count,'$file_name',$line_num)"
+					VALUES ( $first_call,'$called_by','$hook','$hook_type',$arg_count,'$file_name',$line_num )"
 				);
 				
 				$first_call ++;

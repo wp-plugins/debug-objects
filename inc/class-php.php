@@ -381,8 +381,6 @@ if ( ! class_exists( 'Debug_Objects_Php' ) ) {
 				$_SERVER['SCRIPT_FILENAME'] = __( 'Undefined', parent :: get_plugin_data() );
 			if ( ! isset( $_SERVER['PHP_SELF'] ) )
 				$_SERVER['PHP_SELF'] = __( 'Undefined', parent :: get_plugin_data() );
-			if ( ! isset( $_GET['error'] ) )
-				$_GET['error'] = __( 'Undefined', parent :: get_plugin_data() );
 			
 			$output .= "\n" . '<h4>' . __( 'Selected server and execution environment information', parent :: get_plugin_data() ) . '</h4>' . "\n";
 			$output .= '<ul>' . "\n";
@@ -392,9 +390,19 @@ if ( ! class_exists( 'Debug_Objects_Php' ) ) {
 			$output .= '<li class="alternate">' . __( 'SCRIPT_NAME:', parent :: get_plugin_data() ) . ' ' . $_SERVER['SCRIPT_NAME'] . '</li>';
 			$output .= '<li>' . __( 'SCRIPT_FILENAME:', parent :: get_plugin_data() ) . ' ' . $_SERVER['SCRIPT_FILENAME'] . '</li>';
 			$output .= '<li class="alternate">' . __( 'PHP_SELF:', parent :: get_plugin_data() ) . ' ' . $_SERVER['PHP_SELF'] . '</li>';
-			$output .= '<li>' . __( 'GET Error:', parent :: get_plugin_data() ) . ' ' . $_GET['error'] . '</li>';
 			$output .= '<li class="alternate">' . __( 'FILE:', parent :: get_plugin_data() ) . ' ' . __FILE__ . '</li>';
+			if ( ! isset( $_SERVER ) || empty( $_SERVER ) )
+				$output .= __( 'Undefined or empty', parent :: get_plugin_data() );
+			else 
+				$output .= '<li>' . var_export( $_SERVER, TRUE ) . '</li>';
 			$output .= '</ul>' . "\n";
+			
+			// error
+			$output .= "\n" . '<h4>' . __( 'HTTP GET Error', parent :: get_plugin_data() ) . '</h4>' . "\n";
+			$output .= '<ul><li>' . "\n";
+			if ( ! isset( $_GET['error'] ) )
+				$_GET['error'] = __( 'Undefined', parent :: get_plugin_data() );
+			$output .= '</li></ul>' . "\n";
 			
 			// Globals 
 			$output .= "\n" . '<h4>' . __( 'HTTP GET variables', parent :: get_plugin_data() ) . '</h4>' . "\n";
