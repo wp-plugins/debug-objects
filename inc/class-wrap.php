@@ -20,17 +20,61 @@ if ( ! class_exists( 'Debug_Objects_Wrap' ) ) {
 			
 			$options = Debug_Objects_Settings :: return_options();
 			
-			if ( isset( $options['frontend'] ) && '1' === $options['frontend'] ) {
+			self::set_cookie_control();
+			
+			if ( isset( $options['frontend'] ) && '1' === $options['frontend']
+				 || self::debug_control()
+				 ) {
 				add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue_scripts') );
 				add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue_styles') );
 				add_action( 'wp_footer', array( __CLASS__, 'in_admin_footer' ), 9999 );
 			}
 			
-			if ( isset( $options['backend'] ) && '1' === $options['backend'] ) {
+			if ( isset( $options['backend'] ) && '1' === $options['backend']
+				 || self::debug_control()
+				 ) {
 				add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_styles') );
 				add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_scripts') );
 				add_action( 'admin_footer', array( __CLASS__, 'in_admin_footer' ), 9999 );
 			}
+		}
+		
+		public function debug_control() {
+			// Debug via _GET Param on URL
+			if ( ! isset( $_GET['debug'] ) )
+				$debug = FALSE;
+			else
+				$debug = TRUE;
+			
+			if ( ! $debug )
+				$debug = self::get_cookie_control( $debug );
+			
+			return $debug;
+		}
+		
+		public function get_cookie_control( $debug ) {
+			
+			if ( ! isset( $_COOKIE[parent :: get_plugin_data() . '_cookie'] ) )
+				return FALSE;
+			
+			if ( 'Debug_Objects_True' === $_COOKIE[parent :: get_plugin_data() . '_cookie'] )
+				$debug = TRUE;
+			
+			return $debug;
+		}
+		
+		public function set_cookie_control() {
+			
+			if ( ! isset( $_GET['debugcookie'] ) )
+				return;
+			
+			if ( $_GET['debugcookie'] ) {
+				$cookie_live = time() + 60 * 60 * 24 * intval( $_GET['debugcookie'] ); // days
+				setcookie( parent :: get_plugin_data() . '_cookie', 'Debug_Objects_True', $cookie_live, COOKIEPATH, COOKIE_DOMAIN );
+			}
+			
+			if ( 0 == intval( $_GET['debugcookie'] ) )
+				setcookie( parent :: get_plugin_data() . '_cookie', '', time() - 3600, COOKIEPATH, COOKIE_DOMAIN );
 		}
 		
 		public static function enqueue_styles() {
