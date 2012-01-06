@@ -47,7 +47,7 @@ You may also be interested in WordPress tips and tricks at [WP Engineer](http://
 == Installation ==
 = Requirements =
 * WordPress (also Multisite) version 3.3 and later (tested at 3.3)
-* PHP 5.2
+* PHP 5.3
 
 = Installation =
 1. Unpack the download-package
