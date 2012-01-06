@@ -174,7 +174,7 @@ if ( ! class_exists( 'Debug_Objects_Php' ) ) {
 				__( 'Server SW:', parent :: get_plugin_data() )                               => esc_attr( $_SERVER['SERVER_SOFTWARE'] ),
 				__( 'OS version:', parent :: get_plugin_data() )                              => $os,
 				__( 'Memory usage in MByte:', parent :: get_plugin_data() )                   => $memory_usage,
-				__( 'Memory limit, PHP Configuration in MByte', parent :: get_plugin_data() ) => $memory_limit,
+				__( 'Memory limit, PHP Configuration in MByte:', parent :: get_plugin_data() ) => $memory_limit,
 				__( 'Memory percent (in % of 100%):', parent :: get_plugin_data() )           => $memory_percent,
 				__( 'PHP Safe Mode:', parent :: get_plugin_data() )                            => $safe_mode,
 				__( 'PHP Allow URL fopen:', parent :: get_plugin_data() )                      => $allow_url_fopen,

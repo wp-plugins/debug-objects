@@ -231,6 +231,7 @@ if ( ! class_exists( 'Debug_Objects_Settings' ) ) {
 					'Page_Hooks'       => __( 'Hooks of current page, very slow and use many RAM', self :: get_textdomain() ),// Hook Instrument for active page
 					'Query'            => __( 'Contents of Query', self :: get_textdomain() ),// WP Queries
 					'Cache'            => __( 'Contents of Cache', self :: get_textdomain() ),// WP Cache
+					'Memory'           => __( 'Memory Used, Load Time and included Files' ),
 					'About'            => __( 'About the plugin', self :: get_textdomain() ),// about plugin
 				);
 				
@@ -241,7 +242,7 @@ if ( ! class_exists( 'Debug_Objects_Settings' ) ) {
 					?>
 				<tr valign="top">
 					<td scope="row">
-						<label for="<?php echo self :: $option_string . '_' . $key; ?>"><?php echo $class ?></label>
+						<label for="<?php echo self :: $option_string . '_' . $key; ?>"><?php echo str_replace( '_', ' ', $class); ?></label>
 					</td>
 					<td><input type="checkbox" id="<?php echo self :: $option_string . '_' . $key; ?>" name="<?php echo self :: $option_string . '[' . $key . ']'; ?>" value="1" 
 						<?php if ( isset( $options[$key] ) ) checked( '1', $options[$key] ); ?> />	
