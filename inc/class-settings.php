@@ -270,7 +270,9 @@ if ( ! class_exists( 'Debug_Objects_Settings' ) ) {
 				
 				<h3><span><?php _e( 'Like this plugin?', self :: get_textdomain() ); ?></span></h3>
 				<div class="inside">
-					<p><?php _e( 'Here\'s how you can give back:', self :: get_textdomain() ); ?></p>
+					<p>
+						<img style="float:right;" src="<?php echo plugins_url( '/img/bug-32.png', str_replace( '/inc', '', __FILE__ ) ); ?>" alt="The Bug" />
+						<?php _e( 'Here\'s how you can give back:', self :: get_textdomain() ); ?></p>
 					<ul>
 						<li><a href="http://wordpress.org/extend/plugins/debug-objects/" title="<?php esc_attr_e( 'The Plugin on the WordPress plugin repository', self :: get_textdomain() ); ?>"><?php _e( 'Give the plugin a good rating.', self :: get_textdomain() ); ?></a></li>
 						<li><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=6069955" title="<?php esc_attr_e( 'Donate via PayPal', self :: get_textdomain() ); ?>"><?php _e( 'Donate a few euros.', self :: get_textdomain() ); ?></a></li>
