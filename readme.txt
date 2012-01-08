@@ -4,7 +4,7 @@ Donate link: http://bueltge.de/wunschliste/
 Tags: debug, sql, analyse, tuning, performance, database, queries, query, php, 
 Requires at least: 3.3
 Tested up to: 3.3
-Stable tag: 2.0.0
+Stable tag: 2.0.1
 
 The Plugin Debug Objects provides a large number of information: query, cache, constants, hooks, functions and many more.
 
@@ -14,6 +14,8 @@ The Plugin Debug Objects provides the user, which has the appropriate rights, no
 = The Plugin provides in various tabs information to: =
 * PHP
 * Memory usage
+* Load Time
+* Included Files
 * Operating System
 * Server
 * WordPress Version
@@ -23,7 +25,7 @@ The Plugin Debug Objects provides the user, which has the appropriate rights, no
 * File Permissions
 * Separate user and usermeta tables
 * FTP and SSH definitions
-* Query information
+* Detailed Query information
 * Conditional tags; value of the tag
 * Theme information
 * Template Information
@@ -32,7 +34,7 @@ The Plugin Debug Objects provides the user, which has the appropriate rights, no
 * Functions, which respond on hooks and filters
 * Contents of arrays to hooks and filters
 * All defined constants
-* ...
+* and many more ...
 
 The plugin does not filter values and should only be used for information and optimization, I don't recommended to use it on a live blog. For developers it can rapidly deliver data, which is useful in a development environment.
 There are no data in the database and there are no settings. Therefore, the installation is pretty simple: Just upload the Plugin in the Plugin directory or use the automatic installation of the backend to install and activate the Plugin. In the footer of the frontend of the blog, you can see the information.
@@ -76,6 +78,11 @@ The plugin comes with various translations, please refer to the [WordPress Codex
 * Thanks for bulgarian language files to [Web Geek](http://webhostinggeeks.com/)
 
 == Changelog ==
+= 2.0.1 =
+* Add Memory informations, Load Time, included Files
+* Change query output with small changes; view queries bigger 0.5 and 1.0 ms in other color for fast identification
+* add fix on warp to include unknown functions for PHP smaller 5.3 (hope)
+
 = 2.0.0 =
 * rewrite the plugin
 * add settings page

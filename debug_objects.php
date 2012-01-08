@@ -14,7 +14,7 @@
  * License:     GPLv3
  * Author:      Frank B&uuml;ltge
  * Author URI:  http://bueltge.de/
- * Last Change: 01/06/2012
+ * Last Change: 01/08/2012
  */
 
 //error_reporting(E_ALL);

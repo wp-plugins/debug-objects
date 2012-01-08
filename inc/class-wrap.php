@@ -139,7 +139,8 @@ if ( ! class_exists( 'Debug_Objects_Wrap' ) ) {
 					<?php
 					foreach( $tabs as $tab ) {
 						echo '<div id="' . htmlentities2( tag_escape( $tab['tab'] ) ) . '">';
-							$tab['function'][0] :: $tab['function'][1]();
+						if ( function_exists( $tab['function'][0] :: $tab['function'][1]() ) )
+								$tab['function'][0] :: $tab['function'][1]();
 							do_action( 'debug_objects_function' );
 						echo '</div>';
 					}

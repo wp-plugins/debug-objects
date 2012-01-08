@@ -1,18 +1,31 @@
 /* Begin Debug Objects CSS */
+#debugobjects * {
+	margin: 0;
+	font-size: 12px;
+}
+
 div#debugobjects {
 	left: 1%;
 	right: 1%;
-	padding: 10px;
-	margin-bottom: 30px;
+	margin: 30px 10px;
 	font-size: 12px !important; /* fix for all themes */
 	color: #fff;
 	text-align: left;
 	z-index: 999;
 }
 
+div#debugobjectstabs {
+	padding: 10px;
+}
+
 div#debugobjectstabs, .ui-corner-all {
 	border: 1px solid #DFDFDF;
 	border-radius: 3px;
+}
+
+
+div#debugobjects ol li {
+	margin: 5px 0 5px 15px;
 }
 
 div#debugobjects #memory ul, div#debugobjects #conditional_tags ul, 
@@ -25,6 +38,7 @@ div#debugobjects #queries ul {
 div#debugobjects #constants ul li,
 div#debugobjects #queries ul {
 	padding: 10px;
+	margin: 10px;
 }
 
 div#debugobjects h4, div#debugobjects h4 a, .h4 {
@@ -56,8 +70,9 @@ div#debugobjects table {
 	width: 100%;
 }
 
-div#debugobjects ul li:hover, div#debugobjects ol li:hover {
-	background: #dadada;
+div#debugobjects ul li:hover, div#debugobjects ol li:hover,
+div#debugobjects tr:hover {
+	background: #D54E21;
 }
 
 div#debugobjects li.none_list {
@@ -84,4 +99,13 @@ div#debugobjects li.none_list {
 #debugqueries {
 	display: none !important;
 }
+
+.high_query_time {
+	border: 2px solid orange;
+}
+
+.big_query_time {
+	border: 2px solid red;
+}
+
 /* End Debug Objects CSS */

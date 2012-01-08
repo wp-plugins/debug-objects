@@ -72,16 +72,25 @@ if ( ! class_exists( 'Debug_Objects_Query' ) ) {
 				
 				foreach ( $wpdb->queries as $q ) {
 					
-					if ( $x % 2 != 0 )
+					$time = $q[1];
+					$time_ms = number_format( sprintf('%0.1f', $q[1] * 1000), 1, '.', ',' );
+					if ( '0.5' <= $time_ms )
+						$class = ' high_query_time';
+					elseif ( '1.' <= $time_ms )
+						$class = ' big_query_time';
+					else 
 						$class = '';
+					
+					if ( $x % 2 != 0 )
+						$class = ' class="default' . $class . '"';
 					else
-						$class = ' class="alternate"';
+						$class = ' class="alternate' . $class . '"';
 					
 					$total_query_time += $q[1];
 					$debug_queries .= '<li' . $class . '><ul>';
 					$debug_queries .= '<li class="none_list"><strong>' . __( 'Time:', parent :: get_plugin_data() ) . '</strong> ' 
-						. number_format( sprintf('%0.1f', $q[1] * 1000), 1, '.', ',' ) . __( 'ms', parent :: get_plugin_data() ) 
-						. ' (' . $q[1] . __( 's', parent :: get_plugin_data() ) . ')</li>';
+						. $time_ms . __( 'ms', parent :: get_plugin_data() ) 
+						. ' (' . $time . __( 's', parent :: get_plugin_data() ) . ')</li>';
 					if ( isset($q[1]) && ! empty($q[1]) ) {
 						$s = nl2br( esc_html( $q[0] ) );
 						$s = trim( ereg_replace( '[[:space:]]+', ' ', $s) );
