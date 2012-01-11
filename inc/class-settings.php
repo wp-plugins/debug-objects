@@ -58,7 +58,7 @@ if ( ! class_exists( 'Debug_Objects_Settings' ) ) {
 			
 			//register_uninstall_hook( __FILE__,       array( 'Debug_Objects_Settings', 'unregister_settings' ) );
 			// settings for an active multisite
-			if ( is_multisite() && is_plugin_active_for_network( plugin_basename( __FILE__ ) ) ) {
+			if ( is_multisite() && is_plugin_active_for_network( parent :: $plugin ) ) {
 				add_action( 'network_admin_menu',    array( __CLASS__, 'add_settings_page' ) );
 				// add settings link
 				add_filter( 'network_admin_plugin_action_links', array( __CLASS__, 'network_admin_plugin_action_links' ), 10, 2 );
@@ -137,7 +137,7 @@ if ( ! class_exists( 'Debug_Objects_Settings' ) ) {
 		 */
 		public function add_settings_page () {
 			
-			if ( is_multisite() && is_plugin_active_for_network( plugin_basename( __FILE__ ) ) ) {
+			if ( is_multisite() && is_plugin_active_for_network( parent :: $plugin ) ) {
 				add_submenu_page(
 					'settings.php',
 					parent :: get_plugin_data( 'Name' ) . ' ' . __( 'Settings', self :: get_textdomain() ),
@@ -159,9 +159,16 @@ if ( ! class_exists( 'Debug_Objects_Settings' ) ) {
 			}
 		}
 		
+		/**
+		 * Return options as array; observed install in MU or single install
+		 * 
+		 * @access  public
+		 * @since   2.0.0
+		 * @return  array
+		 */
 		public function return_options() {
 			
-			if ( is_multisite() && is_plugin_active_for_network( plugin_basename( __FILE__ ) ) )
+			if ( is_multisite() && is_plugin_active_for_network( parent :: $plugin ) )
 				$options = get_site_option( self :: $option_string );
 			else
 				$options = get_option( self :: $option_string );
@@ -172,10 +179,10 @@ if ( ! class_exists( 'Debug_Objects_Settings' ) ) {
 		/**
 		 * Return form and markup on settings page
 		 * 
-		 * @uses settings_fields, normalize_whitespace, is_plugin_active_for_network, get_site_option, get_option
-		 * @access public	
-		 * @since 0.0.2
-		 * @return void
+		 * @uses    settings_fields, normalize_whitespace, is_plugin_active_for_network, get_site_option, get_option
+		 * @access  public	
+		 * @since   2.0.0
+		 * @return  void
 		 */
 		public function get_settings_page() {
 			?>
@@ -183,7 +190,7 @@ if ( ! class_exists( 'Debug_Objects_Settings' ) ) {
 				<?php screen_icon('options-general'); ?>
 				<h2><?php echo parent :: get_plugin_data( 'Name' ); ?> <?php _e('Settings', self :: get_textdomain() ); ?></h2>
 				<?php
-				if ( is_multisite() && is_plugin_active_for_network( plugin_basename( __FILE__ ) ) )
+				if ( is_multisite() && is_plugin_active_for_network( parent :: $plugin ) )
 					$action = 'edit.php?action=' . self :: $option_string;
 				else
 					$action = 'options.php';
@@ -215,6 +222,14 @@ if ( ! class_exists( 'Debug_Objects_Settings' ) ) {
 			<?php
 		}
 		
+		/**
+		 * Echo content in form-area of backend settings page
+		 * 
+		 * @access  public
+		 * @since   2.0.0
+		 * @param   $options array
+		 * @return  void
+		 */
 		public function get_inside_form( $options ) {
 			?>
 			<table class="form-table">
@@ -259,10 +274,10 @@ if ( ! class_exists( 'Debug_Objects_Settings' ) ) {
 		/*
 		 * Return informations to donate
 		 * 
-		 * @uses   _e,esc_attr_e
-		 * @access public
-		 * @since  2.0.0
-		 * @return void
+		 * @uses    _e,esc_attr_e
+		 * @access  public
+		 * @since   2.0.0
+		 * @return  void
 		 */
 		public function get_plugin_infos() {
 			?>
@@ -286,10 +301,10 @@ if ( ! class_exists( 'Debug_Objects_Settings' ) ) {
 		/*
 		 * Return informations about the plugin
 		 * 
-		 * @uses   _e,esc_attr_e
-		 * @access public
-		 * @since  2.0.0
-		 * @return void
+		 * @uses    _e,esc_attr_e
+		 * @access  public
+		 * @since   2.0.0
+		 * @return  void
 		 */
 		public function get_about_plugin() {
 			?>
@@ -313,10 +328,10 @@ if ( ! class_exists( 'Debug_Objects_Settings' ) ) {
 		/*
 		 * Save network settings
 		 * 
-		 * @uses   update_site_option, wp_redirect, add_query_arg, network_admin_url
-		 * @access public
-		 * @since  2.0.0
-		 * @return void
+		 * @uses    update_site_option, wp_redirect, add_query_arg, network_admin_url
+		 * @access  public
+		 * @since   2.0.0
+		 * @return  void
 		 */
 		public function save_network_settings_page() {
 			// validate options
@@ -326,7 +341,7 @@ if ( ! class_exists( 'Debug_Objects_Settings' ) ) {
 			// redirect to settings page in network
 			wp_redirect(
 				add_query_arg( 
-					array('page' => 'addquicktag/inc/class-settings.php', 'updated' => 'true'),
+					array('page' => 'debug-objects/inc/class-settings.php', 'updated' => 'true'),
 					network_admin_url( 'settings.php' )
 				)
 			);
@@ -337,15 +352,15 @@ if ( ! class_exists( 'Debug_Objects_Settings' ) ) {
 		 * Retrun string before update message
 		 * 
 		 * @uses   
-		 * @access public
-		 * @since  2.0.0
-		 * @return string $notice
+		 * @access  public
+		 * @since   2.0.0
+		 * @return  string $notice
 		 */
 		public function get_network_admin_notices() {
 			
 			// if updated and the right page
 			if ( isset( $_GET['updated'] ) && 
-				 'settings_page_addquicktag/inc/class-settings-network' === $GLOBALS['current_screen'] -> id
+				 'settings_page_debug-objects/inc/class-settings-network' === $GLOBALS['current_screen'] -> id
 				) {
 				$message = __( 'Options saved.', self :: get_textdomain() );
 				$notice  = '<div id="message" class="updated"><p>' .$message . '</p></div>';
@@ -356,11 +371,11 @@ if ( ! class_exists( 'Debug_Objects_Settings' ) ) {
 		/**
 		 * Validate settings for options
 		 * 
-		 * @uses   normalize_whitespace
-		 * @access public
-		 * @param  array $value
-		 * @since  2.0.0
-		 * @return string $value
+		 * @uses    normalize_whitespace
+		 * @access  public
+		 * @param   array $value
+		 * @since   2.0.0
+		 * @return  string $value
 		 */
 		public function validate_settings( $values ) {
 			
@@ -428,7 +443,7 @@ if ( ! class_exists( 'Debug_Objects_Settings' ) ) {
 		
 	}
 	
-	//add_action( 'plugins_loaded', array( 'Debug_Objects_Settings', 'get_object' ) );
+	add_action( 'plugins_loaded', array( 'Debug_Objects_Settings', 'get_object' ) );
 	$Debug_Objects_Settings = Debug_Objects_Settings :: get_object();
 	
 } // end if class exists

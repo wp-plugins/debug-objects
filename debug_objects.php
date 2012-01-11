@@ -10,14 +10,12 @@
  * Text Domain: debug_objects
  * Domain Path: /languages
  * Description: List filter and action-hooks, cache data, defined constants, qieries, included scripts and styles, php and memory informations and return of conditional tags only for admins; for debug, informations or learning purposes. Setting output in the settings of the plugin and use output via setting or url-param '<code>debug</code>' or set a cookie via url param '<code>debugcookie</code>' in days
- * Version:     2.0.1
+ * Version:     2.0.2
  * License:     GPLv3
  * Author:      Frank B&uuml;ltge
  * Author URI:  http://bueltge.de/
- * Last Change: 01/08/2012
+ * Last Change: 01/11/2012
  */
-
-//error_reporting(E_ALL);
 
 //avoid direct calls to this file, because now WP core and framework has been used.
 ! defined( 'ABSPATH' ) and exit;
@@ -31,15 +29,15 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 	class Debug_Objects {
 		
 		static private $classobj = NULL;
-		
+		// var for tab array
 		public static $tabs = array();
-		
+		// string vor save in DB
 		public static $option_string = 'debug_objects';
-		
-		static private $plugin;
-		
+		// plugin basename
+		public static $plugin;
+		// included classes on default; without user settings
 		public static $by_settings = array( 'Wrap' );
-		
+		// exlude class for central include
 		public static $exclude_class = array( 'Backend', 'Frontend' );
 		
 		/**
@@ -79,6 +77,13 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 			self :: init_classes();
 		}
 		
+		/**
+		 * Include classes
+		 * Use filter string 'debug_objects_classes' for include custom classes
+		 * 
+		 * @since   2.0.0
+		 * @return  void
+		 */
 		public function init_classes() {
 			
 			if ( is_multisite() && is_plugin_active_for_network( plugin_basename( __FILE__ ) ) )
@@ -128,7 +133,13 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 				return $plugin_value;
 		}
 		
-		public function get_plugin_string() {
+		/**
+		 * Return plugin basename of plugin
+		 * 
+		 * @since   2.0.0
+		 * @return  string
+		 */
+		public static function get_plugin_string() {
 			
 			return self :: $plugin;
 		}
@@ -141,6 +152,17 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 		 */
 		public static function on_activation() {
 			
+			// Check for PHP Version 5.3
+			if ( ! version_compare( PHP_VERSION, '5.3.0', '>=' ) ) {
+				deactivate_plugins( __FILE__ );
+				wp_die(
+					wp_sprintf(
+						'<strong>%s:</strong> ' . __( 'Sorry, This plugin requires PHP 5.2.4' ),
+						self :: get_plugin_data( 'Name' )
+					)
+				);
+			}
+				
 			//add_option( self :: $option_string, array( 'php' => '1', 'hooks' => '1', 'about' => '1' ) );
 			
 			$GLOBALS['wp_roles'] -> add_cap( 'administrator', '_debug_objects' );
@@ -176,6 +198,16 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 			$GLOBALS['wpdb'] -> query( "DROP TABLE IF EXISTS $table" );
 		}
 		
+		/**
+		 * Return undefined list as tree
+		 * 
+		 * @access  public
+		 * @since   2.0.0
+		 * @param   $arr array
+		 * @param   $root_name string
+		 * @param   $unserialized_string boolean
+		 * @return  $output array
+		 */
 		public static function get_as_ul_tree( $arr, $root_name = '', $unserialized_string = FALSE ) {
 			global $wp_object;
 			

@@ -4,7 +4,7 @@ Donate link: http://bueltge.de/wunschliste/
 Tags: debug, sql, analyse, tuning, performance, database, queries, query, php, 
 Requires at least: 3.3
 Tested up to: 3.3
-Stable tag: 2.0.1
+Stable tag: 2.0.2
 
 The Plugin Debug Objects provides a large number of information: query, cache, constants, hooks, functions and many more.
 
@@ -49,7 +49,7 @@ You may also be interested in WordPress tips and tricks at [WP Engineer](http://
 == Installation ==
 = Requirements =
 * WordPress (also Multisite) version 3.3 and later (tested at 3.3)
-* PHP 5.3
+* PHP 5.2
 
 = Installation =
 1. Unpack the download-package
@@ -78,17 +78,24 @@ The plugin comes with various translations, please refer to the [WordPress Codex
 * Thanks for bulgarian language files to [Web Geek](http://webhostinggeeks.com/)
 
 == Changelog ==
+= 2.0.2 =
+* fix settings on use in Multisite
+* Add php check on activate
+* change init for all class to use the plugin also on PHP smaller 5.3
+* 
+
 = 2.0.1 =
 * Add Memory informations, Load Time, included Files
 * Change query output with small changes; view queries bigger 0.5 and 1.0 ms in other color for fast identification
-* add fix on warp to include unknown functions for PHP smaller 5.3 (hope)
+* Add fix on warp to include unknown functions for PHP smaller 5.3 (hope)
+* Further complement the phpdoc
 
 = 2.0.0 =
-* rewrite the plugin
-* add settings page
-* cookie for view output
-* different classes for different 
-* params for control output tasks
+* Rewrite the plugin
+* Add settings page
+* Cookie for view output
+* Different classes for different 
+* Params for control output tasks
 
 = v1.1.0 (12/04/2011) =
 * Add Hooks of current page

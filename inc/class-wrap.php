@@ -9,36 +9,49 @@
  */
 
 if ( ! class_exists( 'Debug_Objects_Wrap' ) ) {
-	//add_action( 'init', array( 'Debug_Objects_Wrap', 'init' ) );
 	
 	class Debug_Objects_Wrap extends Debug_Objects {
 		
+		/**
+		 * Include class in plugin and init all functions
+		 * 
+		 * @access  public
+		 * @since   2.0.0
+		 * @return  void
+		 */
 		public static function init() {
-			
+			// not enough right - back
 			if ( ! current_user_can( '_debug_objects' ) )
 				return;
 			
 			$options = Debug_Objects_Settings :: return_options();
 			
 			self::set_cookie_control();
-			
+			// check for output on frontend
 			if ( isset( $options['frontend'] ) && '1' === $options['frontend']
 				 || self::debug_control()
 				 ) {
 				add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue_scripts') );
 				add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue_styles') );
-				add_action( 'wp_footer', array( __CLASS__, 'in_admin_footer' ), 9999 );
+				add_action( 'wp_footer', array( __CLASS__, 'get_content' ), 9999 );
 			}
-			
+			// check for output on backend
 			if ( isset( $options['backend'] ) && '1' === $options['backend']
 				 || self::debug_control()
 				 ) {
 				add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_styles') );
 				add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_scripts') );
-				add_action( 'admin_footer', array( __CLASS__, 'in_admin_footer' ), 9999 );
+				add_action( 'admin_footer', array( __CLASS__, 'get_content' ), 9999 );
 			}
 		}
 		
+		/**
+		 * Check for url param to view output
+		 * 
+		 * @access  public
+		 * @since   2.0.1
+		 * @return  $debug boolean
+		 */
 		public function debug_control() {
 			// Debug via _GET Param on URL
 			if ( ! isset( $_GET['debug'] ) )
@@ -49,9 +62,16 @@ if ( ! class_exists( 'Debug_Objects_Wrap' ) ) {
 			if ( ! $debug )
 				$debug = self::get_cookie_control( $debug );
 			
-			return $debug;
+			return (bool) $debug;
 		}
 		
+		/**
+		 * Check for cookie to view output
+		 * 
+		 * @access  public
+		 * @since   2.0.1
+		 * @return  $debug boolean
+		 */
 		public function get_cookie_control( $debug ) {
 			
 			if ( ! isset( $_COOKIE[parent :: get_plugin_data() . '_cookie'] ) )
@@ -60,9 +80,16 @@ if ( ! class_exists( 'Debug_Objects_Wrap' ) ) {
 			if ( 'Debug_Objects_True' === $_COOKIE[parent :: get_plugin_data() . '_cookie'] )
 				$debug = TRUE;
 			
-			return $debug;
+			return (bool) $debug;
 		}
 		
+		/**
+		 * Init cookie and control the live time
+		 * 
+		 * @access  public
+		 * @since   2.0.1
+		 * @return  void
+		 */
 		public function set_cookie_control() {
 			
 			if ( ! isset( $_GET['debugcookie'] ) )
@@ -77,6 +104,13 @@ if ( ! class_exists( 'Debug_Objects_Wrap' ) ) {
 				setcookie( parent :: get_plugin_data() . '_cookie', '', time() - 3600, COOKIEPATH, COOKIE_DOMAIN );
 		}
 		
+		/**
+		 * Enqueue stylesheets on frontend or backend
+		 * 
+		 * @access  public
+		 * @since   2.0.0
+		 * @return  void
+		 */
 		public static function enqueue_styles() {
 			
 			$suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '.dev' : '';
@@ -95,6 +129,13 @@ if ( ! class_exists( 'Debug_Objects_Wrap' ) ) {
 			);
 		}
 		
+		/**
+		 * Enqueue scripts on frontend or backend
+		 * 
+		 * @access  public
+		 * @since   2.0.0
+		 * @return  void
+		 */
 		public static function enqueue_scripts( $where ) {
 			
 			$suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '.dev' : '';
@@ -115,7 +156,14 @@ if ( ! class_exists( 'Debug_Objects_Wrap' ) ) {
 			);
 		}
 		
-		public static function in_admin_footer() {
+		/**
+		 * Echo markup for view output
+		 * 
+		 * @access  public
+		 * @since   2.0.0
+		 * @return  string
+		 */
+		public static function get_content() {
 			?>
 			<div id="debugobjects">
 				<div id="debugobjectstabs">
@@ -139,8 +187,10 @@ if ( ! class_exists( 'Debug_Objects_Wrap' ) ) {
 					<?php
 					foreach( $tabs as $tab ) {
 						echo '<div id="' . htmlentities2( tag_escape( $tab['tab'] ) ) . '">';
-						if ( function_exists( $tab['function'][0] :: $tab['function'][1]() ) )
-								$tab['function'][0] :: $tab['function'][1]();
+								// for php version 5.2 and only static method
+								call_user_func( array( $tab['function'][0], $tab['function'][1] ) );
+								// only with php 5.3 and higher
+								//$tab['function'][0] :: $tab['function'][1]();
 							do_action( 'debug_objects_function' );
 						echo '</div>';
 					}
