@@ -82,7 +82,6 @@ The plugin comes with various translations, please refer to the [WordPress Codex
 * fix settings on use in Multisite
 * Add php check on activate
 * change init for all class to use the plugin also on PHP smaller 5.3
-* 
 
 = 2.0.1 =
 * Add Memory informations, Load Time, included Files
