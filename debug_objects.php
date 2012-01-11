@@ -153,11 +153,11 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 		public static function on_activation() {
 			
 			// Check for PHP Version 5.3
-			if ( ! version_compare( PHP_VERSION, '5.3.0', '>=' ) ) {
+			if ( ! version_compare( PHP_VERSION, '5.2.0', '>=' ) ) {
 				deactivate_plugins( __FILE__ );
 				wp_die(
 					wp_sprintf(
-						'<strong>%s:</strong> ' . __( 'Sorry, This plugin requires PHP 5.2.4' ),
+						'<strong>%s:</strong> ' . __( 'Sorry, This plugin requires PHP 5.2.0' ),
 						self :: get_plugin_data( 'Name' )
 					)
 				);
