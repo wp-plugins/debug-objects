@@ -152,7 +152,7 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 		 */
 		public static function on_activation() {
 			
-			// Check for PHP Version 5.3
+			// Check for PHP Version 5.2
 			if ( ! version_compare( PHP_VERSION, '5.2.0', '>=' ) ) {
 				deactivate_plugins( __FILE__ );
 				wp_die(
