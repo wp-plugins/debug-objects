@@ -187,7 +187,6 @@ if ( ! class_exists( 'Debug_Objects_Wrap' ) ) {
 					<?php
 					foreach( $tabs as $tab ) {
 						echo '<div id="' . htmlentities2( tag_escape( $tab['tab'] ) ) . '">';
-								// for php version 5.2 and only static method
 								call_user_func( array( $tab['function'][0], $tab['function'][1] ) );
 								// only with php 5.3 and higher
 								//$tab['function'][0] :: $tab['function'][1]();

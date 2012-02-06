@@ -10,15 +10,21 @@
  * Text Domain: debug_objects
  * Domain Path: /languages
  * Description: List filter and action-hooks, cache data, defined constants, qieries, included scripts and styles, php and memory informations and return of conditional tags only for admins; for debug, informations or learning purposes. Setting output in the settings of the plugin and use output via setting or url-param '<code>debug</code>' or set a cookie via url param '<code>debugcookie</code>' in days
- * Version:     2.0.2
+ * Version:     2.1.0
  * License:     GPLv3
  * Author:      Frank B&uuml;ltge
  * Author URI:  http://bueltge.de/
- * Last Change: 01/11/2012
+ * Last Change: 02/06/2012
  */
 
-//avoid direct calls to this file, because now WP core and framework has been used.
-! defined( 'ABSPATH' ) and exit;
+// error_reporting(E_ALL);
+
+// avoid direct calls to this file, because now WP core and framework has been used.
+if ( ! function_exists( 'add_filter' ) ) {
+	echo "Hi there! I'm just a part of plugin, not much I can do when called directly.";
+	exit;
+}
+	
 
 if ( ! class_exists( 'Debug_Objects' ) ) {
 	
@@ -152,12 +158,12 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 		 */
 		public static function on_activation() {
 			
-			// Check for PHP Version 5.2
-			if ( ! version_compare( PHP_VERSION, '5.2.0', '>=' ) ) {
+			// Check for PHP Version 5.3
+			if ( ! version_compare( PHP_VERSION, '5.3.0', '>=' ) ) {
 				deactivate_plugins( __FILE__ );
 				wp_die(
 					wp_sprintf(
-						'<strong>%s:</strong> ' . __( 'Sorry, This plugin requires PHP 5.2.0' ),
+						'<strong>%s:</strong> ' . __( 'Sorry, This plugin requires PHP 5.2.4' ),
 						self :: get_plugin_data( 'Name' )
 					)
 				);

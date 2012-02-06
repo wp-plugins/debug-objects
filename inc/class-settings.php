@@ -239,6 +239,7 @@ if ( ! class_exists( 'Debug_Objects_Settings' ) ) {
 					'Frontend'         => __( 'Output in Footer of Frontend. <br />Alternatively use url param "<code>debug</code>" or set a cookie via url param "<code>debugcookie</code>" in days <br />Example: <code>example.com/?debugcookie=5</code>', self :: get_textdomain() ),
 					'Php'              => __( 'PHP, WordPress and global Stuff', self :: get_textdomain() ),// php, WordPress, globals and more
 					'Conditional_Tags' => __( 'Conditional Tags', self :: get_textdomain() ), // conditional tags
+					'Theme'            => __( 'Theme and Template informations', self :: get_textdomain() ),
 					'Constants'        => __( 'All Constants', self :: get_textdomain() ),// All active Constants
 					'Enqueue_Stuff'    => __( 'Introduced scripts and stylesheets', self :: get_textdomain() ),// Scripts and styles
 					'Debug_Hooks'      => __( 'List existing Hooks and assigned functions and count of accepted args', self :: get_textdomain() ), // Hooks, faster
@@ -286,7 +287,7 @@ if ( ! class_exists( 'Debug_Objects_Settings' ) ) {
 				<h3><span><?php _e( 'Like this plugin?', self :: get_textdomain() ); ?></span></h3>
 				<div class="inside">
 					<p>
-						<img style="float:right;" src="<?php echo plugins_url( '/img/bug-32.png', str_replace( '/inc', '', __FILE__ ) ); ?>" alt="The Bug" />
+						<img style="float:right;" src="<?php echo plugins_url( '/img/bug-32.png', parent::$plugin ); ?>" alt="The Bug" />
 						<?php _e( 'Here\'s how you can give back:', self :: get_textdomain() ); ?></p>
 					<ul>
 						<li><a href="http://wordpress.org/extend/plugins/debug-objects/" title="<?php esc_attr_e( 'The Plugin on the WordPress plugin repository', self :: get_textdomain() ); ?>"><?php _e( 'Give the plugin a good rating.', self :: get_textdomain() ); ?></a></li>

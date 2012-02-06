@@ -3,8 +3,8 @@ Contributors: Bueltge
 Donate link: http://bueltge.de/wunschliste/
 Tags: debug, sql, analyse, tuning, performance, database, queries, query, php, 
 Requires at least: 3.3
-Tested up to: 3.3
-Stable tag: 2.0.2
+Tested up to: 3.4-alpha
+Stable tag: 2.1.0
 
 The Plugin Debug Objects provides a large number of information: query, cache, constants, hooks, functions and many more.
 
@@ -71,13 +71,13 @@ Good news, this plugin is free for everyone! Since it's released under the GPL, 
 The plugin comes with various translations, please refer to the [WordPress Codex](http://codex.wordpress.org/Installing_WordPress_in_Your_Language "Installing WordPress in Your Language") for more information about activating the translation. If you want to help to translate the plugin to your language, please have a look at the .pot file which contains all defintions and may be used with a [gettext](http://www.gnu.org/software/gettext/) editor like [Poedit](http://www.poedit.net/) (Windows).
 
 = Localizations =
-* Thanks for belorussion translation to [Marcis G.](http://pc.de/ "pc.de")
-* Thanks for japanese translation to [Fumito Mizuno](http://ounziw.com/ "Standing on the Shoulder of Linus")
-* Thanks for hindi translation to [Alois M&auml;nner](http://www.nautilus-one.at "http://www.nautilus-one.at")
-* Thanks for dutch translation to [RenÃ¨](http://wpwebshop.com/premium-wordpress-themes/ "WP webshop")
-* Thanks for bulgarian language files to [Web Geek](http://webhostinggeeks.com/)
+* german language file
 
 == Changelog ==
+= 2.1.0 =
+* Add tab for theme and template informations
+* small fix with externel plugin-folder
+
 = 2.0.2 =
 * fix settings on use in Multisite
 * Add php check on activate
