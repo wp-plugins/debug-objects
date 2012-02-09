@@ -10,11 +10,11 @@
  * Text Domain: debug_objects
  * Domain Path: /languages
  * Description: List filter and action-hooks, cache data, defined constants, qieries, included scripts and styles, php and memory informations and return of conditional tags only for admins; for debug, informations or learning purposes. Setting output in the settings of the plugin and use output via setting or url-param '<code>debug</code>' or set a cookie via url param '<code>debugcookie</code>' in days
- * Version:     2.1.0
+ * Version:     2.1.1
  * License:     GPLv3
  * Author:      Frank B&uuml;ltge
  * Author URI:  http://bueltge.de/
- * Last Change: 02/06/2012
+ * Last Change: 02/09/2012
  */
 
 // error_reporting(E_ALL);
@@ -90,7 +90,7 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 		 * @since   2.0.0
 		 * @return  void
 		 */
-		public function init_classes() {
+		private function init_classes() {
 			
 			if ( is_multisite() && is_plugin_active_for_network( plugin_basename( __FILE__ ) ) )
 				$options = get_site_option( self :: $option_string );
@@ -156,10 +156,10 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 		 * @since   2.0.0
 		 * @return  void
 		 */
-		public static function on_activation() {
+		public function on_activation() {
 			
 			// Check for PHP Version 5.3
-			if ( ! version_compare( PHP_VERSION, '5.3.0', '>=' ) ) {
+			if ( ! version_compare( PHP_VERSION, '5.2.4', '>=' ) ) {
 				deactivate_plugins( __FILE__ );
 				wp_die(
 					wp_sprintf(
@@ -214,7 +214,7 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 		 * @param   $unserialized_string boolean
 		 * @return  $output array
 		 */
-		public static function get_as_ul_tree( $arr, $root_name = '', $unserialized_string = FALSE ) {
+		private function get_as_ul_tree( $arr, $root_name = '', $unserialized_string = FALSE ) {
 			global $wp_object;
 			
 			$wp_object = 0;
@@ -308,7 +308,7 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 				}
 			}
 			
-			if ($root_name)
+			if ( $root_name )
 				$output .= "\t" . '</ul>' . "\n\t" . '</li>' . "\n" . '</ul>' . "\n";
 			
 			return $output;
