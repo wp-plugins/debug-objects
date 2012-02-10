@@ -12,14 +12,10 @@ if ( ! class_exists( 'Debug_Objects_Page_Hooks' ) ) {
 	
 	class Debug_Objects_Page_Hooks extends Debug_Objects {
 		
-		static private $table;
-		
 		public static function init() {
 			
 			if ( ! current_user_can( '_debug_objects' ) )
 				return;
-			
-			self :: $table = $GLOBALS['wpdb'] -> prefix . 'hook_list';
 			
 			// self :: control_schedule_record();
 			// add_action( 'record_hook_usage', array( 'Debug_Objects_Page_Hooks', 'control_record' ) );
@@ -111,12 +107,13 @@ if ( ! class_exists( 'Debug_Objects_Page_Hooks' ) ) {
 				if ( 1 == $first_call ) {
 					$doc_root = esc_attr( $_SERVER['DOCUMENT_ROOT'] );
 					
-					$results = $wpdb -> get_results( 'SHOW TABLE STATUS LIKE \'' . self :: $table . '\'');
+					$results = $wpdb -> get_results( 'SHOW TABLE STATUS LIKE \'' . parent::$table . '\'');
 					if ( 1 == count($results) ) {
-						$wpdb -> query( 'TRUNCATE TABLE ' . self :: $table );
+						$wpdb -> query( 'TRUNCATE TABLE ' . parent::$table );
 					} else {
+						$table = parent::$table;
 						$wpdb -> query(
-							"CREATE TABLE self :: $table (
+							"CREATE TABLE $table (
 							called_by varchar(96) NOT NULL,
 							hook_name varchar(96) NOT NULL,
 							hook_type varchar(15) NOT NULL,
@@ -146,7 +143,7 @@ if ( ! class_exists( 'Debug_Objects_Page_Hooks' ) ) {
 				else
 					$called_by = $callstack[4]['function'] . '()';
 				
-				$wpdb -> query( "INSERT " . self :: $table . "
+				$wpdb -> query( "INSERT " . parent::$table . "
 					(first_call,called_by,hook_name,hook_type,arg_count,file_name,line_num)
 					VALUES ( $first_call,'$called_by','$hook','$hook_type',$arg_count,'$file_name',$line_num )"
 				);

@@ -26,7 +26,6 @@ if ( ! class_exists( 'Debug_Objects_Wrap' ) ) {
 			
 			$options = Debug_Objects_Settings :: return_options();
 			
-			self::set_cookie_control();
 			// check for output on frontend
 			if ( isset( $options['frontend'] ) && '1' === $options['frontend']
 				 || self::debug_control()
@@ -43,65 +42,6 @@ if ( ! class_exists( 'Debug_Objects_Wrap' ) ) {
 				add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_scripts') );
 				add_action( 'admin_footer', array( __CLASS__, 'get_content' ), 9999 );
 			}
-		}
-		
-		/**
-		 * Check for url param to view output
-		 * 
-		 * @access  public
-		 * @since   2.0.1
-		 * @return  $debug boolean
-		 */
-		public function debug_control() {
-			// Debug via _GET Param on URL
-			if ( ! isset( $_GET['debug'] ) )
-				$debug = FALSE;
-			else
-				$debug = TRUE;
-			
-			if ( ! $debug )
-				$debug = self::get_cookie_control( $debug );
-			
-			return (bool) $debug;
-		}
-		
-		/**
-		 * Check for cookie to view output
-		 * 
-		 * @access  public
-		 * @since   2.0.1
-		 * @return  $debug boolean
-		 */
-		public function get_cookie_control( $debug ) {
-			
-			if ( ! isset( $_COOKIE[parent :: get_plugin_data() . '_cookie'] ) )
-				return FALSE;
-			
-			if ( 'Debug_Objects_True' === $_COOKIE[parent :: get_plugin_data() . '_cookie'] )
-				$debug = TRUE;
-			
-			return (bool) $debug;
-		}
-		
-		/**
-		 * Init cookie and control the live time
-		 * 
-		 * @access  public
-		 * @since   2.0.1
-		 * @return  void
-		 */
-		public function set_cookie_control() {
-			
-			if ( ! isset( $_GET['debugcookie'] ) )
-				return;
-			
-			if ( $_GET['debugcookie'] ) {
-				$cookie_live = time() + 60 * 60 * 24 * intval( $_GET['debugcookie'] ); // days
-				setcookie( parent :: get_plugin_data() . '_cookie', 'Debug_Objects_True', $cookie_live, COOKIEPATH, COOKIE_DOMAIN );
-			}
-			
-			if ( 0 == intval( $_GET['debugcookie'] ) )
-				setcookie( parent :: get_plugin_data() . '_cookie', '', time() - 3600, COOKIEPATH, COOKIE_DOMAIN );
 		}
 		
 		/**

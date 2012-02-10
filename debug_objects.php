@@ -10,7 +10,7 @@
  * Text Domain: debug_objects
  * Domain Path: /languages
  * Description: List filter and action-hooks, cache data, defined constants, qieries, included scripts and styles, php and memory informations and return of conditional tags only for admins; for debug, informations or learning purposes. Setting output in the settings of the plugin and use output via setting or url-param '<code>debug</code>' or set a cookie via url param '<code>debugcookie</code>' in days
- * Version:     2.1.1
+ * Version:     2.1.2
  * License:     GPLv3
  * Author:      Frank B&uuml;ltge
  * Author URI:  http://bueltge.de/
@@ -35,6 +35,8 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 	class Debug_Objects {
 		
 		static private $classobj = NULL;
+		// table for page hooks
+		public static $table;
 		// var for tab array
 		public static $tabs = array();
 		// string vor save in DB
@@ -70,10 +72,11 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 		 */
 		public function __construct() {
 			
-			// add and remove settings, the table for the plugin
-			
+			// define table
+			self :: $table = $GLOBALS['wpdb'] -> base_prefix . 'hook_list';
 			self :: $plugin = plugin_basename( __FILE__ );
 			
+			// add and remove settings, the table for the plugin
 			register_deactivation_hook( __FILE__, array( __CLASS__, 'on_deactivation' ) );
 			register_uninstall_hook( __FILE__,    array( 'Debug_Objects', 'on_deactivation' ) );
 			
@@ -109,11 +112,77 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 			}
 			$classes = apply_filters( 'debug_objects_classes', self :: $by_settings );
 			
-			foreach ( $classes as $key => $require )
-				require_once dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'inc/class-' . strtolower( $require ) . '.php';
+			self::set_cookie_control();
 			
-			foreach ( $classes as $class )
-				add_action( 'init', array( 'Debug_Objects_' . $class, 'init' ) );
+			if ( ( isset( $options['frontend'] ) && '1' === $options['frontend'] ) || 
+				 ( isset( $options['backend'] ) && '1' === $options['backend'] ) || 
+				 self::debug_control()
+			) {
+				foreach ( $classes as $key => $require )
+					require_once dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'inc/class-' . strtolower( $require ) . '.php';
+			
+				foreach ( $classes as $class )
+					add_action( 'init', array( 'Debug_Objects_' . $class, 'init' ) );
+			}
+		}
+		
+/**
+		 * Check for url param to view output
+		 * 
+		 * @access  public
+		 * @since   2.0.1
+		 * @return  $debug boolean
+		 */
+		public function debug_control() {
+			// Debug via _GET Param on URL
+			if ( ! isset( $_GET['debug'] ) )
+				$debug = FALSE;
+			else
+				$debug = TRUE;
+			
+			if ( ! $debug )
+				$debug = self::get_cookie_control( $debug );
+			
+			return (bool) $debug;
+		}
+		
+		/**
+		 * Check for cookie to view output
+		 * 
+		 * @access  public
+		 * @since   2.0.1
+		 * @return  $debug boolean
+		 */
+		public function get_cookie_control( $debug ) {
+			
+			if ( ! isset( $_COOKIE[self::get_plugin_data() . '_cookie'] ) )
+				return FALSE;
+			
+			if ( 'Debug_Objects_True' === $_COOKIE[self::get_plugin_data() . '_cookie'] )
+				$debug = TRUE;
+			
+			return (bool) $debug;
+		}
+		
+		/**
+		 * Init cookie and control the live time
+		 * 
+		 * @access  public
+		 * @since   2.0.1
+		 * @return  void
+		 */
+		public function set_cookie_control() {
+			
+			if ( ! isset( $_GET['debugcookie'] ) )
+				return;
+			
+			if ( $_GET['debugcookie'] ) {
+				$cookie_live = time() + 60 * 60 * 24 * intval( $_GET['debugcookie'] ); // days
+				setcookie( $this->get_plugin_data() . '_cookie', 'Debug_Objects_True', $cookie_live, COOKIEPATH, COOKIE_DOMAIN );
+			}
+			
+			if ( 0 == intval( $_GET['debugcookie'] ) )
+				setcookie( $this->get_plugin_data() . '_cookie', '', time() - 3600, COOKIEPATH, COOKIE_DOMAIN );
 		}
 		
 		/**
@@ -173,7 +242,7 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 			
 			$GLOBALS['wp_roles'] -> add_cap( 'administrator', '_debug_objects' );
 			// add table
-			$table = $GLOBALS['wpdb'] -> prefix . 'hook_list';
+			$table = self::$table;
 			$GLOBALS['wpdb'] -> query(
 				"CREATE TABLE $table (
 				called_by varchar(96) NOT NULL,
@@ -200,8 +269,7 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 			
 			$GLOBALS['wp_roles'] -> remove_cap( 'administrator', '_debug_objects' );
 			// remove hook table
-			$table = $GLOBALS['wpdb'] -> prefix . 'hook_list';
-			$GLOBALS['wpdb'] -> query( "DROP TABLE IF EXISTS $table" );
+			$GLOBALS['wpdb'] -> query( "DROP TABLE IF EXISTS " . self::$table );
 		}
 		
 		/**
@@ -214,7 +282,7 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 		 * @param   $unserialized_string boolean
 		 * @return  $output array
 		 */
-		private function get_as_ul_tree( $arr, $root_name = '', $unserialized_string = FALSE ) {
+		public function get_as_ul_tree( $arr, $root_name = '', $unserialized_string = FALSE ) {
 			global $wp_object;
 			
 			$wp_object = 0;
