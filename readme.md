@@ -1,8 +1,8 @@
 # Debug Objects
-The WordPress Plugin *Debug Objects* provides a large number of information: query, cache, constants, hooks, functions and many more.
+The WordPress Plugin *Debug Objects* provides a large number of information: query, cache, crons, constants, hooks, functions and many more.
 
 ## Description
-The Plugin Debug Objects provides the user, which has the appropriate rights, normally the administrator, a large number of information: query, cache, constants, hooks, functions and many many more. Values and content get displayed at the frontend and backend of the blog, to analyze errors but also to better understand and develop with/for WordPress.
+The Plugin Debug Objects provides the user, which has the appropriate rights, normally the administrator, a large number of information: query, cache, crons, constants, hooks, functions and many many more. Values and content get displayed at the frontend and backend of the blog, to analyze errors but also to better understand and develop with/for WordPress.
 
 *The Plugin provides in various tabs information to:*
 
@@ -23,6 +23,7 @@ The Plugin Debug Objects provides the user, which has the appropriate rights, no
 * Conditional tags; value of the tag
 * Theme information
 * Template Information
+* Cron content and his functions to an cron
 * Cache content
 * Hooks and filters
 * Functions, which respond on hooks and filters
