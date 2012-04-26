@@ -117,6 +117,8 @@ if ( ! class_exists( 'Debug_Objects_Wrap' ) ) {
 					);
 					*/
 					$tabs = apply_filters( 'debug_objects_tabs', $tabs = array() );
+					if ( empty( $tabs ) )
+						echo '<li>Debug Objects: No active settings.</li>';
 					
 					foreach( $tabs as $tab ) {
 						echo '<li><a href="#' . htmlentities2( tag_escape( $tab['tab'] ) ) . '">' . esc_attr( $tab['tab'] ) . '</a></li>';
