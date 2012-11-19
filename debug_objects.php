@@ -10,7 +10,7 @@
  * Text Domain: debug_objects
  * Domain Path: /languages
  * Description: List filter and action-hooks, cache data, defined constants, qieries, included scripts and styles, php and memory informations and return of conditional tags only for admins; for debug, informations or learning purposes. Setting output in the settings of the plugin and use output via setting or url-param '<code>debug</code>' or set a cookie via url param '<code>debugcookie</code>' in days
- * Version:     2.2.0
+ * Version:     2.1.10
  * License:     GPLv3
  * Author:      Frank B&uuml;ltge
  * Author URI:  http://bueltge.de/
@@ -155,6 +155,7 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 		 * @return  $debug boolean
 		 */
 		public function debug_control() {
+			
 			// Debug via _GET Param on URL
 			if ( ! isset( $_GET['debug'] ) )
 				$debug = FALSE;
@@ -217,11 +218,17 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 		 */
 		public static function get_plugin_data( $value = 'TextDomain', $echo = FALSE ) {
 			
+			static $plugin_data = array();
+			
+			// fetch the data just once.
+			if ( isset( $plugin_data[ $value ] ) )
+				return $plugin_data[ $value ];
+			
 			if ( ! function_exists( 'get_plugin_data' ) )
 				require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
 			
 			$plugin_data  = get_plugin_data( __FILE__ );
-			$plugin_value = $plugin_data[$value];
+			$plugin_value = empty ( $plugin_data[ $value ] ) ? '' : $plugin_data[ $value ];
 			
 			if ( $echo )
 				echo $plugin_value;
