@@ -77,7 +77,7 @@ The plugin comes with various translations, please refer to the [WordPress Codex
 * Lithuanian translation files by [Vincent G](http://www.host1plus.com)
 
 == Changelog ==
-= 2.1.10 =
+= 2.2.0 =
 * Mninor Fixes, PHP Warnings and Notice
 * Add "Super Var Dump" project
 
