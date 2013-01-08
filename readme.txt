@@ -3,8 +3,8 @@ Contributors: Bueltge, inpsyde
 Donate link: http://bueltge.de/wunschliste/
 Tags: debug, sql, analyse, tuning, performance, database, queries, query, php, cron, cache
 Requires at least: 3.3
-Tested up to: 3.5-Beta3
-Stable tag: 2.2.0
+Tested up to: 3.6-alpha
+Stable tag: 2.1.11
 
 The Plugin Debug Objects provides a large number of information: query, cache, cron, constants, hooks, functions and many more.
 
@@ -35,6 +35,10 @@ The Plugin Debug Objects provides the user, which has the appropriate rights, no
 * Functions, which respond on hooks and filters
 * Contents of arrays to hooks and filters
 * All defined constants
+* Super Var Dump
+* Run WordPress in default mode via url-param
+* Add alternative PHP Error reporting: [PHP Error](http://phperror.net/)
+* Inlcude Logging in Chrome Console: [ChromePHP](http://www.chromephp.com/)
 * and many more ...
 
 The plugin does not filter values and should only be used for information and optimization, I don't recommended to use it on a live blog. For developers it can rapidly deliver data, which is useful in a development environment.
@@ -77,7 +81,12 @@ The plugin comes with various translations, please refer to the [WordPress Codex
 * Lithuanian translation files by [Vincent G](http://www.host1plus.com)
 
 == Changelog ==
-= 2.2.0 =
+= 2.1.11 =
+* Add possibility to run WP in default mode; Add the url-param 'default', like '?debug&default' for run WordPress in a safe mode. Plugins are not loaed and set the default theme as active theme, is it available.
+* Add logging in chrome Webinspector via [ChromePHP](http://www.chromephp.com/)
+* Add [PHPError](http://phperror.net/), alternative PHP Error reporting
+
+= 2.1.10 (11/19/2012) =
 * Mninor Fixes, PHP Warnings and Notice
 * Add "Super Var Dump" project
 
