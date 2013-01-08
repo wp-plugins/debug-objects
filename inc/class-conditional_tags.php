@@ -7,31 +7,49 @@
  * @author      Frank B&uuml;ltge
  * @since       2.0.0
  */
+if ( ! function_exists( 'add_filter' ) ) {
+	echo "Hi there! I'm just a part of plugin, not much I can do when called directly.";
+	exit;
+}
 
 if ( ! class_exists( 'Debug_Objects_Conditional_Tags' ) ) {
-	add_action( 'admin_init', array( 'Debug_Objects_Conditional_Tags', 'init' ) );
 	
 	class Debug_Objects_Conditional_Tags extends Debug_Objects {
 		
+		protected static $classobj = NULL;
+		
+		/**
+		 * Handler for the action 'init'. Instantiates this class.
+		 * 
+		 * @access  public
+		 * @return  $classobj
+		 */
 		public static function init() {
+			
+			NULL === self::$classobj and self::$classobj = new self();
+			
+			return self::$classobj;
+		}
+		
+		public function __construct() {
 			
 			if ( ! current_user_can( '_debug_objects' ) )
 				return;
 			
-			add_filter( 'debug_objects_tabs', array( __CLASS__, 'get_conditional_tab' ) );
+			add_filter( 'debug_objects_tabs', array( $this, 'get_conditional_tab' ) );
 		}
 		
-		public static function get_conditional_tab( $tabs ) {
+		public function get_conditional_tab( $tabs ) {
 			
 			$tabs[] = array( 
 				'tab' => __( 'Conditional Tags', parent :: get_plugin_data() ),
-				'function' => array( __CLASS__, 'get_conditional_tags' )
+				'function' => array( $this, 'get_conditional_tags' )
 			);
 			
 			return $tabs;
 		}
 		
-		public static function get_conditional_tags( $echo = TRUE ) {
+		public function get_conditional_tags( $echo = TRUE ) {
 			
 			$is = '';
 			$is_not = '';

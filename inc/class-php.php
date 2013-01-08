@@ -8,30 +8,48 @@
  * @since       2.0.0
  */
 
+if ( ! function_exists( 'add_filter' ) ) {
+	echo "Hi there! I'm just a part of plugin, not much I can do when called directly.";
+	exit;
+}
+
 if ( ! class_exists( 'Debug_Objects_Php' ) ) {
-	//add_action( 'admin_init', array( 'Debug_Objects_Php', 'init' ) );
-	
 	class Debug_Objects_Php extends Debug_Objects {
 		
+		protected static $classobj = NULL;
+		
+		/**
+		 * Handler for the action 'init'. Instantiates this class.
+		 * 
+		 * @access  public
+		 * @return  $classobj
+		 */
 		public static function init() {
+			
+			NULL === self::$classobj and self::$classobj = new self();
+			
+			return self::$classobj;
+		}
+		
+		public function __construct() {
 			
 			if ( ! current_user_can( '_debug_objects' ) )
 				return;
 			
-			add_filter( 'debug_objects_tabs', array( __CLASS__, 'get_conditional_tab' ) );
+			add_filter( 'debug_objects_tabs', array( $this, 'get_conditional_tab' ) );
 		}
 		
-		public static function get_conditional_tab( $tabs ) {
+		public function get_conditional_tab( $tabs ) {
 			
 			$tabs[] = array( 
 				'tab' => __( 'PHP, Globals &amp; WP', parent :: get_plugin_data() ),
-				'function' => array( __CLASS__, 'get_different_stuff' )
+				'function' => array( $this, 'get_different_stuff' )
 			);
 			
 			return $tabs;
 		}
 		
-		public static function get_different_stuff( $echo = TRUE ) {
+		public function get_different_stuff( $echo = TRUE ) {
 			global $wpdb, $locale;
 			
 			if ( defined( 'WPLANG' ) )
@@ -43,14 +61,20 @@ if ( ! class_exists( 'Debug_Objects_Php' ) ) {
 			$memory_usage = function_exists( 'memory_get_usage' ) ? round(memory_get_usage() / 1024 / 1024, 2) : 0;
 			$memory_limit = (int) ini_get( 'memory_limit' ) ;
 			
+			$memory_percent = '';
 			if ( ! empty($memory_usage) && ! empty($memory_limit) )
 				$memory_percent = round( $memory_usage / $memory_limit * 100, 0 );
 			
+			$os = __( 'undefined', parent :: get_plugin_data() );
 			$oskey = $_SERVER['HTTP_USER_AGENT'];
 			//Operating-System scan start
 			if ( preg_match( '=WIN=i', $oskey) ) { //Windows
 				if (preg_match( '=NT=i', $oskey) ) {
-					if (preg_match( '=5.1=', $oskey) ) {
+					if (preg_match( '=6.1=', $oskey) ) {
+						$os = __( 'Windows 7', parent :: get_plugin_data() );
+					} elseif (preg_match( '=6.0=', $oskey) ) {
+						$os = __( 'Windows Vista', parent :: get_plugin_data() );
+					} elseif (preg_match( '=5.1=', $oskey) ) {
 						$os = __( 'Windows XP', parent :: get_plugin_data() );
 					} elseif(preg_match( '=5.0=', $oskey) ) {//Windows 2000
 						$os = __( 'Windows 2000', parent :: get_plugin_data() );

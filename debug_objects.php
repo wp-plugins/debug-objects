@@ -1,20 +1,19 @@
 <?php
 /**
  * @package Debug Objects
- * @author  Frank B&uuml;ltge
- */
- 
-/**
+ * @author  Frank Bültge
+ * 
+ * 
  * Plugin Name: Debug Objects
  * Plugin URI:  http://bueltge.de/debug-objects-wordpress-plugin/966/
  * Text Domain: debug_objects
  * Domain Path: /languages
- * Description: List filter and action-hooks, cache data, defined constants, qieries, included scripts and styles, php and memory informations and return of conditional tags only for admins; for debug, informations or learning purposes. Setting output in the settings of the plugin and use output via setting or url-param '<code>debug</code>' or set a cookie via url param '<code>debugcookie</code>' in days
- * Version:     2.1.10
+ * Description: List filter and action-hooks, cache data, defined constants, qieries, included scripts and styles, php and memory informations and return of conditional tags only for admins; for debug, informations or learning purposes. Setting output in the settings of the plugin and use output via link in Admin Bar, via setting, via url-param '<code>debug</code>' or set a cookie via url param '<code>debugcookie</code>' in days.
+ * Version:     2.1.11
  * License:     GPLv3
- * Author:      Frank B&uuml;ltge
+ * Author:      Frank Bültge
  * Author URI:  http://bueltge.de/
- * Last Change: 11/15/2012
+ * Last Change: 02/01/2013)
  */
 
 // error_reporting(E_ALL);
@@ -34,7 +33,7 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 	
 	class Debug_Objects {
 		
-		static private $classobj = NULL;
+		protected static $classobj = NULL;
 		// table for page hooks
 		public static $table = 'hook_list';
 		// var for tab array
@@ -55,13 +54,11 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 		 * @since   2.0.0
 		 * @return  $classobj
 		 */
-		public function get_object() {
+		public static function get_object() {
 			
-			if ( NULL === self :: $classobj ) {
-				self :: $classobj = new self;
-			}
-			
-			return self :: $classobj;
+			NULL === self::$classobj and self::$classobj = new self();
+		
+			return self::$classobj;
 		}
 		
 		/**
@@ -80,15 +77,16 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 				require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
 			
 			// add and remove settings, the table for the plugin
-			register_deactivation_hook( __FILE__, array( __CLASS__, 'on_deactivation' ) );
+			register_deactivation_hook( __FILE__, array( $this, 'on_deactivation' ) );
 			register_uninstall_hook( __FILE__,    array( 'Debug_Objects', 'on_deactivation' ) );
 			
+			// include for load safe mode
+			require_once dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'inc/class-default_mode.php';
 			// Include settings
 			require_once dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'inc/class-settings.php';
 			
-			add_action( 'admin_init', array( __CLASS__, 'add_capabilities' ) );
+			add_action( 'admin_init', array( $this, 'add_capabilities' ) );
 			
-			//add_action( 'init', array( __CLASS__, 'init_classes' ) );
 			self::init_classes();
 		}
 		
@@ -104,7 +102,7 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 		 * @since   2.0.0
 		 * @return  void
 		 */
-		private function init_classes() {
+		public function init_classes() {
 			
 			if ( is_multisite() && is_plugin_active_for_network( plugin_basename( __FILE__ ) ) )
 				$options = get_site_option( self :: $option_string );
@@ -216,7 +214,7 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 		 *         Name, PluginURI, Version, Description, Author, AuthorURI, TextDomain, DomainPath, Network, Title
 		 * @return string
 		 */
-		public static function get_plugin_data( $value = 'TextDomain', $echo = FALSE ) {
+		public function get_plugin_data( $value = 'TextDomain', $echo = FALSE ) {
 			
 			static $plugin_data = array();
 			
@@ -242,7 +240,7 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 		 * @since   2.0.0
 		 * @return  string
 		 */
-		public static function get_plugin_string() {
+		public function get_plugin_string() {
 			
 			return self :: $plugin;
 		}
@@ -291,7 +289,7 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 		 * @since   2.0.0
 		 * @return  void
 		 */
-		public static function on_deactivation() {
+		public function on_deactivation() {
 			
 			unregister_setting( self :: $option_string . '_group', self :: $option_string );
 			delete_option( self :: $option_string );
@@ -416,3 +414,20 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 	} // end class
 	
 } // end if class exists
+
+if ( ! function_exists( 'pre_print' ) ) {
+
+	/**
+	 * Print debug output
+	 *
+	 * @since  2012.11.03
+	 * @param  mixed
+	 * @return void
+	 */
+	function pre_print( $var ) {
+
+		$export = var_export( $var, TRUE );
+		$escape = htmlspecialchars( $export, ENT_QUOTES, 'utf-8', FALSE );
+		print "<pre>$escape</pre>";
+	}
+}

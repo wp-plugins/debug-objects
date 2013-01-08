@@ -29,6 +29,10 @@ The Plugin Debug Objects provides the user, which has the appropriate rights, no
 * Functions, which respond on hooks and filters
 * Contents of arrays to hooks and filters
 * All defined constants
+* Super Var Dump
+* Run WordPress in default mode via url-param
+* Add alternative PHP Error reporting: [PHP Error](http://phperror.net/)
+* Include Logging in Chrome Console: [ChromePHP](http://www.chromephp.com/)
 * and many more ...
 
 The plugin does not filter values and should only be used for information and optimization, I don't recommended to use it on a live blog. For developers it can rapidly deliver data, which is useful in a development environment.
@@ -49,6 +53,10 @@ There are no data in the database and there are no settings. Therefore, the inst
 
 
 ## Screenshots
+![Settings Screenshot in WordPress 3.6 alpha][screenshot]
+
+[screenshot]: https://raw.github.com/bueltge/Debug-Objects/master/screenshot-1.png "Settings in WordPress 3.6 alpha"
+
  * [See this example screenshot in WordPress 3.3](https://github.com/bueltge/Debug-Objects/blob/master/screenshot-1.png)
 
 
@@ -70,3 +78,4 @@ I'm German and my English might be gruesome here and there. So please be patient
 ## Changelog
 
  * [see on the page](http://wordpress.org/extend/plugins/debug-objects/changelog/)
+ * or see the [commits](https://github.com/bueltge/Debug-Objects/commits/master)

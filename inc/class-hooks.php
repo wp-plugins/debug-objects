@@ -8,30 +8,48 @@
  * @since       2.0.0
  */
 
+if ( ! function_exists( 'add_filter' ) ) {
+	echo "Hi there! I'm just a part of plugin, not much I can do when called directly.";
+	exit;
+}
+
 if ( ! class_exists( 'Debug_Objects_Hooks' ) ) {
-	//add_action( 'admin_init', array( 'Debug_Objects_Hooks', 'init' ) );
-	
 	class Debug_Objects_Hooks extends Debug_Objects {
 		
+		protected static $classobj = NULL;
+		
+		/**
+		 * Handler for the action 'init'. Instantiates this class.
+		 * 
+		 * @access  public
+		 * @return  $classobj
+		 */
 		public static function init() {
+			
+			NULL === self::$classobj and self::$classobj = new self();
+			
+			return self::$classobj;
+		}
+
+		public function __construct() {
 			
 			if ( ! current_user_can( '_debug_objects' ) )
 				return;
 			
-			add_filter( 'debug_objects_tabs', array( __CLASS__, 'get_conditional_tab' ) );
+			add_filter( 'debug_objects_tabs', array( $this, 'get_conditional_tab' ) );
 		}
 		
-		public static function get_conditional_tab( $tabs ) {
+		public function get_conditional_tab( $tabs ) {
 			
 			$tabs[] = array( 
 				'tab' => __( 'Hooks', parent :: get_plugin_data() ),
-				'function' => array( __CLASS__, 'get_hooks' )
+				'function' => array( $this, 'get_hooks' )
 			);
 			
 			return $tabs;
 		}
 		
-		public static function get_hooks( $echo = TRUE, $sort_hooks = TRUE ) {
+		public function get_hooks( $echo = TRUE, $sort_hooks = TRUE ) {
 			global $wp_filter;
 			
 			if ( empty( $wp_filter ) )
