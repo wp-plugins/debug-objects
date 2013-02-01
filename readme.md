@@ -29,7 +29,9 @@ The Plugin Debug Objects provides the user, which has the appropriate rights, no
 * Functions, which respond on hooks and filters
 * Contents of arrays to hooks and filters
 * All defined constants
-* Super Var Dump
+* All classes
+* Post Meta data
+* See data from `$_POST`; `$_GET` and debug backtrace before rewrite; usefull for forms in backend
 * Run WordPress in default mode via url-param
 * Add alternative PHP Error reporting: [PHP Error](http://phperror.net/)
 * Include Logging in Chrome Console: [ChromePHP](http://www.chromephp.com/)

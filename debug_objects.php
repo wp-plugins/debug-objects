@@ -9,27 +9,28 @@
  * Text Domain: debug_objects
  * Domain Path: /languages
  * Description: List filter and action-hooks, cache data, defined constants, qieries, included scripts and styles, php and memory informations and return of conditional tags only for admins; for debug, informations or learning purposes. Setting output in the settings of the plugin and use output via link in Admin Bar, via setting, via url-param '<code>debug</code>' or set a cookie via url param '<code>debugcookie</code>' in days.
- * Version:     2.1.11
+ * Version:     2.1.12
  * License:     GPLv3
  * Author:      Frank Bültge
  * Author URI:  http://bueltge.de/
  * Last Change: 02/01/2013)
  */
 
-// error_reporting(E_ALL);
-
 // avoid direct calls to this file, because now WP core and framework has been used.
 if ( ! function_exists( 'add_filter' ) ) {
 	echo "Hi there! I'm just a part of plugin, not much I can do when called directly.";
 	exit;
 }
-	
 
 if ( ! class_exists( 'Debug_Objects' ) ) {
 	
 	// include plugin on hook
 	add_action( 'plugins_loaded',       array( 'Debug_Objects', 'get_object' ) );
 	register_activation_hook( __FILE__, array( 'Debug_Objects', 'on_activation' ) );
+	
+	// include the ChromePHP very early
+	require_once dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'inc/class-chromephp.php';
+	$debug_objects_chromephp = Debug_Objects_Chromephp::init();
 	
 	class Debug_Objects {
 		
@@ -68,6 +69,8 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 		 * @return  void
 		 */
 		public function __construct() {
+			
+			ini_set( 'max_execution_time', 60 );
 			
 			// define table
 			self :: $table  = $GLOBALS['wpdb'] -> base_prefix . self::$table;
@@ -135,17 +138,32 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 			
 			self::set_cookie_control();
 			
+			// Load class backtrace without output, if option is active
+			if ( in_array( 'Rewrite_backtrace', $classes ) ) {
+				
+				$file = dirname( __FILE__ ) . DIRECTORY_SEPARATOR 
+					. 'inc/class-rewrite_backtrace.php';
+				require_once( $file );
+				add_action( 'init', array( 'Debug_Objects_Rewrite_Backtrace', 'init' ) );
+			}
+			
 			if ( $view || self::debug_control()
 			) {
-				foreach ( $classes as $key => $require )
-					require_once dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'inc/class-' . strtolower( $require ) . '.php';
-			
-				foreach ( $classes as $class )
-					add_action( 'init', array( 'Debug_Objects_' . $class, 'init' ) );
+				foreach ( $classes as $key => $require ) {
+					if ( ! class_exists( 'Debug_Objects_' . $require ) ) {
+						$file = dirname( __FILE__ ) . DIRECTORY_SEPARATOR 
+							. 'inc/class-' . strtolower( $require ) . '.php';
+						if ( file_exists( $file ) )
+							require_once $file;
+						
+						add_action( 'init', array( 'Debug_Objects_' . $require, 'init' ) );
+					}
+				}
 			}
+			
 		}
 		
-/**
+		/**
 		 * Check for url param to view output
 		 * 
 		 * @access  public
@@ -416,18 +434,18 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 } // end if class exists
 
 if ( ! function_exists( 'pre_print' ) ) {
-
+	
 	/**
 	 * Print debug output
 	 *
-	 * @since  2012.11.03
+	 * @since  03/11/2012
 	 * @param  mixed
 	 * @return void
 	 */
-	function pre_print( $var ) {
-
+	function pre_print( $var, $before = '' ) {
+		
 		$export = var_export( $var, TRUE );
 		$escape = htmlspecialchars( $export, ENT_QUOTES, 'utf-8', FALSE );
-		print "<pre>$escape</pre>";
+		print $before . '<pre>' . $escape . '</pre>';
 	}
 }
