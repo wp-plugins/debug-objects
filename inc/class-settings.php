@@ -6,6 +6,7 @@
  * @subpackage  Settings
  * @author      Frank Bültge
  * @since       2.0.0
+ * @version     06/18/2013
  */
 
 if ( ! function_exists( 'add_filter' ) ) {
@@ -66,8 +67,6 @@ if ( ! class_exists( 'Debug_Objects_Settings' ) ) {
 				add_action( 'network_admin_edit_' . self::$option_string, array( $this, 'save_network_settings_page' ) );
 				// return message for update settings
 				add_action( 'network_admin_notices', array( $this, 'get_network_admin_notices' ) );
-				// todos on init of WP
-				add_action( 'init', array( $this, 'on_init' ) );
 			} else {
 				add_action( 'admin_menu',            array( $this, 'add_settings_page' ) );
 				// add settings link
@@ -75,7 +74,9 @@ if ( ! class_exists( 'Debug_Objects_Settings' ) ) {
 				// use settings API
 				add_action( 'admin_init',            array( $this, 'register_settings' ) );
 			}
-			//
+			// todos on init of WP
+			add_action( 'init', array( $this, 'on_init' ) );
+			// content for settings page
 			add_action( 'debug_objects_settings_page', array( $this, 'get_inside_form' ) );
 			// add meta boxes on settings pages
 			add_action( 'debug_objects_settings_page_sidebar', array( $this, 'get_plugin_infos' ) );
@@ -105,6 +106,10 @@ if ( ! class_exists( 'Debug_Objects_Settings' ) ) {
 		 * @return  void
 		 */
 		public function on_init() {
+			
+			// set classes for admin bar item
+			add_filter( 'debug_objects_classes', array( $this, 'get_debug_objects_classes' ) );
+			
 			// add item on admin bar for go faster to the settings
 			add_action( 'admin_bar_menu', array( $this, 'add_wp_admin_bar_item' ), 9999 );
 		}
@@ -144,6 +149,17 @@ if ( ! class_exists( 'Debug_Objects_Settings' ) ) {
 		}
 		
 		/**
+		 * Return classes for the Debug Objects Item
+		 * 
+		 * @param  Array $classes
+		 * @return Array $classes
+		 */
+		public function get_debug_objects_classes( $classes ) {
+			
+			return $classes;
+		}
+		
+		/**
 		 * Add item in admin bar
 		 * 
 		 * @since   07/24/2012
@@ -154,12 +170,16 @@ if ( ! class_exists( 'Debug_Objects_Settings' ) ) {
 			if ( ! is_super_admin() || ! is_admin_bar_showing() )
 				return NULL;
 			
+			$classes = apply_filters( 'debug_objects_classes', array() );
+			$classes = implode( ' ', $classes );
+			
 			$wp_admin_bar->add_menu(
 				array(
 					'parent'    => 'network-admin',
 					'secondary' => FALSE,
 					'id'        => 'network-' . self::get_textdomain(),
 					'title'     => self::get_plugin_data( 'Name' ),
+					'meta'      => array( 'class' => $classes ),
 					'href'      => network_admin_url( 'settings.php?page=' . plugin_basename( __FILE__ ) ),
 				)
 			);
@@ -173,13 +193,14 @@ if ( ! class_exists( 'Debug_Objects_Settings' ) ) {
 			$href = $url . $get . "debug#debugobjects";
 			$wp_admin_bar->add_menu(
 				array(
-					'id' => 'debug_objects', 
+					'id'     => 'debug_objects', 
 					'parent' => 'top-secondary',
-					'title' => '<img style="float:left;height:28px;" src="' 
+					'title'  => '<img style="float:left;height:28px;" src="' 
 						. plugins_url( '/img/bug-32.png', parent::$plugin ) 
 						. '" alt="The Bug" />' 
 						. __( ' Objects', self::get_textdomain() ),
-					'href' => $href
+					'meta'   => array( 'class' => $classes ),
+					'href'   => $href
 				)
 			);
 		}
@@ -314,14 +335,16 @@ if ( ! class_exists( 'Debug_Objects_Settings' ) ) {
 					'Classes'           => __( 'List all declared classes and his subclasses' ),
 					'Functions'         => __( 'List all defined functions' ),
 					'Constants'         => __( 'All Constants' ),// All active Constants
+					'Shortcodes'        => __( 'List all shortcodes' ),
 					'Rewrite_Backtrace' => __( 'Filter to temporarily get a "debug object" prior to redirecting with a backtrace' ),
 					'Conditional_Tags'  => __( 'Conditional Tags' ), // conditional tags
-					'Post_Meta'         => __( 'Get a list of post meta for the current post' ),
+					'Post_Meta'         => __( 'Get a list of arguments to custom post types and a list of post meta for the current post type' ),
 					'Theme'             => __( 'Theme and Template informations' ),
 					'Enqueue_Stuff'     => __( 'Introduced scripts and stylesheets' ),// Scripts and styles
 					'Debug_Hooks'       => __( 'List existing Hooks and assigned functions and count of accepted args' ), // Hooks, faster
 					//'Hooks'            => __( 'List existing Hooks and assigned functions' ),// Hooks
-					'Page_Hooks'        => __( 'Hooks of current page, very slow and use many RAM' ),// Hook Instrument for active page
+					'All_Hooks'         => __( 'List all hooks, very slow and use many RAM' ),
+					'Page_Hooks'        => __( 'Hooks of current page' ),// Hook Instrument for active page
 					'Query'             => __( 'Contents of Query' ),// WP Queries
 					'Stack_Trace'       => __( 'Stack Trace, all files and functions on each query. Query options is prerequisite.<br />A stack trace is a report of the active stack frames at a certain point in time during the execution of a program.' ),
 					'Cache'             => __( 'Contents of Cache' ),// WP Cache
@@ -329,7 +352,7 @@ if ( ! class_exists( 'Debug_Objects_Settings' ) ) {
 					'Memory'            => __( 'Memory Used, Load Time and included Files' ),
 					'Inspector'         => __( 'Provide information about a given domain' ),
 					//'Super_Var_Dump'    => __( 'A customized var_dump walker for viewing complex PHP variable data with an easy, javascript-backed nested-exploring view. Use the function <code>super_var_dump( $example_object );</code> for your debugging. More hints on <a href="https://github.com/ericandrewlewis/super-var-dump">this project</a>.' ),
-					'Chromephp'         => __( 'Logging PHP variables to Google Chrome console. You need to install the <a href="http://www.chromephp.com/">ChromePHP</a> extension. Start logging: <code>ChromePhp::log( $_SERVER );</code> More information can be found here: <a href="http://www.chromephp.com">http://www.chromephp.com</a>. This option is always active to load very early, before it possible to check the options.' ),
+					'Chromephp'         => __( 'Logging PHP variables to Google Chrome console. You need to install the <a href="http://chromelogger.com/">Chrome Logger</a> extension. Start logging: <code>ChromePhp::log( $_SERVER );</code> More information can be found here: <a href="https://github.com/ccampbell/chromephp">github.com/ccampbell/chromephp</a>. This option is always active to load very early, before it possible to check the options.' ),
 					//'Debug'            => __( '' ),
 					'Php_Error'         => __( 'A alternative PHP Error reporting; works only with PHP 5.3. Set the url param <code>php_error</code> for all strict messages.' ),
 					'Default_Mode'      => __( 'Add the url-param \'<code>default</code>\', like \'<code>?debug&default</code>\', for run WordPress in a safe mode. Plugins are not loaded and set the default theme as active theme, is it available.' ),

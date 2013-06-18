@@ -4,7 +4,7 @@
  *
  * @package     Debug Objects
  * @subpackage  Current Hooks
- * @author      Frank B&uuml;ltge
+ * @author      Frank Bültge
  * @since       2.0.0
  */
 
@@ -13,164 +13,156 @@ if ( ! function_exists( 'add_filter' ) ) {
 	exit;
 }
 
-if ( ! class_exists( 'Debug_Objects_Page_Hooks' ) ) {
-	class Debug_Objects_Page_Hooks extends Debug_Objects {
+if ( class_exists( 'Debug_Objects_Page_Hooks' ) )
+	return NULL;
+
+class Debug_Objects_Page_Hooks {
+	
+	protected static $classobj = NULL;
+	
+	public $filters_storage = array();
+	
+	/**
+	 * Handler for the action 'init'. Instantiates this class.
+	 * 
+	 * @access  public
+	 * @return  $classobj
+	 */
+	public static function init() {
 		
-		protected static $classobj = NULL;
+		NULL === self::$classobj and self::$classobj = new self();
 		
-		/**
-		 * Handler for the action 'init'. Instantiates this class.
-		 * 
-		 * @access  public
-		 * @return  $classobj
-		 */
-		public static function init() {
-			
-			NULL === self::$classobj and self::$classobj = new self();
-			
-			return self::$classobj;
-		}
+		return self::$classobj;
+	}
+	
+	/**
+	 * Constructor, init the methods
+	 * 
+	 * @return  void
+	 * @since   2.1.11
+	 */
+	public function __construct() {
 		
-		public function __construct() {
-			
-			if ( ! current_user_can( '_debug_objects' ) )
-				return;
-			
-			// self :: control_schedule_record();
-			// add_action( 'record_hook_usage', array( 'Debug_Objects_Page_Hooks', 'control_record' ) );
-			
-			add_action( 'all', array( $this, 'record_hook_usage' ) );
-			add_filter( 'debug_objects_tabs', array( $this, 'get_conditional_tab' ) );
-		}
+		if ( ! current_user_can( '_debug_objects' ) )
+			return NULL;
 		
-		public function get_conditional_tab( $tabs ) {
-			
-			$tabs[] = array( 
-				'tab' => __( 'Page Hooks', parent :: get_plugin_data() ),
-				'function' => array( $this, 'get_page_hooks' )
-			);
-			
-			return $tabs;
-		}
+		add_action( 'all', array( $this, 'store_fired_filters' ) );
+		add_filter( 'debug_objects_tabs', array( $this, 'get_conditional_tab' ) );
+	}
+	
+	/**
+	 * Add content for tabs
+	 * 
+	 * @param  Array $tabs
+	 * @return Array $tabs
+	 */
+	public function get_conditional_tab( $tabs ) {
 		
-		public function control_schedule_record() {
-			// wp_clear_scheduled_hook('record_hook_usage');
-			if ( ! wp_next_scheduled( 'record_hook_usage' ) )
-				wp_schedule_event( time(), 'daily', 'record_hook_usage' ); // hourly, daily and twicedaily
-			
-		}
+		$tabs[] = array( 
+			'tab' => __( 'Page Hooks' ),
+			'function' => array( $this, 'get_hooks' )
+		);
 		
-		public function control_record() {
-			
-			add_action( 'all', array( $this, 'record_hook_usage' ) );
-		}
+		return $tabs;
+	}
+	
+	public function store_fired_filters( $tag ) {
+		global $wp_filter;
+
+		if ( ! isset( $wp_filter[ $tag ] ) )
+			return;
+
+		$hooked = $wp_filter[ $tag ];
+		ksort( $hooked );
+
+		foreach ( $hooked as $priority => $function )
+			$hooked[] = $function;
+
+		$this->filters_storage[] = array(
+			'tag'    => $tag,
+			'hooked' => $wp_filter[ $tag ],
+		);
+	}
+	
+	/**
+	 * Get hooks for current page
+	 * 
+	 * @return String
+	 */
+	public function get_hooks() {
+		global $wp_actions;
 		
-		public function get_page_hooks( $echo = TRUE ) {
-			global $wpdb;
+		$callbacks        = array();
+		$hooks            = array();
+		$filter_hooks     = '';
+		$filter_callbacks = '';
+		
+		foreach ( $this->filters_storage as $index => $the_ ) {
 			
-			$hooks = $wpdb -> get_results( 'SELECT * FROM ' . self :: $table . ' ORDER BY first_call' );
+			$hook_callbacks = array();
 			
-			$html = array();
-			$html[] = '<table>
-			<tr>
-				<th>1.Call</th>
-				<th>Hook-Name</th>
-				<th>-Type</th>
-				<th>Arguments</th>
-				<th>Called by</th>
-				<th>Line</th>
-				<th>File Name</th>
-			</tr>';
-			
-			$class = '';
-			foreach( $hooks as $hook ) {
-				$class = ( ' class="alternate"' == $class ) ? '' : ' class="alternate"';
-				if ( 30 < (int) strlen( $hook -> hook_name ) )
-					$hook->hook_name = '<span title="' . $hook -> hook_name . '">' . substr($hook -> hook_name, 0, 36) . '</span>';
-				/*
-				if ( 20 < (int) strlen( $hook -> file_name ) )
-					$hook->file_name = '<span title="' . $hook -> file_name . '">' . substr($hook -> file_name, -30, 30) . '</span>';
-				*/
-				$html[] = "<tr{$class}>
-					<td>{$hook->first_call}</td>
-					<td>{$hook->hook_name}</td>
-					<td>{$hook->hook_type}</td>
-					<td>{$hook->arg_count}</td>
-					<td>{$hook->called_by}</td>
-					<td>{$hook->line_num}</td>
-					<td>{$hook->file_name}</td>
-				</tr>";
+			if ( ! in_array( $the_['tag'], $hooks ) ) {
+				$hooks[] = $the_['tag'];
+				$filter_hooks .= "<tr><td><code>{$the_['tag']}</code></td></tr>";
 			}
-			$html[] = '</table>';
 			
-			$output = implode( "\n", $html );
-			
-			if ( $echo )
-				echo $output;
-			else
-				return $output;
-		}
-		
-		function record_hook_usage( $hook ) {
-			global $wpdb;
-			
-			static $in_hook = FALSE;
-			static $first_call = 1;
-			static $doc_root;
-			
-			$callstack = debug_backtrace();
-			
-			if ( ! $in_hook ) {
-				$in_hook = TRUE;
-				
-				if ( 1 == $first_call ) {
-					$doc_root = esc_attr( $_SERVER['DOCUMENT_ROOT'] );
-					
-					$results = $wpdb -> get_results( 'SHOW TABLE STATUS LIKE \'' . parent::$table . '\'');
-					if ( 1 == count($results) ) {
-						$wpdb -> query( 'TRUNCATE TABLE ' . parent::$table );
-					} else {
-						$table = parent::$table;
-						$wpdb -> query(
-							"CREATE TABLE $table (
-							called_by varchar(96) NOT NULL,
-							hook_name varchar(96) NOT NULL,
-							hook_type varchar(15) NOT NULL,
-							first_call int(11) NOT NULL,
-							arg_count tinyint(4) NOT NULL,
-							file_name varchar(128) NOT NULL,
-							line_num smallint NOT NULL,
-							PRIMARY KEY (first_call,hook_name) )"
+			foreach( $the_['hooked'] as $priority => $hooked ) {
+				foreach( $hooked as $id => $function ) {
+					if ( is_string( $function['function'] ) ) {
+						// as array
+						$hook_callbacks[] = array(
+							'name'     => $function['function'],
+							'args'     => $function['accepted_args'],
+							'priority' => $priority
 						);
+						// readable
+						$filter_callbacks = "Function: {$function['function']}(), Arguments: {$function['accepted_args']}, Priority: {$priority}";
 					}
 				}
-				
-				$args = func_get_args();
-				$arg_count = count($args) - 1;
-				$hook_type = str_replace( 'do_', '',
-					str_replace(
-						'apply_filters', 'filter',
-						str_replace( '_ref_array', '[]', $callstack[3]['function'] )
-					)
-				);
-				$str_replace = $doc_root . preg_replace('|https?://[^/]+|i', '', get_option('home') . '/' );
-				$file_name = addslashes( str_replace( $str_replace, '', $callstack[3]['file'] ) );
-				$line_num  = $callstack[3]['line'];
-				
-				if ( ! isset( $callstack[4] ) )
-					$called_by = __( 'Undefinded', parent :: get_plugin_data() );
-				else
-					$called_by = $callstack[4]['function'] . '()';
-				
-				$wpdb -> query( "INSERT " . parent::$table . "
-					(first_call,called_by,hook_name,hook_type,arg_count,file_name,line_num)
-					VALUES ( $first_call,'$called_by','$hook','$hook_type',$arg_count,'$file_name',$line_num )"
-				);
-				
-				$first_call ++;
-				$in_hook = FALSE;
 			}
+			$callbacks[$the_['tag']][] = $filter_callbacks; //$hook_callbacks;
 		}
 		
-	} // end class
-}// end if class exists
+		$output  = '';
+		
+		$output .= '<table>';
+		
+		$output .= '<tr class="nohover">';
+		$output .= '<th>Total Action Hooks: ' . count( $wp_actions ) . '</th>';
+		//$output .= '<th>Total Filter Hooks: ' . count( $hooks ) . '</th>';
+		$output .= '<th>Total Filter Hooks & Callback: ' . count( $callbacks ) . '</th>';
+		$output .= '</tr>';
+		
+		$output .= '<tr class="nohover">';
+		
+		$output .= '<td><table>';
+		foreach ( $wp_actions as $key => $val ) {
+			$output .= "<tr><td><code>{$key}</code></td></tr>";
+		}
+		$output .= '</table></td>';
+		/*
+		$output .= '<td><table>';
+		$output .= $filter_hooks;
+		$output .= '</table></td>';
+		*/
+		$output .= '<td><table>';
+		foreach ( $callbacks as $hook => $values ) {
+			// remove dublicate items
+			$values = array_unique( $values );
+			foreach ($values as $key => $value) {
+				$escape = htmlspecialchars( $value, ENT_QUOTES, 'utf-8', FALSE );
+				if ( empty( $escape ) )
+					$escape = 'Empty';
+				$prev_hook = $hook;
+				$output .= "<tr><td>Hook: <code>{$hook}</code><br> {$escape}</td></tr>";
+			}
+		}
+		$output .= '</table></td>';
+		
+		$output .= '</tr>';
+		$output .= '</table>';
+		
+		echo $output;
+	}
+	
+} // end class

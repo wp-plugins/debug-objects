@@ -30,11 +30,13 @@ The Plugin Debug Objects provides the user, which has the appropriate rights, no
 * Contents of arrays to hooks and filters
 * All defined constants
 * All classes
+* All shortcodes
 * Post Meta data
+* List Custom Post Type Arguments
 * See data from `$_POST`; `$_GET` and debug backtrace before rewrite; usefull for forms in backend
 * Run WordPress in default mode via url-param
 * Add alternative PHP Error reporting: [PHP Error](http://phperror.net/)
-* Include Logging in Chrome Console: [ChromePHP](http://www.chromephp.com/)
+* Include Logging in Chrome Console: [ChromeLogger](http://chromelogger.com/)
 * and many more ...
 
 The plugin does not filter values and should only be used for information and optimization, I don't recommended to use it on a live blog. For developers it can rapidly deliver data, which is useful in a development environment.
@@ -44,7 +46,7 @@ There are no data in the database and there are no settings. Therefore, the inst
 ## Installation
 ### Requirements
 * WordPress (also Multisite) version 3.3 and later (tested at 3.3)
-* PHP 5.2.4
+* PHP 5.2.4; PHP 5.3 preferred
 
 ### Installation
 1. Unpack the download-package
@@ -57,13 +59,13 @@ There are no data in the database and there are no settings. Therefore, the inst
 ## Screenshots
 ![Settings Screenshot in WordPress 3.6 alpha][screenshot]
 
-[screenshot]: https://raw.github.com/bueltge/Debug-Objects/master/screenshot-1.png "Settings in WordPress 3.6 alpha"
+[screenshot]: https://raw.github.com/bueltge/Debug-Objects/master/assets/screenshot-1.png "Settings in WordPress 3.6 alpha"
 
  * [See this example screenshot in WordPress 3.3](https://github.com/bueltge/Debug-Objects/blob/master/screenshot-1.png)
 
 
 ## Other Notes
-### Licence
+### License
 Good news, this plugin is free for everyone! Since it's released under the GPL, you can use it free of charge on your personal or commercial blog. But if you enjoy this plugin, you can thank me and leave a [small donation](http://bueltge.de/wunschliste/ "Wishliste and Donate") for the time I've spent writing and supporting this plugin. And I really don't want to know how many hours of my life this plugin has already eaten ;)
 
 ### Translations
