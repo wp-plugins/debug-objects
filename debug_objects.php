@@ -9,11 +9,11 @@
  * Text Domain: debug_objects
  * Domain Path: /languages
  * Description: List filter and action-hooks, cache data, defined constants, qieries, included scripts and styles, php and memory informations and return of conditional tags only for admins; for debug, informations or learning purposes. Setting output in the settings of the plugin and use output via link in Admin Bar, via setting, via url-param '<code>debug</code>' or set a cookie via url param '<code>debugcookie</code>' in days.
- * Version:     2.1.13
+ * Version:     2.1.14
  * License:     GPLv3
  * Author:      Frank Bültge
  * Author URI:  http://bueltge.de/
- * Last Change: 06/18/2013)
+ * Last Change: 08/15/2013)
  */
 
 // avoid direct calls to this file, because now WP core and framework has been used.
@@ -442,10 +442,44 @@ if ( ! function_exists( 'pre_print' ) ) {
 	 * @param  mixed
 	 * @return void
 	 */
-	function pre_print( $var, $before = '' ) {
+	function pre_print( $var, $before = '', $return = FALSE ) {
 		
 		$export = var_export( $var, TRUE );
 		$escape = htmlspecialchars( $export, ENT_QUOTES, 'utf-8', FALSE );
-		print $before . '<pre>' . $escape . '</pre>';
+		if ( $return )
+			return $escape;
+		else
+			print $before . '<pre>' . $escape . '</pre>';
+	}
+}
+
+if ( ! function_exists( 'debug_to_console' ) ) {
+	/**
+	 * Simple helper to debug to the console
+	 * 
+	 * @param  Array, String $data
+	 * @return string
+	 */
+	function debug_to_console( $data ) {
+		
+		$output = '';
+		
+		if ( is_array( $data ) ) {
+			$output .= "<script>console.warn( 'Debug Objects with Array.' ); console.log( '" . implode( ',', $data) . "' );</script>";
+		} else if ( is_object( $data ) ) {
+			$data    = var_export( $data, TRUE );
+			$data    = explode( "\n", $data );
+			foreach( $data as $line ) {
+				if ( trim( $line ) ) {
+					$line    = addslashes( $line );
+					$output .= "console.log( '{$line}' );";
+				}
+			}
+			$output = "<script>console.warn( 'Debug Objects with Object.' ); $output</script>";
+		} else {
+			$output .= "<script>console.log( 'Debug Objects: {$data}' );</script>";
+		}
+		
+		echo $output;
 	}
 }
