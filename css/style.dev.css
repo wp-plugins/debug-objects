@@ -12,7 +12,8 @@ div#debugobjects {
 	font-size: 12px !important; /* fix for all themes */
 	color: #fff;
 	text-align: left;
-	z-index: 999;
+	position: relative;
+	z-index: 99990;
 	clear: both;
 }
 
@@ -75,7 +76,10 @@ div#debugobjects .important {
 	padding: .5%;
 }
 
-div#debugobjects .alternate, div#debugobjects .alt {
+.admin-color-classic div#debugobjects .alternate, .admin-color-classic div#debugobjects .alt {
+	background: #d1e5ee;
+}
+.admin-color-fresh div#debugobjects .alternate, .admin-color-fresh div#debugobjects .alt {
 	background: #e6e6e6;
 }
 
@@ -135,6 +139,10 @@ div#debugobjects #cron td {
 
 .big_query_time {
 	border: 2px solid red;
+}
+
+#debugobjects #pagehooks code span {
+	font-weight: 900;
 }
 
 /* End Debug Objects CSS */
