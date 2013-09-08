@@ -4,7 +4,7 @@ Donate link: http://bueltge.de/wunschliste/
 Tags: debug, sql, analyse, tuning, performance, database, queries, query, php, cron, cache
 Requires at least: 3.3
 Tested up to: 3.7-alpha
-Stable tag: 2.1.14
+Stable tag: trunk
 
 The Plugin Debug Objects provides a large number of information: query, cache, cron, constants, hooks, functions and many more.
 
@@ -26,6 +26,7 @@ The Plugin Debug Objects provides the user, which has the appropriate rights, no
 * Separate user and usermeta tables
 * FTP and SSH definitions
 * Detailed Query information
+* Query informaton about the active plugins, nice to identifier the longrunners on the plugins
 * Conditional tags; value of the tag
 * Theme information
 * Template Information
@@ -73,18 +74,23 @@ Have a look at the premium plugins in our [market](http://marketpress.com).
 
 
 == Other Notes ==
+= Older versions =
+You find older version on this repo, [here](http://wordpress.org/plugins/debug-objects/developers/) But only to version 2.1.14
+After this version you find the other verison on the [github repo](https://github.com/bueltge/Debug-Objects)
+
 = Licence =
 Good news, this plugin is free for everyone! Since it's released under the GPL, you can use it free of charge on your personal or commercial blog. But if you enjoy this plugin, you can thank me and leave a [small donation](http://bueltge.de/wunschliste/ "Wishliste and Donate") for the time I've spent writing and supporting this plugin. And I really don't want to know how many hours of my life this plugin has already eaten ;)
 
-= Translations =
-The plugin comes with various translations, please refer to the [WordPress Codex](http://codex.wordpress.org/Installing_WordPress_in_Your_Language "Installing WordPress in Your Language") for more information about activating the translation. If you want to help to translate the plugin to your language, please have a look at the .pot file which contains all defintions and may be used with a [gettext](http://www.gnu.org/software/gettext/) editor like [Poedit](http://www.poedit.net/) (Windows).
-
-= Localizations =
-* german language files
-* Romanian language files, thanks to [Alexander Ovsov](http://webhostinggeeks.com/)
-* Lithuanian translation files by [Vincent G](http://www.host1plus.com)
-
 == Changelog ==
+= 2.1.15 (08/09/2013) =
+* Enhancement to see the queries of plugins and identfier the problems
+* Sort queries on load time
+* Fix on empty arrays on shortcodes
+* More UI on tabs like default WordPress, also a difference from classic to fresh backend
+* Remove Translation files, to old and the source use often only english - enough for debugging
+* Filter for includes files, now without `wp-admin` and `wp-includes` folders
+* Fix cookie function, to cache last active tab
+
 = 2.1.14 (08/15/2013) =
 * Small fixes for php strict warnings [Forum Thread](http://wordpress.org/support/topic/strict-warnings-fix)
 * Add function `debug_to_console( $data )` for easy to use debug informations in the console from browser, see settings page for hints
