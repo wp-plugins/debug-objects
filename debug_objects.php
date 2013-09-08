@@ -9,11 +9,11 @@
  * Text Domain: debug_objects
  * Domain Path: /languages
  * Description: List filter and action-hooks, cache data, defined constants, qieries, included scripts and styles, php and memory informations and return of conditional tags only for admins; for debug, informations or learning purposes. Setting output in the settings of the plugin and use output via link in Admin Bar, via setting, via url-param '<code>debug</code>' or set a cookie via url param '<code>debugcookie</code>' in days.
- * Version:     2.1.14
+ * Version:     2.1.15
  * License:     GPLv3
  * Author:      Frank Bültge
  * Author URI:  http://bueltge.de/
- * Last Change: 08/15/2013)
+ * Last Change: 09/08/2013)
  */
 
 // avoid direct calls to this file, because now WP core and framework has been used.
@@ -465,7 +465,11 @@ if ( ! function_exists( 'debug_to_console' ) ) {
 		$output = '';
 		
 		if ( is_array( $data ) ) {
-			$output .= "<script>console.warn( 'Debug Objects with Array.' ); console.log( '" . implode( ',', $data) . "' );</script>";
+			$output .= "console.warn( 'Debug Objects with Array.' ); 
+				console.log( '" . preg_replace( 
+					"/\n/", "\\n",
+					str_replace( "'", "\'", var_export( $data, TRUE ) )
+				) . "' );";
 		} else if ( is_object( $data ) ) {
 			$data    = var_export( $data, TRUE );
 			$data    = explode( "\n", $data );
@@ -475,11 +479,11 @@ if ( ! function_exists( 'debug_to_console' ) ) {
 					$output .= "console.log( '{$line}' );";
 				}
 			}
-			$output = "<script>console.warn( 'Debug Objects with Object.' ); $output</script>";
+			$output = "console.warn( 'Debug Objects with Object.' ); $output";
 		} else {
-			$output .= "<script>console.log( 'Debug Objects: {$data}' );</script>";
+			$output .= "console.log( 'Debug Objects: {$data}' );";
 		}
 		
-		echo $output;
+		echo '<script>' . $output . '</script>';
 	}
 }
