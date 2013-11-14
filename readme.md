@@ -62,10 +62,10 @@ There are no data in the database and there are no settings. Therefore, the inst
 ## Screenshots
 ![Settings Screenshot in WordPress 3.6 alpha][screenshot]
 
-[screenshot]: https://raw.github.com/bueltge/Debug-Objects/master/assets/screenshot-1.png "Settings in WordPress 3.6 alpha"
+[screenshot]: assets/screenshot-1.png "Settings in WordPress 3.6 alpha"
 
- * [See this example screenshot in WordPress 3.3](https://github.com/bueltge/Debug-Objects/blob/master/screenshot-1.png)
-
+ * [The cron information, in WordPress 3.3](assets/screenshot-1.png)
+ * [Fired Hooks of the current back end page, in WordPress 3.8](assets/screenshot-2.png)
 
 ## Other Notes
 ### License
