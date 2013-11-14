@@ -4,7 +4,7 @@
  *
  * @package     Debug Objects
  * @subpackage  Enqueued Scripts and Stylesheets
- * @author      Frank B&uuml;ltge
+ * @author      Frank Bültge
  * @since       2.0.0
  */
 
@@ -51,28 +51,82 @@ if ( ! class_exists( 'Debug_Objects_Enqueue_Stuff' ) ) {
 		
 		public function get_enqueued_stuff() {
 			global $wp_scripts, $wp_styles;
-			?>
-			<table>
-				<tr><th colspan="3"><h4>Enqueued Scripts</h4></th></tr>
-				<tr><th>Order</th><th>Loaded</th><th>Dependencies</th><th>Path</th></tr>
-			<?php
-			$i = 1;
-			foreach ( $wp_scripts->do_items() as $loaded_scripts ) {
-				echo '<tr',  ( $i % 2 === 0 ) ? '' : ' class="alternate"' , '><td>', $i, '<td>', $loaded_scripts, '</td><td>', ( count( $wp_scripts->registered[$loaded_scripts]->deps ) > 0 ) ? implode( " and ", $wp_scripts->registered[$loaded_scripts]->deps ) : '', '</td><td>', $wp_scripts->registered[$loaded_scripts]->src , '</td></tr>', "\n";
-				$i++;
-			}
-			?>
-				<tr><th colspan="3"><h4>Enqueued Styles</h4></th></tr>
-				<tr><th>Order</th><th>Loaded</th><th>Dependencies</th><th>Path</th></tr>
-				<?php
 			
+			/**
+			 * Get all enqueue scripts
+			 * Current is do_items() not usable, echo all scripts
+			 * 
+			 * @see https://github.com/bueltge/Debug-Objects/issues/22#issuecomment-24728637
+			 */
+			//$loaded_scripts = $wp_scripts->do_items();
+			$wp_scripts->all_deps( $wp_scripts->queue );
+			$loaded_scripts = $wp_scripts->to_do;
+			
+			// Get all enqueue styles
+			$loaded_styles  = $wp_styles->do_items();
+			?>
+			
+			<table>
+				<tr>
+					<th colspan="4"><strong>Enqueued Scripts</strong></th>
+				</tr>
+				<tr>
+					<th>Order</th>
+					<th>Loaded</th>
+					<th>Dependencies</th>
+					<th>Path</th>
+				</tr>
+			<?php
+			$class = '';
 			$i = 1;
-			foreach ( $wp_styles->do_items() as $loaded_styles ) {
-				echo '<tr', ( $i % 2 === 0 ) ? '' : ' class="alternate"' , '"><td>', $i, '<td>', $loaded_styles, '</td><td>', ( count( $wp_styles->registered[$loaded_styles]->deps ) > 0 ) ? implode( " and ", $wp_styles->registered[$loaded_styles]->deps ) : '', '</td><td>', $wp_styles->registered[$loaded_styles]->src , '</td></tr>', "\n";
+			foreach ( $loaded_scripts as $loaded_script ) {
+				
+				$class = ( $i % 2 === 0 ) ? '' : ' class="alternate"';
+				echo '<tr' . $class . '>';
+				echo '<td>' . $i . '</td>';
+				echo '<td>' . esc_attr( $loaded_script ) . '</td>';
+				echo '<td>';
+				echo ( count( $wp_scripts->registered[$loaded_script]->deps ) > 0 ) ? implode( __( ', ' ), $wp_scripts->registered[$loaded_script]->deps ) : '';
+				echo '</td>';
+				echo '<td>' . $wp_scripts->registered[$loaded_script]->src . '</td>';
+				echo '</tr>' . "\n";
+				
 				$i++;
 			}
 			?>
 			</table>
+			
+			<table>
+				<tr>
+					<th colspan="4"><strong>Enqueued Styles</strong></th>
+				</tr>
+				<tr>
+					<th>Order</th>
+					<th>Loaded</th>
+					<th>Dependencies</th>
+					<th>Path</th>
+				</tr>
+			
+			<?php
+			$class = '';
+			$i = 1;
+			foreach ( $loaded_styles as $loaded_style ) {
+				
+				$class = ( $i % 2 === 0 ) ? '' : ' class="alternate"';
+				echo '<tr' . $class . '>';
+				echo '<td>' . $i . '</td>';
+				echo '<td>' . esc_attr( $loaded_style ) . '</td>';
+				echo '<td>';
+				echo ( count( $wp_styles->registered[$loaded_style]->deps ) > 0 ) ? implode( __( ', ' ), $wp_styles->registered[$loaded_style]->deps ) : '';
+				echo '</td>';
+				echo '<td>' . $wp_styles->registered[$loaded_style]->src . '</td>';
+				echo '</tr>' . "\n";
+				
+				$i++;
+			}
+			?>
+			</table>
+			
 			<?php
 		}
 		

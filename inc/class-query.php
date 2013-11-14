@@ -91,76 +91,6 @@ if ( ! class_exists( 'Debug_Objects_Query' ) ) {
 		}
 		
 		/**
-		 * Sorting of Multidimensional arrays
-		 * Only >= PHP 5.3
-		 * 
-		 * @since   08/18/2013
-		 * @see     http://stackoverflow.com/questions/96759/how-do-i-sort-a-multidimensional-array-in-php
-		 * @return  Boolean
-		 */
-		public function make_comparer() {
-			// Normalize criteria up front so that the comparer finds everything tidy
-			$criteria = func_get_args();
-			foreach ($criteria as $index => $criterion) {
-				$criteria[$index] = is_array($criterion)
-					? array_pad($criterion, 3, null)
-					: array($criterion, SORT_ASC, null);
-			}
-		 
-			return function( $first, $second ) use ( $criteria ) {
-				foreach ($criteria as $criterion) {
-					// How will we compare this round?
-					list($column, $sortOrder, $projection) = $criterion;
-					$sortOrder = $sortOrder === SORT_DESC ? -1 : 1;
-					
-					// If a projection was defined project the values now
-					if ($projection) {
-						$lhs = call_user_func($projection, $first[$column]);
-						$rhs = call_user_func($projection, $second[$column]);
-					} else {
-						$lhs = $first[$column];
-						$rhs = $second[$column];
-					}
-					
-					// Do the actual comparison; do not return if equal
-					if ($lhs < $rhs) {
-						return -1 * $sortOrder;
-					} else if ($lhs > $rhs) {
-						return 1 * $sortOrder;
-					}
-				}
-				
-				return 0; // tiebreakers exhausted, so $first == $second
-			};
-		}
-		
-		/**
-		 * Sorting of Multidimensional arrays
-		 * Hint: Slow and inefficent which to much foreach, usort is a better way
-		 * 
-		 * @since   08/18/2013
-		 * @see     http://stackoverflow.com/questions/2699086/sort-multidimensional-array-by-value-2
-		 * @param   Array,  Input array
-		 * @param   String of key in array
-		 */
-		public function aasort( &$array, $key ) {
-			
-			$sorter = array();
-			$ret    = array();
-			reset( $array );
-			
-			foreach( $array as $ii => $va ) {
-				$sorter[$ii] = $va[$key];
-			}
-			asort( $sorter );
-			
-			foreach( $sorter as $ii => $va ) {
-				$ret[$ii] = $array[$ii];
-			}
-			$array = $ret;
-		}
-		
-		/**
 		 * Filters wpdb::query
 		 * This filter stores all queries and their backtraces for later use
 		 * 
@@ -403,18 +333,27 @@ if ( ! class_exists( 'Debug_Objects_Query' ) ) {
 					$debug_queries .= '<li><strong>' . __( 'Total:' ) . ' ' 
 						. get_num_queries() . ' ' 
 						. __( 'num_queries.' ) . '</strong></li>' . "\n";
-					$debug_queries .= '<li class="none_list">' 
+					$debug_queries .= '<li>' 
 						. __( '&raquo; Different values in num_query and query? - please set the constant' ) 
-						. ' <code>define(\'SAVEQUERIES\', true);</code>' . __( 'in your' ) . ' <code>wp-config.php</code></li>' . "\n";
+						. ' <code>define( \'SAVEQUERIES\', TRUE );</code>' . __( 'in your' ) . ' <code>wp-config.php</code></li>' . "\n";
 				}
 				$debug_queries .= '</ul>' . "\n";
 
 				$debug_queries .= '<hr /><ol>' . "\n";
 				
-				// sort queries from high to low
-				// use time value in first subquery, array value 1
-				if ( ! empty( $sorting ) || ! $sorting )
-					usort( $this->_queries, $this->make_comparer([1, $sorting]) );
+				/**
+				 * Hook to filter the queries array
+				 * 
+				 * @since  09/13/13
+				 */
+				$this->_queries = apply_filters( 
+					'debug_objects_sort_queries', $this->_queries, $sorting
+				);
+				
+				foreach ( $this->_queries as $key => $row ) {
+					$queries[$key]  = $row[0]; 
+				}
+				array_multisort( $queries, $sorting, $this->_queries );
 				
 				foreach ( $this->_queries as $q ) {
 					
@@ -435,7 +374,7 @@ if ( ! class_exists( 'Debug_Objects_Query' ) ) {
 					
 					$total_query_time += $time;
 					$debug_queries .= '<li' . $class . '><ul>';
-					$debug_queries .= '<li class="none_list"><strong>' 
+					$debug_queries .= '<li><strong>' 
 						. __( 'Time:' ) . '</strong> ' 
 						. $time_ms . __( 'ms' ) 
 						. ' (' . $time . __( 's' ) . ')</li>';
@@ -443,7 +382,7 @@ if ( ! class_exists( 'Debug_Objects_Query' ) ) {
 					if ( isset($q[1]) && ! empty($time) ) {
 						$s = nl2br( esc_html( $q[0] ) );
 						$s = trim( preg_replace( '/[[:space:]]+/', ' ', $s) );
-						$debug_queries .= '<li class="none_list"><strong>' 
+						$debug_queries .= '<li><strong>' 
 							. __( 'Query:' ) . '</strong> <code>' 
 							. $s . '</code></li>';
 					}
@@ -458,12 +397,12 @@ if ( ! class_exists( 'Debug_Objects_Query' ) ) {
 						}
 						
 						if ( ! STACKTRACE ) {
-							$debug_queries .= '<li class="none_list"><strong>Function:</strong> <code>' 
+							$debug_queries .= '<li><strong>Function:</strong> <code>' 
 								. end( $st_array ) . '()</code></li>';
 						} else {
 							$st = implode( ', ', $markup_st );
 							$st = str_replace( self :: $replaced_actions, array( 'do_action' ), $st );
-							$debug_queries .= '<li class="none_list"><strong>' 
+							$debug_queries .= '<li><strong>' 
 								. '<a href="http://en.wikipedia.org/wiki/Stack_trace">Stack trace</a>:</strong> ' 
 								. $st . '</li>';
 						}
@@ -504,12 +443,12 @@ if ( ! class_exists( 'Debug_Objects_Query' ) ) {
 				$debug_queries .= '<li><strong>' . __( 'Total num_query time:' ) . ' ' 
 					. timer_stop() . ' ' . __( 'for' ) . ' ' . get_num_queries() . ' ' 
 					. __( 'num_queries.' ) . '</strong></li>' . "\n";
-				$debug_queries .= '<li class="none_list">' 
+				$debug_queries .= '<li>' 
 					. __( '&raquo; Different values in num_query and query? - please set the constant' ) 
-					. ' <code>define(\'SAVEQUERIES\', true);</code>' . __( 'in your' ) . ' <code>wp-config.php</code></li>' . "\n";
+					. ' <code>define( \'SAVEQUERIES\', TRUE );</code>' . __( 'in your' ) . ' <code>wp-config.php</code></li>' . "\n";
 			}
 			if ( $total_query_time == 0 )
-				$debug_queries .= '<li class="none_list">' . __( '&raquo; Query time is null (0)? - please set the constant' ) 
+				$debug_queries .= '<li>' . __( '&raquo; Query time is null (0)? - please set the constant' ) 
 					. ' <code>SAVEQUERIES</code>' . ' ' . __( 'at' ) . ' <code>TRUE</code> ' . __( 'in your' ) 
 					. ' <code>wp-config.php</code></li>' . "\n";
 			if ( 0 < $total_time )

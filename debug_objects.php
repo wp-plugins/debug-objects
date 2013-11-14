@@ -9,11 +9,11 @@
  * Text Domain: debug_objects
  * Domain Path: /languages
  * Description: List filter and action-hooks, cache data, defined constants, qieries, included scripts and styles, php and memory informations and return of conditional tags only for admins; for debug, informations or learning purposes. Setting output in the settings of the plugin and use output via link in Admin Bar, via setting, via url-param '<code>debug</code>' or set a cookie via url param '<code>debugcookie</code>' in days.
- * Version:     2.1.15
+ * Version:     2.1.16
  * License:     GPLv3
  * Author:      Frank Bültge
  * Author URI:  http://bueltge.de/
- * Last Change: 09/08/2013)
+ * Last Change: 11/14/2013
  */
 
 // avoid direct calls to this file, because now WP core and framework has been used.
@@ -34,7 +34,21 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 	
 	class Debug_Objects {
 		
+		/**
+		 * The class object
+		 * 
+		 * @since  0.0.1
+		 * @var    String
+		 */
 		protected static $classobj = NULL;
+		/**
+		 * Define folder, there have inside the autoload files
+		 * 
+		 * @since  09/16/2013
+		 * @var    String
+		 */
+		static protected $file_base = '';
+		
 		// table for page hooks
 		public static $table = 'hook_list';
 		// var for tab array
@@ -58,7 +72,7 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 		public static function get_object() {
 			
 			NULL === self::$classobj and self::$classobj = new self();
-		
+			
 			return self::$classobj;
 		}
 		
@@ -73,26 +87,55 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 			ini_set( 'max_execution_time', 60 );
 			
 			// define table
-			self :: $table  = $GLOBALS['wpdb'] -> base_prefix . self::$table;
-			self :: $plugin = plugin_basename( __FILE__ );
+			self::$table  = $GLOBALS['wpdb'] -> base_prefix . self::$table;
+			self::$plugin = plugin_basename( __FILE__ );
 			
 			if ( is_multisite() && ! function_exists( 'is_plugin_active_for_network' ) )
 				require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
 			
 			// add and remove settings, the table for the plugin
 			register_deactivation_hook( __FILE__, array( $this, 'on_deactivation' ) );
-			register_uninstall_hook( __FILE__,    array( 'Debug_Objects', 'on_deactivation' ) );
+			register_uninstall_hook( __FILE__,    array( 'Debug_Objects', 'on_uninstall' ) );
 			
-			// include for load safe mode
-			require_once dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'inc/class-default_mode.php';
-			// Include settings
-			require_once dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'inc/class-settings.php';
+			// define folder for autoload, seetings was load via settings and init_classes()
+			self::$file_base = dirname( __FILE__ ) . '/inc/autoload';
 			
+			// Load 5.4 improvements 
+			if ( version_compare( phpversion(), '5.4.0', '>=' ) )
+				require_once( dirname( __FILE__ ) . '/inc/class-php-54-improvements.php' );
+			
+			// load all files form autoload folder
+			$this->load();
+			
+			// add custom capability
 			add_action( 'admin_init', array( $this, 'add_capabilities' ) );
 			
 			self::init_classes();
 		}
 		
+		/**
+		 * Load all files from a folder, no check
+		 *
+		 * @since   09/16/2013
+		 * @return  void
+		 */
+		public static function load() {
+			
+			$file_base = self::$file_base;
+			
+			$autoload_files = glob( "$file_base/*.php" );
+			
+			// load files
+			foreach( $autoload_files as $path )
+				require_once $path;
+		}
+		
+		/**
+		 * Add custom capability to check always with custom object
+		 * 
+		 * @since   0.0.1
+		 * @return  void
+		 */
 		public function add_capabilities() {
 			
 			$GLOBALS['wp_roles']->add_cap( 'administrator', '_debug_objects' );
@@ -156,7 +199,7 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 						if ( file_exists( $file ) )
 							require_once $file;
 						
-						add_action( 'init', array( 'Debug_Objects_' . $require, 'init' ) );
+						add_action( 'plugins_loaded', array( 'Debug_Objects_' . $require, 'init' ), -1 );
 					}
 				}
 			}
@@ -269,7 +312,7 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 		 * @since   2.0.0
 		 * @return  void
 		 */
-		public function on_activation() {
+		public static function on_activation() {
 			
 			// Check for PHP Version
 			if ( ! version_compare( PHP_VERSION, '5.2.4', '>=' ) ) {
@@ -289,7 +332,7 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 			$table = $GLOBALS['wpdb']->base_prefix . self::$table;
 			
 			$GLOBALS['wpdb'] -> query(
-				"CREATE TABLE $table (
+				"CREATE TABLE IF NOT EXISTS $table (
 				called_by varchar(96) NOT NULL,
 				hook_name varchar(96) NOT NULL,
 				hook_type varchar(15) NOT NULL,
@@ -302,19 +345,29 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 		}
 		
 		/**
-		 * Delete user rights and the db-table
+		 * Flush capabilities when plugin deactivated
 		 * 
 		 * @since   2.0.0
 		 * @return  void
 		 */
 		public function on_deactivation() {
-			
-			unregister_setting( self :: $option_string . '_group', self :: $option_string );
-			delete_option( self :: $option_string );
-			
 			// remove retired administrator capability
 			$GLOBALS['wp_roles']->remove_cap( 'administrator', '_debug_objects' );
+		}
+		
+		/**
+		 * Delete user rights and the db-table on uninstall
+		 *
+		 * @since   2.1.16
+		 * @return  void
+		 */
+		public function on_uninstall() {
+			unregister_setting( self :: $option_string . '_group', self :: $option_string );
+			delete_option( self :: $option_string );
 				
+			// remove retired administrator capability
+			$GLOBALS['wp_roles']->remove_cap( 'administrator', '_debug_objects' );
+			
 			// remove hook table
 			$GLOBALS['wpdb']->query( "DROP TABLE IF EXISTS " . self::$table );
 		}
