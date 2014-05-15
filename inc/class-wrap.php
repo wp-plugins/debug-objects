@@ -6,6 +6,7 @@
  * @subpackage  Markup and Hooks for include content
  * @author      Frank Bültge
  * @since       2.0.0
+ * @version     03/18/2014
  */
 
 if ( ! function_exists( 'add_filter' ) ) {
@@ -43,14 +44,14 @@ if ( ! class_exists( 'Debug_Objects_Wrap' ) ) {
 			if ( ! current_user_can( '_debug_objects' ) )
 				return;
 			
-			$options = Debug_Objects_Settings :: return_options();
+			$options = Debug_Objects_Settings::return_options();
 			
 			// check for output on frontend
 			if ( isset( $options['frontend'] ) && '1' === $options['frontend']
 				 || self::debug_control()
 				 ) {
-				add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts') );
 				add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_styles') );
+				add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts') );
 				add_action( 'wp_footer', array( $this, 'get_content' ), 9999 );
 			}
 			// check for output on backend
@@ -79,16 +80,20 @@ if ( ! class_exists( 'Debug_Objects_Wrap' ) ) {
 			
 			wp_register_style( 'jquery-ui-css', $path . '/css/jquery-ui-demo.css' );
 			
-			// check user style
-			if ( 'classic' == get_user_option( 'admin_color') )
-				wp_register_style( 'jquery-ui-wp', $path . '/css/jquery-ui-classic.css', 'jquery-ui-css' );
-			else
-				wp_register_style( 'jquery-ui-wp', $path . '/css/jquery-ui-fresh.css', 'jquery-ui-css' );
+			wp_register_style( 'jquery-ui-wp', $path . '/css/jquery-ui-fresh.css', 'jquery-ui-css' );
+
+			wp_register_style(
+				parent::get_plugin_data() . '_jquery_dataTables',
+				$path . '/css/jquery.dataTables.css',
+				array(),
+				FALSE,
+				'screen'
+			);
 			
 			wp_register_style(
 				parent::get_plugin_data() . '_style',
 				$path . '/css/style' . $suffix. '.css',
-				array( 'jquery-ui-css', 'jquery-ui-wp' ),
+				array( 'jquery-ui-css', 'jquery-ui-wp', parent::get_plugin_data() . '_jquery_dataTables' ),
 				FALSE,
 				'screen'
 			);
@@ -107,21 +112,35 @@ if ( ! class_exists( 'Debug_Objects_Wrap' ) ) {
 			
 			$suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '.dev' : '';
 			
+			// jquery tablesorter plugin
 			wp_enqueue_script(
-				parent::get_plugin_data() . '_script', 
-				str_replace( '/inc/', '', plugins_url( 'js/debug_objects' . $suffix. '.js', dirname( __FILE__ ) ) ), 
-				array( 'jquery-ui-tabs', parent :: get_plugin_data() . '_cookie_script' ),
+				parent::get_plugin_data() . '_datatables', 
+				str_replace( '/inc/', '', plugins_url( 'js/jquery.dataTables.min.js', dirname( __FILE__ ) ) ), 
+				array( 'jquery' ),
 				filemtime( 
-					str_replace( '/inc/', '', plugin_dir_path( dirname( __FILE__ ) ) . 'js/debug_objects' . $suffix. '.js' )
+					str_replace( '/inc/', '', plugin_dir_path( dirname( __FILE__ ) ) . 'js/jquery.dataTables.min.js' )
 				),
 				TRUE
 			);
+			
+			// jquery cookie plugin
 			wp_enqueue_script(
 				parent::get_plugin_data() . '_cookie_script', 
 				str_replace( '/inc/', '', plugins_url( 'js/jquery.cookie.js', dirname( __FILE__ ) ) ), 
 				array( 'jquery' ),
 				filemtime( 
 					str_replace( '/inc/', '', plugin_dir_path( dirname( __FILE__ ) ) . 'js/jquery.cookie.js' )
+				),
+				TRUE
+			);
+			
+			// Debug Objects script
+			wp_enqueue_script(
+				parent::get_plugin_data() . '_script', 
+				str_replace( '/inc/', '', plugins_url( 'js/debug_objects' . $suffix. '.js', dirname( __FILE__ ) ) ), 
+				array( 'jquery-ui-tabs', parent::get_plugin_data() . '_datatables', parent :: get_plugin_data() . '_cookie_script' ),
+				filemtime( 
+					str_replace( '/inc/', '', plugin_dir_path( dirname( __FILE__ ) ) . 'js/debug_objects' . $suffix. '.js' )
 				),
 				TRUE
 			);

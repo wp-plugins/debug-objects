@@ -139,9 +139,9 @@ class Debug_Objects_Screen_Info {
 			
 		}
 		
-		$output = '<table><tr><th><code>current_screen</code> ' 
+		$output = '<table class="tablesorter"><thead><tr><th><code>current_screen</code> ' 
 			. __( 'Key, <a href="http://codex.wordpress.org/Function_Reference/get_current_screen">Help</a>' ) 
-			. '</th><th>' . __( 'Data' ) . '</th></tr>' 
+			. '</th><th>' . __( 'Data' ) . '</th></tr></thead>'
 			. $output . '</table>';
 		
 		return $output;
@@ -166,18 +166,22 @@ class Debug_Objects_Screen_Info {
 				// check for object
 				if ( is_object( $global_value ) ) {
 					$global_value = (array) $global_value;
-					$global_value = '<pre>' . var_export( $global_value, TRUE ) . '</pre>';
+					$global_value = Debug_Objects::pre_print( $global_value, '', TRUE );
+				} else {
+					$global_value = '<code>' . $global_value . '</code>';
 				}
 				
-				$output .= '<tr' . $class . '><td>' . $value . '</td><td>';
-				$output .= $global_value . '</td></tr>';
+				$output .= '<tr' . $class . '>';
+				$output .= '<td><code>' . $value . '</code></td>';
+				$output .= '<td>' . $global_value . '</td>';
+				$output .= '</tr>';
 				
 				unset( $globals[ $key ] );
 			}
 			
 		}
 		
-		$output = '<table><tr><th>' . __( 'Global variable' ) . '</th><th>' . __( 'Value' ) . '</th></tr>' 
+		$output = '<table class="tablesorter"><thead><tr><th>' . __( 'Global variable' ) . '</th><th>' . __( 'Value' ) . '</th></tr></thead>' 
 			. $output . '</table>';
 		
 		return $output;

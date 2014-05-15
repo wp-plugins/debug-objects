@@ -52,6 +52,9 @@ if ( ! class_exists( 'Debug_Objects_Enqueue_Stuff' ) ) {
 		public function get_enqueued_stuff() {
 			global $wp_scripts, $wp_styles;
 			
+			// Get settings
+			$options = Debug_Objects_Settings::return_options();
+			
 			/**
 			 * Get all enqueue scripts
 			 * Current is do_items() not usable, echo all scripts
@@ -66,20 +69,28 @@ if ( ! class_exists( 'Debug_Objects_Enqueue_Stuff' ) ) {
 			$loaded_styles  = $wp_styles->do_items();
 			?>
 			
-			<table>
-				<tr>
-					<th colspan="4"><strong>Enqueued Scripts</strong></th>
-				</tr>
-				<tr>
-					<th>Order</th>
-					<th>Loaded</th>
-					<th>Dependencies</th>
-					<th>Path</th>
-				</tr>
+			<h4><?php _e( 'Enqueued Scripts' ); ?></h4>
+			<table class="tablesorter">
+				<thead>
+					<tr>
+						<th>Order</th>
+						<th>Loaded</th>
+						<th>Dependencies</th>
+						<th>Path</th>
+					</tr>
+				</thead>
 			<?php
 			$class = '';
 			$i = 1;
 			foreach ( $loaded_scripts as $loaded_script ) {
+				
+				// Filter scripts from this plugin, not helpful
+				if (
+					isset( $options[ 'filter' ] ) 
+					&& '1' === $options[ 'filter' ] 
+					&& 'debug_objects' === substr( $loaded_script, 0, 13 )
+					)
+					break;
 				
 				$class = ( $i % 2 === 0 ) ? '' : ' class="alternate"';
 				echo '<tr' . $class . '>';
@@ -96,21 +107,29 @@ if ( ! class_exists( 'Debug_Objects_Enqueue_Stuff' ) ) {
 			?>
 			</table>
 			
-			<table>
-				<tr>
-					<th colspan="4"><strong>Enqueued Styles</strong></th>
-				</tr>
-				<tr>
-					<th>Order</th>
-					<th>Loaded</th>
-					<th>Dependencies</th>
-					<th>Path</th>
-				</tr>
-			
+			<h4><?php _e( 'Enqueued Styles' ); ?></h4>
+			<table class="tablesorter">
+				<thead>
+					<tr>
+						<th>Order</th>
+						<th>Loaded</th>
+						<th>Dependencies</th>
+						<th>Path</th>
+					</tr>
+				</thead>
+				
 			<?php
 			$class = '';
 			$i = 1;
 			foreach ( $loaded_styles as $loaded_style ) {
+				
+				// Filter scripts from this plugin, not helpful
+				if (
+					isset( $options[ 'filter' ] ) 
+					&& '1' === $options[ 'filter' ] 
+					&& 'debug_objects' === substr( $loaded_style, 0, 13 )
+					)
+					break;
 				
 				$class = ( $i % 2 === 0 ) ? '' : ' class="alternate"';
 				echo '<tr' . $class . '>';

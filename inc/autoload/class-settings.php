@@ -113,13 +113,16 @@ if ( ! class_exists( 'Debug_Objects_Settings' ) ) {
 			// add item on admin bar for go faster to the settings
 			add_action( 'admin_bar_menu', array( $this, 'add_wp_admin_bar_item' ), 9999 );
 		}
-		
+
 		/**
 		 * Add settings link on plugins.php in backend
-		 * 
-		 * @uses   
+		 *
+		 * @uses
 		 * @access public
-		 * @param  array $links, string $file
+		 *
+		 * @param  array $links , string $file
+		 * @param        $file
+		 *
 		 * @since  2.0.0
 		 * @return string $links
 		 */
@@ -174,7 +177,7 @@ if ( ! class_exists( 'Debug_Objects_Settings' ) ) {
 			if ( is_multisite() && ! is_plugin_active_for_network( parent :: $plugin ) )
 				return NULL;
 			
-			$classes = apply_filters( 'debug_objects_classes', array() );
+			$classes = apply_filters( 'debug_objects_css_classes', array() );
 			$classes = implode( ' ', $classes );
 			
 			$wp_admin_bar->add_menu(
@@ -188,7 +191,8 @@ if ( ! class_exists( 'Debug_Objects_Settings' ) ) {
 				)
 			);
 			
-			$url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+			$scheme = ( is_ssl() ? 'https' : 'http' );
+			$url = $scheme . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 			$str = array( '?debug', '&debug', '#debugobjects' );
 			$url = esc_url( str_replace( $str, '', $url ) );
 			$get = '?';
@@ -342,18 +346,21 @@ if ( ! class_exists( 'Debug_Objects_Settings' ) ) {
 					'Shortcodes'        => __( 'List all shortcodes' ),
 					'Rewrite_Backtrace' => __( 'Filter to temporarily get a "debug object" prior to redirecting with a backtrace' ),
 					'Conditional_Tags'  => __( 'Conditional Tags' ), // conditional tags
+					'Options'           => __( 'This tab shows a list of all saved options' ),
 					'Post_Meta'         => __( 'Get a list of arguments to custom post types and a list of post meta for the current post type' ),
 					'Theme'             => __( 'Theme and Template informations' ),
+					'Html_Inspector'    => __( 'HTML Inspector is a code quality tool to check markup. Any errors will be reported to the console of the browser. This works only on front end. <a href="https://github.com/philipwalton/html-inspector" title="GitHub Repository for the tool.">More information</a> about the solutions.' ),
 					'Translation'       => __( 'Get translation data: language, files, possible problems.' ),
 					'Enqueue_Stuff'     => __( 'Introduced scripts and stylesheets' ),// Scripts and styles
 					'Debug_Hooks'       => __( 'List existing Hooks and assigned functions and count of accepted args' ), // Hooks, faster
-					//'Hooks'            => __( 'List existing Hooks and assigned functions' ),// Hooks
+					//'Hooks'            => __( 'List existing Hooks and assigned functions' ), // Hooks
 					'All_Hooks'         => __( 'List all hooks, very slow and use many RAM' ),
 					'Page_Hooks'        => __( 'Hooks of current page' ),// Hook Instrument for active page
 					'Screen_Info'       => __( 'Shows all the screen info for the current page from the admin backend' ),
-					'Query'             => __( 'Two Tabs: Only the plugin queries with runtime and content of all queries and his runtime in order of runtime' ),// WP Queries
-					'Stack_Trace'       => __( 'Stack Trace, all files and functions on each query. Query options is prerequisite.<br />A stack trace is a report of the active stack frames at a certain point in time during the execution of a program.' ),
+					'Db_Query'          => __( 'Three Tabs: Only the database queries from plugins and wp-content in each tab with runtime and a tab with content of all queries and his runtime in order of runtime' ),// WP Queries
+					'Stack_Trace'       => __( 'Stack Trace, all files and functions on each query. The Database-Query options is prerequisite.<br />A stack trace is a report of the active stack frames at a certain point in time during the execution of a program.' ),
 					'Cache'             => __( 'Contents of Cache' ),// WP Cache
+					'Rewrites'          => __( 'A list of all cached rewrites.' ),
 					'Cron'              => __( 'Crons' ),
 					'Memory'            => __( 'Memory Used, Load Time and included Files, but without all file in the folder <code>wp-admin</code>, <code>wp-includes</code>' ),
 					'Inspector'         => __( 'Provide information about a given domain' ),
@@ -362,6 +369,7 @@ if ( ! class_exists( 'Debug_Objects_Settings' ) ) {
 					//'Debug'            => __( '' ),
 					'Php_Error'         => __( 'A alternative PHP Error reporting; works only with PHP 5.3. Set the url param <code>php_error</code> for all strict messages.' ),
 					'Default_Mode'      => __( 'Add the url-param \'<code>default</code>\', like \'<code>?debug&default</code>\', for run WordPress in a safe mode. Plugins are not loaded and set the default theme as active theme, is it available.' ),
+					'Filter'            => __( 'Filter class, hooks, scripts and styles from this plugin Debug Objects.' ),
 					'About'             => __( 'About the plugin' ),// about plugin
 				);
 				
@@ -500,19 +508,22 @@ if ( ! class_exists( 'Debug_Objects_Settings' ) ) {
 				echo $notice;
 			}
 		}
-		
+
 		/**
 		 * Validate settings for options
-		 * 
-		 * @uses    normalize_whitespace
-		 * @access  public
-		 * @param   array $value
-		 * @since   2.0.0
+		 *
+		 * @uses     normalize_whitespace
+		 * @access   public
+		 *
+		 * @param $values
+		 *
+		 * @internal param array $value
+		 * @since    2.0.0
 		 * @return  string $value
 		 */
 		public function validate_settings( $values ) {
 			
-			foreach ( $values as $key => $value ) {
+			foreach ( (array) $values as $key => $value ) {
 				
 				if ( isset($value[$key]) ) {
 					

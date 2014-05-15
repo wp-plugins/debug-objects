@@ -19,12 +19,16 @@ div#debugobjects {
 
 div#debugobjects code {
 	word-wrap: break-word;
+	padding: 0;
 }
 
 div#debugobjects pre {
+	background: none;
+	background-color: transparent !important;
 	width: 100%;
 	overflow: auto;
-	white-space: pre;
+	white-space: pre-wrap;
+	word-wrap: break-word;
 }
 
 div#debugobjectstabs {
@@ -41,8 +45,15 @@ div#debugobjects ol li {
 	margin: 5px 0 5px 15px;
 }
 
-div#debugobjects div div ul li, div#debugobjects div div td {
-	padding: 0 10px;
+div#debugobjects div div ul li, div#debugobjects div div td,
+div#debugobjects div div th {
+	padding: 5px;
+}
+
+div#debugobjects div div table, div#debugobjects div div td,
+div#debugobjects div div th {
+	border-collapse: collapse;
+	border: 1px solid #bbb;
 }
 
 div#debugobjects #memory ul, div#debugobjects #conditional_tags ul, 
@@ -50,6 +61,11 @@ div#debugobjects #hooks ul, div#debugobjects #template ul,
 div#debugobjects #cache ul, div#debugobjects #constants ul,
 div#debugobjects #queries ul {
 	list-style-type: disc;
+}
+
+div#debugobjects #cache .root ul {
+	border-left: 1px dotted #808080;
+	padding-left: 30px;
 }
 
 div#debugobjects #constants ul li,
@@ -101,11 +117,14 @@ div#debugobjects td {
 }
 
 div#debugobjects ul li:hover, div#debugobjects ol li:hover,
-div#debugobjects tr:hover {
-	background: #D54E21;
+div#debugobjects tr:hover,
+div#debugobjects .alternate:hover, div#debugobjects .alt:hover {
+	background: #F7D0C3;
 }
+
 div#debugobjects tr.nohover:hover {
 	background: none;
+	border: none;
 }
 
 div#debugobjects li.none_list {
@@ -148,5 +167,4 @@ div#debugobjects #cron td {
 #debugobjects #pagehooks code span {
 	font-weight: 900;
 }
-
 /* End Debug Objects CSS */

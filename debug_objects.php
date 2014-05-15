@@ -8,12 +8,12 @@
  * Plugin URI:  http://bueltge.de/debug-objects-wordpress-plugin/966/
  * Text Domain: debug_objects
  * Domain Path: /languages
- * Description: List filter and action-hooks, cache data, defined constants, qieries, included scripts and styles, php and memory informations and return of conditional tags only for admins; for debug, informations or learning purposes. Setting output in the settings of the plugin and use output via link in Admin Bar, via setting, via url-param '<code>debug</code>' or set a cookie via url param '<code>debugcookie</code>' in days.
- * Version:     2.1.16
+ * Description: List filter and action-hooks, cache data, defined constants, queries, included scripts and styles, php and memory information and return of conditional tags only for admins; for debug, information or learning purposes. Setting output in the settings of the plugin and use output via link in Admin Bar, via setting, via url-param '<code>debug</code>' or set a cookie via url param '<code>debugcookie</code>' in days.
+ * Version:     2.1.17
  * License:     GPLv3
  * Author:      Frank Bültge
  * Author URI:  http://bueltge.de/
- * Last Change: 11/14/2013
+ * Last Change: 03/18/2014
  */
 
 // avoid direct calls to this file, because now WP core and framework has been used.
@@ -27,7 +27,7 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 	// include plugin on hook
 	add_action( 'plugins_loaded',       array( 'Debug_Objects', 'get_object' ) );
 	register_activation_hook( __FILE__, array( 'Debug_Objects', 'on_activation' ) );
-	
+
 	// include the ChromePHP very early
 	require_once dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'inc/class-chromephp.php';
 	$debug_objects_chromephp = Debug_Objects_Chromephp::init();
@@ -59,28 +59,30 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 		public static $plugin;
 		// included classes on default; without user settings
 		public static $by_settings = array( 'Wrap' );
-		// exlude class for central include
+		// exclude class for central include
 		public static $exclude_class = array( 'Backend', 'Frontend', 'Stack_Trace' );
-		
+		// store classes from settings
+		public $store_classes = array();
+
 		/**
 		 * Handler for the action 'init'. Instantiates this class.
-		 * 
+		 *
 		 * @access  public
 		 * @since   2.0.0
-		 * @return  $classobj
+		 * @return \Debug_Objects|String $classobj
 		 */
 		public static function get_object() {
 			
-			NULL === self::$classobj and self::$classobj = new self();
+			NULL === self::$classobj && self::$classobj = new self();
 			
 			return self::$classobj;
 		}
-		
+
 		/**
 		 * Init other methods via hook; install settings and capabilities
-		 * 
+		 *
 		 * @since   2.0.0
-		 * @return  void
+		 * @return \Debug_Objects
 		 */
 		public function __construct() {
 			
@@ -97,7 +99,7 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 			register_deactivation_hook( __FILE__, array( $this, 'on_deactivation' ) );
 			register_uninstall_hook( __FILE__,    array( 'Debug_Objects', 'on_uninstall' ) );
 			
-			// define folder for autoload, seetings was load via settings and init_classes()
+			// define folder for autoload, settings was load via settings and init_classes()
 			self::$file_base = dirname( __FILE__ ) . '/inc/autoload';
 			
 			// Load 5.4 improvements 
@@ -137,10 +139,10 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 		 * @return  void
 		 */
 		public function add_capabilities() {
-			
+
 			$GLOBALS['wp_roles']->add_cap( 'administrator', '_debug_objects' );
 		}
-		
+
 		/**
 		 * Include classes
 		 * Use filter string 'debug_objects_classes' for include custom classes
@@ -151,9 +153,9 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 		public function init_classes() {
 			
 			if ( is_multisite() && is_plugin_active_for_network( plugin_basename( __FILE__ ) ) )
-				$options = get_site_option( self :: $option_string );
+				$options = get_site_option( self::$option_string );
 			else
-				$options = get_option( self :: $option_string );
+				$options = get_option( self::$option_string );
 			
 			if ( ( isset( $options['frontend'] ) && '1' === $options['frontend'] ) || 
 				( isset( $options['backend'] ) && '1' === $options['backend'] ) )
@@ -177,7 +179,7 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 						self :: $by_settings[] = ucwords( $class );
 				}
 			}
-			$classes = apply_filters( 'debug_objects_classes', self :: $by_settings );
+			$classes = $this->store_classes = apply_filters( 'debug_objects_classes', self::$by_settings );
 			
 			self::set_cookie_control();
 			
@@ -190,12 +192,12 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 				add_action( 'init', array( 'Debug_Objects_Rewrite_Backtrace', 'init' ) );
 			}
 			
-			if ( $view || self::debug_control()
-			) {
+			if ( $view || self::debug_control()	) {
 				foreach ( $classes as $key => $require ) {
 					if ( ! class_exists( 'Debug_Objects_' . $require ) ) {
 						$file = dirname( __FILE__ ) . DIRECTORY_SEPARATOR 
 							. 'inc/class-' . strtolower( $require ) . '.php';
+
 						if ( file_exists( $file ) )
 							require_once $file;
 						
@@ -205,13 +207,18 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 			}
 			
 		}
-		
+
+		public function get_classes() {
+			
+			return $this->store_classes;
+		}
+
 		/**
 		 * Check for url param to view output
-		 * 
+		 *
 		 * @access  public
 		 * @since   2.0.1
-		 * @return  $debug boolean
+		 * @return bool $debug
 		 */
 		public function debug_control() {
 			
@@ -226,13 +233,14 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 			
 			return (bool) $debug;
 		}
-		
+
 		/**
 		 * Check for cookie to view output
-		 * 
+		 *
 		 * @access  public
 		 * @since   2.0.1
-		 * @return  $debug boolean
+		 * @param   $debug
+		 * @return  bool $debug
 		 */
 		public function get_cookie_control( $debug ) {
 			
@@ -265,15 +273,16 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 			if ( 0 == intval( $_GET['debugcookie'] ) )
 				setcookie( $this->get_plugin_data() . '_cookie', '', time() - 3600, COOKIEPATH, COOKIE_DOMAIN );
 		}
-		
+
 		/**
 		 * Return plugin comment data
-		 * 
-		 * @since  2.0.0
-		 * @access public
-		 * @param  $value string, default = 'TextDomain'
-		 *         Name, PluginURI, Version, Description, Author, AuthorURI, TextDomain, DomainPath, Network, Title
-		 * @return string
+		 *
+		 * @since   2.0.0
+		 * @access  public
+		 * @param   string $value default = 'TextDomain'
+		 *                    Name, PluginURI, Version, Description, Author, AuthorURI, TextDomain, DomainPath, Network, Title
+		 * @param   bool $echo
+		 * @return  string
 		 */
 		public function get_plugin_data( $value = 'TextDomain', $echo = FALSE ) {
 			
@@ -303,7 +312,7 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 		 */
 		public function get_plugin_string() {
 			
-			return self :: $plugin;
+			return self::$plugin;
 		}
 		
 		/**
@@ -362,8 +371,9 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 		 * @return  void
 		 */
 		public function on_uninstall() {
-			unregister_setting( self :: $option_string . '_group', self :: $option_string );
-			delete_option( self :: $option_string );
+
+			unregister_setting( self::$option_string . '_group', self::$option_string );
+			delete_option( self::$option_string );
 				
 			// remove retired administrator capability
 			$GLOBALS['wp_roles']->remove_cap( 'administrator', '_debug_objects' );
@@ -373,14 +383,59 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 		}
 		
 		/**
-		 * Return undefined list as tree
+		 * Recursive search in array for string
 		 * 
+		 * @param  String  $needle
+		 * @param  Array   $haystack
+		 * @return Boolean
+		 */
+		public function recursive_in_array( $needle, $haystack ) {
+	
+			if ( '' != $haystack ) {
+				foreach ( $haystack as $stalk ) {
+					if ( $needle == $stalk || (is_array( $stalk ) && $this->recursive_in_array( $needle, $stalk ) ) ) {
+						return TRUE;
+					}
+				}
+				return FALSE;
+			}
+	
+		}
+		
+		/**
+		 *  Find the position of the first occurrence of a case-insensitive substring in a array
+		 * 
+		 * @param  String  $needle
+		 * @param  Array   $haystack
+		 * @return Boolean
+		 */
+		public function array_find( $needle, $haystack ) {
+			
+			foreach ( $haystack as $key => $value ) {
+				
+				if ( is_object( $value ) )
+					$value = get_object_vars( $value );
+				
+				if ( is_array( $value ) ) {
+					return $this->array_find( $needle, $value );
+				
+				} else if ( FALSE !== stripos( $needle, $value ) ) {
+					return TRUE;
+				}
+			}
+			
+			return FALSE;
+		}
+		
+		/**
+		 * Return undefined list as tree
+		 *
 		 * @access  public
 		 * @since   2.0.0
-		 * @param   $arr array
-		 * @param   $root_name string
-		 * @param   $unserialized_string boolean
-		 * @return  $output array
+		 * @param   array $arr
+		 * @param   string $root_name
+		 * @param   bool $unserialized_string
+		 * @return  string $output
 		 */
 		public function get_as_ul_tree( $arr, $root_name = '', $unserialized_string = FALSE ) {
 			global $wp_object;
@@ -451,22 +506,24 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 						$val = preg_replace( '/;n;/', ';N;', $val );
 						$val = str_replace( "\n", "", $val );
 						$val = normalize_whitespace($val);
+
 						if ( is_serialized_string( $val ) )
 							$obj = unserialize( $val );
 						else
 							$obj = normalize_whitespace( $val );
-						$is_serialized = ($obj !== false && preg_match("/^(O:|a:)/", $val));
+
 						$output .= "<li class=\"vt-$vt\"><span class=\"key\">" . htmlspecialchars($key) . '</span>';
 						$output .= "<br/><small><em>type</em>: $vt | <em>size</em>: ".strlen($val). " | <em>serialized</em>: ".(is_serialized($val) !== false?"true":"false"). '</small><br/>';
+
 						if ( is_serialized($val) ) {
 							$output .= Debug_Objects :: get_as_ul_tree($obj, "<small><em>value</em>:</small> <span class=\"value\">[unserialized]</span>", true);
-						}
-						else {
+						} else {
 							if ($val)
 								$output .= '<small><em>value</em>: </small><span class="value">' . htmlspecialchars($val) . '</span>';
 							else
 								$output .= '';
 						}
+
 						$output .= '</li>';
 					break;
 					default: //what the hell is this ?
@@ -482,27 +539,46 @@ if ( ! class_exists( 'Debug_Objects' ) ) {
 			return $output;
 		}
 		
+		/**
+		 * Print debug output
+		 *
+		 * @since     03/11/2012
+		 * @param     mixed $var
+		 * @param     string $before
+		 * @param     bool   $return
+		 * @internal  param $mixed
+		 * @return    string
+		 */
+		public static function pre_print( $var, $before = '', $return = FALSE ) {
+			
+			$export = var_export( $var, TRUE );
+			$escape = htmlspecialchars( $export, ENT_QUOTES, 'utf-8', FALSE );
+			
+			if ( $return )
+				return $before . '<pre>' . $escape . '</pre>';
+			else
+				print $before . '<pre>' . $escape . '</pre>';
+		}
+		
 	} // end class
 	
 } // end if class exists
 
 if ( ! function_exists( 'pre_print' ) ) {
-	
+
 	/**
 	 * Print debug output
 	 *
-	 * @since  03/11/2012
-	 * @param  mixed
-	 * @return void
+	 * @since     03/11/2012
+	 * @param     mixed $var
+	 * @param     string $before
+	 * @param     bool   $return
+	 * @internal  param $mixed
+	 * @return    string
 	 */
 	function pre_print( $var, $before = '', $return = FALSE ) {
 		
-		$export = var_export( $var, TRUE );
-		$escape = htmlspecialchars( $export, ENT_QUOTES, 'utf-8', FALSE );
-		if ( $return )
-			return $escape;
-		else
-			print $before . '<pre>' . $escape . '</pre>';
+		Debug_Objects::pre_print( $var, $before, $return );
 	}
 }
 
@@ -510,13 +586,13 @@ if ( ! function_exists( 'debug_to_console' ) ) {
 	/**
 	 * Simple helper to debug to the console
 	 * 
-	 * @param  Array, String $data
+	 * @param  object, array, string $data
 	 * @return string
 	 */
 	function debug_to_console( $data ) {
 		
 		$output = '';
-		
+		/*
 		if ( is_array( $data ) ) {
 			$output .= "console.warn( 'Debug Objects with Array.' ); 
 				console.log( '" . preg_replace( 
@@ -536,7 +612,11 @@ if ( ! function_exists( 'debug_to_console' ) ) {
 		} else {
 			$output .= "console.log( 'Debug Objects: {$data}' );";
 		}
-		
+		*/
+		// new and smaller version, easier to maintain
+		$output .= 'console.info( \'Debug in Console via Debug Objects Plugin:\' );';
+		$output .= 'console.log(' . json_encode( $data ) . ');';
+
 		echo '<script>' . $output . '</script>';
 	}
 }

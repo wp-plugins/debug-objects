@@ -1,5 +1,8 @@
+
 function debug_objects_toggle( obj ) {
-	var el = document.getElementById(obj);
+	
+	var el = document.getElementById( obj );
+	
 	if ( el.style.display != 'block' ) {
 		el.style.display = 'block';
 	} else {
@@ -46,5 +49,12 @@ function debug_objects_toggle( obj ) {
 		collapsible: true,
 		active: selected_tab,
 	} );
+	
+	// Add tablesorter function
+	$( '#debugobjects table.tablesorter' ).DataTable( {
+		"iDisplayLength": 25,
+		"aLengthMenu": [ 10, 25, 50, 75, 100, 200, 500 ],
+		"bJQueryUI": true
+	} ); 
 	
 } )( jQuery );

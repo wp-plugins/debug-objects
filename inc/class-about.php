@@ -4,8 +4,9 @@
  *
  * @package     Debug Objects
  * @subpackage  About plugin
- * @author      Frank B&uuml;ltge
+ * @author      Frank Bültge
  * @since       2.0.0
+ * @version     01/13/2014
  */
 
 if ( ! function_exists( 'add_filter' ) ) {
@@ -17,28 +18,37 @@ if ( ! class_exists( 'Debug_Objects_About' ) ) {
 	class Debug_Objects_About extends Debug_Objects {
 		
 		protected static $classobj = NULL;
-		
+
 		/**
-		* Handler for the action 'init'. Instantiates this class.
-		* 
-		* @access  public
-		* @return  $classobj
-		*/
+		 * Handler for the action 'init'. Instantiates this class.
+		 *
+		 * @access  public
+		 * @return \Debug_Objects_About|null $classobj
+		 */
 		public static function init() {
 			
-			NULL === self::$classobj and self::$classobj = new self();
+			NULL === self::$classobj && self::$classobj = new self();
 			
 			return self::$classobj;
 		}
-	
+
+		/**
+		 * Constructor
+		 */
 		public function __construct() {
 			
 			if ( ! current_user_can( '_debug_objects' ) )
 				return;
 			
-			add_filter( 'debug_objects_tabs', array( $this, 'get_conditional_tab' ) );
+			add_filter( 'debug_objects_tabs', array( $this, 'get_conditional_tab' ), 99 );
 		}
-		
+
+		/**
+		 * Create new tab for information about the plugin in the plugin tab list
+		 *
+		 * @param   array $tabs
+		 * @return  array $tabs
+		 */
 		public function get_conditional_tab( $tabs ) {
 			
 			$tabs[] = array( 
@@ -49,6 +59,13 @@ if ( ! class_exists( 'Debug_Objects_About' ) ) {
 			return $tabs;
 		}
 
+		/**
+		 * Get information from plugin to easy red on the tab content
+		 *
+		 * @param   string $value
+		 * @param   bool   $echo
+		 * @return  string $output
+		 */
 		public function get_plugin_data( $value = 'TextDomain', $echo = TRUE ) {
 
 			$output  = '';
@@ -81,4 +98,5 @@ if ( ! class_exists( 'Debug_Objects_About' ) ) {
 		}
 		
 	} // end class
+
 }// end if class exists
