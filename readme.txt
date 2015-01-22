@@ -3,7 +3,7 @@ Contributors: Bueltge, inpsyde
 Donate link: http://bueltge.de/wunschliste/
 Tags: debug, sql, analyse, tuning, performance, database, queries, query, php, cron, cache
 Requires at least: 3.3
-Tested up to: 4.1
+Tested up to: 4.2-alpha
 Stable tag: trunk
 
 The Plugin Debug Objects provides a large number of information: query, cache, cron, constants, hooks, functions and many more.
@@ -37,6 +37,7 @@ The Plugin Debug Objects provides the user, which has the appropriate rights, no
 * Cache content
 * Hooks and filters
 * All options from table, for single and multisite installation
+* Time values for inspect Permalink Rules
 * Rewrites, a list of cached rewrites and the rule
 * Current screen information to find the right backend page and hook
 * List Custom Post Type Arguments
@@ -45,6 +46,7 @@ The Plugin Debug Objects provides the user, which has the appropriate rights, no
 * All defined constants
 * All classes
 * All shortcodes
+* List transients
 * Post Meta data
 * See data from `$_POST`; `$_GET` and debug backtrace before rewrite; usefull for forms in backend
 * Run WordPress in default mode via url-param
@@ -89,7 +91,17 @@ After this version you find the other verison on the [github repo](https://githu
 Good news, this plugin is free for everyone! Since it's released under the GPL, you can use it free of charge on your personal or commercial blog. But if you enjoy this plugin, you can thank me and leave a [small donation](http://bueltge.de/wunschliste/ "Wishliste and Donate") for the time I've spent writing and supporting this plugin. And I really don't want to know how many hours of my life this plugin has already eaten ;)
 
 == Changelog ==
-= 2.1.17 (05/19/2014) =
+= 2.2.0 (2015-01-22) =
+* Add new tab for check timeline of Permalink rules
+* Add more visibility for php errors, warnings, notice
+* More css rules for output view that it works on more themes
+* Add php error backtrace alternative
+* Add composer support
+* Add cron logger, save in transients with string `debug_objects_http_<transport><time>`, [issue 36](https://github.com/bueltge/Debug-Objects/issues/36)
+* Add Transients view
+* More information on Page Hooks
+
+= 2.1.18 (05/19/2014) =
 * Solve SVN Bug, now with all files also inside the SVN, not only the git
 
 = 2.1.17 (05/15/2014) =

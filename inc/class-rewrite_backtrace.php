@@ -21,13 +21,13 @@ class Debug_Objects_Rewrite_Backtrace {
 	
 	protected static $classobj = NULL;
 	
-	public $transient_string = 'debug_objects_rewrite_backtrace';
-	
+	public $transient_key = 'debug_objects_rewrite_backtrace';
+
 	/**
 	 * Handler for the action 'init'. Instantiates this class.
-	 * 
+	 *
 	 * @access  public
-	 * @return  $classobj
+	 * @return \Debug_Objects_Rewrite_Backtrace|null $classobj
 	 */
 	public static function init() {
 		
@@ -35,11 +35,10 @@ class Debug_Objects_Rewrite_Backtrace {
 		
 		return self::$classobj;
 	}
-	
+
 	/**
 	 * Constructor, init the methods
-	 * 
-	 * @return  void
+	 *
 	 * @since   2.1.11
 	 */
 	public function __construct() {
@@ -49,13 +48,12 @@ class Debug_Objects_Rewrite_Backtrace {
 	}
 	
 	/**
-	 * Parse data and save in transient dat in DB
+	 * Parse data and save in transient data in DB
 	 * 
 	 * @param  $location
-	 * @param  $status
 	 * @return $location
 	 */
-	public function redirect_debug( $location, $status ) {
+	public function redirect_debug( $location ) {
 		
 		ob_start();
 		debug_print_backtrace();
@@ -64,9 +62,9 @@ class Debug_Objects_Rewrite_Backtrace {
 		$output['_post']           = $_POST;
 		$output['global_post']     = isset( $GLOBALS['post'] ) ? $GLOBALS['post'] : '';
 		if ( is_network_admin() )
-			set_site_transient( $this->transient_string, $output, 120 );
+			set_site_transient( $this->transient_key, $output, 120 );
 		else
-			set_transient( $this->transient_string, $output, 120 );
+			set_transient( $this->transient_key, $output, 120 );
 		ob_end_clean();
 		
 		return $location;
@@ -97,9 +95,9 @@ class Debug_Objects_Rewrite_Backtrace {
 	public function get_debug_backtrace( $echo = TRUE ) {
 		
 		if ( is_network_admin() )
-			$data = get_site_transient( $this->transient_string );
+			$data = get_site_transient( $this->transient_key );
 		else
-			$data = get_transient( $this->transient_string );
+			$data = get_transient( $this->transient_key );
 		
 		$output  = '';
 		$output .= '<h4>$_POST</h4>';
@@ -125,8 +123,8 @@ class Debug_Objects_Rewrite_Backtrace {
 		
 		if ( $echo )
 			echo $output;
-		else
-			return $output;
+
+		return $output;
 	}
 	
 } // end class

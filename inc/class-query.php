@@ -25,13 +25,13 @@ if ( ! class_exists( 'Debug_Objects_Query' ) ) {
 	class Debug_Objects_Query {
 	
 		private static $classobj = NULL;
-		
+
 		/**
 		 * Handler for the action 'init'. Instantiates this class.
-		 * 
+		 *
 		 * @access  public
 		 * @since   2.0.0
-		 * @return  $classobj
+		 * @return Debug_Objects_Query|null $classobj
 		 */
 		public static function init() {
 			
@@ -40,11 +40,10 @@ if ( ! class_exists( 'Debug_Objects_Query' ) ) {
 			
 			return self::$classobj;
 		}
-		
+
 		/**
 		 * Init the message
-		 * 
-		 * @return  void
+		 *
 		 */
 		public function __construct() {
 			
@@ -58,7 +57,7 @@ if ( ! class_exists( 'Debug_Objects_Query' ) ) {
 		 */
 		public function get_message() {
 			
-			$level = defined( 'E_USER_DEPRECATED' ) ? E_USER_DEPRECATED : E_USER_WARNING;
+			//$level = defined( 'E_USER_DEPRECATED' ) ? E_USER_DEPRECATED : E_USER_WARNING;
 			$msg   = __( 'Class Debug_Objects_Query was replaced with Debug_Objects_Db_Query. Please re-save the settings of the Debug Objects Plugin.' );
 			//trigger_error( $msg, $level );
 			_deprecated_function( __CLASS__, '2.1.17', 'Debug_Objects_Db_Query' );
